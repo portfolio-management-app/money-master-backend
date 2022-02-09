@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces;
+using ApplicationCore.UserAggregate;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,12 +33,18 @@ namespace PublicAPI
 
             services.AddControllers();
             services.AddDbContext<AppDbContext>(builder =>
-                builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection")));
+                builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
+                    .LogTo(Console.WriteLine));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicAPI", Version = "v1" });
                 c.EnableAnnotations();
             });
+            
+            // configure DI services
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
