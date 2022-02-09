@@ -23,7 +23,8 @@ namespace PublicAPI.Endpoints.User
         {
             try
             {
-                var newUser = _userService.AddNewUser(request.Email, request.Password);
+                var newUser = 
+                    await Task.Run(() => _userService.AddNewUser(request.Email, request.Password), cancellationToken);
                 return Ok(newUser.Adapt<RegisterResponse>()); 
             }
             catch (ApplicationException ex)

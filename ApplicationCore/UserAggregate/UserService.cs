@@ -22,5 +22,13 @@ namespace ApplicationCore.UserAggregate
             _userRepository.Insert(newUser);
             return newUser;
         }
+
+        public User TryAuthenticate(string email, string password)
+        {
+            var existedUser = _userRepository.GetFirst(user => user.Email == email);
+            if (existedUser is null)
+                throw new ApplicationException($"User with email {email} does not exist");
+            return existedUser.CheckPassword(password) ? existedUser : null;
+        }
     }
 }
