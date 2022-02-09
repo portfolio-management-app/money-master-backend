@@ -5,16 +5,20 @@ using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.UserAggregate;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace PublicAPI.Endpoints.User
 {
     public class Register: EndpointBaseAsync.WithRequest<RegisterRequest>.WithActionResult<RegisterResponse>
     {
         private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-        public Register( IUserService userService)
+        public Register( IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
         }
         
         
@@ -25,7 +29,10 @@ namespace PublicAPI.Endpoints.User
             {
                 var newUser = 
                     await Task.Run(() => _userService.AddNewUser(request.Email, request.Password), cancellationToken);
-                return Ok(newUser.Adapt<RegisterResponse>()); 
+                string token = newUser.GenerateToken(_configuration["JWTSigningKey"]);
+                var response = newUser.Adapt<RegisterResponse>();
+                response.Token = token;
+                return Ok(response); 
             }
             catch (ApplicationException ex)
             {

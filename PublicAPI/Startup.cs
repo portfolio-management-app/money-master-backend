@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PublicAPI.Configures;
 
 namespace PublicAPI
 {
@@ -35,9 +36,12 @@ namespace PublicAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicAPI", Version = "v1" });
                 c.EnableAnnotations();
             });
+            services.ConfigureJwtAuthenticationScheme(Configuration["JWTSigningKey"]);
+            services.AddAuthorization();
             
             // configure DI services
-
+            
+            services.AddSingleton(Configuration);
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
         }
@@ -60,7 +64,7 @@ namespace PublicAPI
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(_ => true) // allow any origin
                 .AllowCredentials()); // allow credentials 
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
