@@ -13,6 +13,16 @@ namespace ApplicationCore.UserAggregate
             _userRepository = userRepository;
         }
 
+        public User GetUserById(int id)
+        {
+            return _userRepository.GetFirst(u => u.Id == id);
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            return _userRepository.GetFirst(u => u.Email == email); 
+        }
+
         public User AddNewUser(string email, string password)
         {
             var existedUser = _userRepository.GetFirst(user => user.Email == email);

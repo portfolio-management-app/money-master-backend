@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using ApplicationCore.Entity.Asset;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ApplicationCore.Entity
@@ -15,6 +17,11 @@ namespace ApplicationCore.Entity
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        
+        // relationships to others table 
+        public List<RealEstateAsset> RealEstateAssets { get; set; } = new List<RealEstateAsset>();
+        public CashAsset CashAsset { get; set; } = new CashAsset();
+        public List<InterestAsset> InterestAssets = new List<InterestAsset>();
 
         public User(string email, string password)
         {
@@ -57,6 +64,7 @@ namespace ApplicationCore.Entity
             {
                 Subject = new ClaimsIdentity(new[]
                 {
+                    new Claim("ID",Id.ToString()),
                     new Claim(ClaimTypes.Email, Email)
                 }),
                 SigningCredentials = credentials,
