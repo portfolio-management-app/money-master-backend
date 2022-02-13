@@ -5,7 +5,6 @@ using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.UserAggregate;
 using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
 namespace PublicAPI.Endpoints.User

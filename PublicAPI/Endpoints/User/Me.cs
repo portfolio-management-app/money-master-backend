@@ -15,6 +15,7 @@ namespace PublicAPI.Endpoints.User
             _userService = userService;
         }
         [Authorize]
+        [HttpGet("user/me")]
         public override ActionResult<MeResponse> Handle()
         {
             int userId = GetUserIdFromToken();
