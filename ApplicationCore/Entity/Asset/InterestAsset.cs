@@ -8,6 +8,5 @@ namespace ApplicationCore.Entity.Asset
         
         // Reinstate: continue to keep in asset and keep interest rate 
         // Not Reinstate:  withdraw to cash at the end of term 
-        public bool IsGoingToReinstate { get; set; }
     }
 }

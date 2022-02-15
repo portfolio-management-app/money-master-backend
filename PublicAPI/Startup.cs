@@ -1,4 +1,5 @@
 using System;
+using ApplicationCore.InterestAssetAggregate;
 using ApplicationCore.Interfaces;
 using ApplicationCore.UserAggregate;
 using Infrastructure;
@@ -44,6 +45,7 @@ namespace PublicAPI
             services.AddSingleton(Configuration);
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
+            services.AddScoped<IInterestAssetService, InterestAssetService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

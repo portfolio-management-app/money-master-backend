@@ -19,6 +19,50 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.BankSavingAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("InputCurrency")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("InputDay")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double>("InputMoneyAmount")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("InterestRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<bool>("IsGoingToReinState")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TermRange")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BankSavingAssets");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CashAsset", b =>
                 {
                     b.Property<int>("Id")
@@ -55,12 +99,15 @@ namespace Infrastructure.Migrations
                     b.ToTable("CashAssets");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entity.Asset.InterestAsset", b =>
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAsset", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("CustomInterestAssetInfoId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -77,9 +124,6 @@ namespace Infrastructure.Migrations
                     b.Property<double>("InterestRate")
                         .HasColumnType("double precision");
 
-                    b.Property<bool>("IsGoingToReinstate")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp without time zone");
 
@@ -94,9 +138,31 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomInterestAssetInfoId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("InterestAssets");
+                    b.ToTable("CustomInterestAssets");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAssetInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CustomInterestAssetInfos");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.Asset.RealEstateAsset", b =>
@@ -158,6 +224,17 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.BankSavingAsset", b =>
+                {
+                    b.HasOne("ApplicationCore.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CashAsset", b =>
                 {
                     b.HasOne("ApplicationCore.Entity.User", "User")
@@ -169,7 +246,24 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entity.Asset.InterestAsset", b =>
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAsset", b =>
+                {
+                    b.HasOne("ApplicationCore.Entity.Asset.CustomInterestAssetInfo", "CustomInterestAssetInfo")
+                        .WithMany()
+                        .HasForeignKey("CustomInterestAssetInfoId");
+
+                    b.HasOne("ApplicationCore.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomInterestAssetInfo");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAssetInfo", b =>
                 {
                     b.HasOne("ApplicationCore.Entity.User", "User")
                         .WithMany()
