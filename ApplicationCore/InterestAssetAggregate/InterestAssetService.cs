@@ -1,7 +1,9 @@
 using System;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
+using ApplicationCore.InterestAssetAggregate.DTOs;
 using ApplicationCore.Interfaces;
+using Mapster;
 
 namespace ApplicationCore.InterestAssetAggregate
 {
@@ -9,12 +11,13 @@ namespace ApplicationCore.InterestAssetAggregate
     {
         private readonly IBaseRepository<User> _userRepository;
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
+        private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
 
-
-        public InterestAssetService(IBaseRepository<User> userRepository, IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo)
+        public InterestAssetService(IBaseRepository<User> userRepository, IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo, IBaseRepository<CustomInterestAsset> customInterestAssetRepo)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
+            _customInterestAssetRepo = customInterestAssetRepo;
         }
 
         public InterestAsset GetInterestedAssetById(int id)
@@ -39,6 +42,44 @@ namespace ApplicationCore.InterestAssetAggregate
             return newCustomCategory;
 
 
+        }
+
+        public CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, string name, DateTime inputDay,
+            double inputMoneyAmount, string inputCurrency, string description, double interestRate, int termRange)
+        {
+            // check is user master of this category
+            var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
+            if (foundCustomCategory.Id != userId)
+                throw new ApplicationException("Unauthorized to access this category");
+            var newCustomInterestAsset = new CustomInterestAsset()
+            {
+                UserId = userId,
+                CustomInterestAssetInfo = foundCustomCategory,
+                Description = description,
+                InputCurrency = inputCurrency,
+                InputDay = inputDay,
+                InputMoneyAmount = inputMoneyAmount,
+                InterestRate = interestRate,
+                LastChanged = DateTime.Now,
+                TermRange = termRange
+
+            };
+
+            _customInterestAssetRepo.Insert(newCustomInterestAsset);
+            return newCustomInterestAsset;
+        }
+
+        public CustomInterestAsset AddCustomInterestAsset(int userId,int customInterestInfoId,CreateNewCustomInterestAssetDto dto)
+        {
+            var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
+            if (foundCustomCategory.UserId != userId)
+                throw new ApplicationException("Unauthorized to access this category");
+
+            var newCustomInterestAsset = dto.Adapt<CustomInterestAsset>();
+            newCustomInterestAsset.UserId = userId;
+            newCustomInterestAsset.CustomInterestAssetInfo = foundCustomCategory;
+            _customInterestAssetRepo.Insert(newCustomInterestAsset);
+            return newCustomInterestAsset;
         }
     }
 }

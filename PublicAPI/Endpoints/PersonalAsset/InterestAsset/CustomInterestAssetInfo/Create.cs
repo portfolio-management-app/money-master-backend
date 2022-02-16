@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInfo
 {
+    [Route("personalAsset/interest")]
+    [Authorize]
     public class Create: EndpointBaseSync.WithRequest<CreateCustomInterestAssetInfoRequest>.WithActionResult<CreateCustomInterestAssetInfoResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
@@ -17,8 +19,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
             _interestAssetService = interestAssetService;
         }
         
-        [Authorize]
-        [HttpPost("personalAsset/interest/custom")]
+        [HttpPost("custom")]
         public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(CreateCustomInterestAssetInfoRequest request)
         {
             var userId = GetUserIdFromToken();
