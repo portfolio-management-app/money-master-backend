@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.InterestAssetAggregate.DTOs;
 using ApplicationCore.Interfaces;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.InterestAssetAggregate
 {
@@ -80,6 +83,24 @@ namespace ApplicationCore.InterestAssetAggregate
             newCustomInterestAsset.CustomInterestAssetInfo = foundCustomCategory;
             _customInterestAssetRepo.Insert(newCustomInterestAsset);
             return newCustomInterestAsset;
+        }
+
+        public List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId)
+        {
+            var foundCategory = _customInterestAssetInfoRepo.GetFirst(ci => ci.UserId == userId);
+            if (foundCategory is null)
+                throw new ApplicationException("Unauthorized access for this category");
+            var list = _customInterestAssetRepo
+                .List(c => c.CustomInterestAssetInfoId == foundCategory.Id); 
+            return list.ToList();
+
+        }
+
+        public List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId)
+        {
+            var foundCategories =
+                _customInterestAssetInfoRepo.List(ci => ci.UserId == userId);
+            return foundCategories.ToList();
         }
     }
 }

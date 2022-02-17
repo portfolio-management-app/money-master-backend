@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PublicAPI.Configures;
+using PublicAPI.Filters;
 
 namespace PublicAPI
 {
@@ -28,7 +29,10 @@ namespace PublicAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<SetUserIdFilter>();
+            });
             services.AddDbContext<AppDbContext>(builder =>
                 builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
                     .LogTo(Console.WriteLine, LogLevel.Information));
