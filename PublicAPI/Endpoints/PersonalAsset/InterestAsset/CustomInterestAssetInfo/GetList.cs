@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using ApplicationCore.InterestAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
@@ -26,7 +22,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
 
         public override ActionResult<List<CreateCustomInterestAssetInfoResponse>> Handle()
         {
-            var userId = int.Parse(HttpContext.Items["userId"].ToString() ?? string.Empty);
+            var userId = (int) HttpContext.Items["userId"]!;
             var foundCategories = _interestAssetService.GetAllUserCustomInterestAssetCategory(userId);
 
             return Ok(foundCategories.Adapt<List<CreateCustomInterestAssetInfoResponse>>());

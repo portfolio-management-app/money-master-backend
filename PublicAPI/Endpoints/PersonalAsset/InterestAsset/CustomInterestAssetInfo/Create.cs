@@ -22,7 +22,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
         [HttpPost("custom")]
         public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(CreateCustomInterestAssetInfoRequest request)
         {
-            var userId = GetUserIdFromToken();
+            var userId = (int) HttpContext.Items["userId"]!;
             try
             {
                 var result =
@@ -34,12 +34,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
                 return BadRequest(ex.Message);
             }
         }
-        
-        
-        private int GetUserIdFromToken()
-        {
-            var userId = int.Parse(HttpContext.User.Claims.First(c => c.Type == "ID").Value);
-            return userId;
-        }
+
     }
 }

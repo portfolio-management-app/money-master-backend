@@ -18,7 +18,7 @@ namespace PublicAPI.Endpoints.User
         [HttpGet("user/me")]
         public override ActionResult<MeResponse> Handle()
         {
-            int userId = GetUserIdFromToken();
+            var userId = (int) HttpContext.Items["userId"]!;
             var foundUser = _userService.GetUserById(userId);
             if (foundUser is null)
                 return NotFound();

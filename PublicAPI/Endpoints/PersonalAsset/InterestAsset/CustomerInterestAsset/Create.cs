@@ -28,9 +28,11 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
         {
             try
             {
+                
+                var userId = (int) HttpContext.Items["userId"]!;
                 var dto = request.CustomInterestAssetCommand.Adapt<CreateNewCustomInterestAssetDto>();
                 var newAsset = 
-                    _interestAssetService.AddCustomInterestAsset(GetUserIdFromToken(),request.CustomInterestAssetInfoId,dto);
+                    _interestAssetService.AddCustomInterestAsset(userId,request.CustomInterestAssetInfoId,dto);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)
@@ -39,10 +41,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
             }
         }
         
-        private int GetUserIdFromToken()
-        {
-            var userId = int.Parse(HttpContext.User.Claims.First(c => c.Type == "ID").Value);
-            return userId;
-        }
+
     }
 }

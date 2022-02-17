@@ -27,7 +27,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
         {
             try
             {
-                var userId = GetUserIdFromToken();
+                var userId = (int) HttpContext.Items["userId"]!;
                 var listCustomAsset = _interestAssetService.GetAllUserCustomInterestAsset(userId,customInfoId);
                 return Ok(listCustomAsset.Adapt<List<SingleCustomInterestAssetResponse>>());
             }
@@ -38,10 +38,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
             }
         }
         
-        private int GetUserIdFromToken()
-        {
-            var userId = int.Parse(HttpContext.User.Claims.First(c => c.Type == "ID").Value);
-            return userId;
-        }
+
     }
 }
