@@ -87,9 +87,13 @@ namespace ApplicationCore.InterestAssetAggregate
 
         public List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId)
         {
-            var foundCategory = _customInterestAssetInfoRepo.GetFirst(ci => ci.UserId == userId);
+            var foundCategory = 
+                _customInterestAssetInfoRepo.GetFirst(ci => ci.Id == customInterestInfoId);
             if (foundCategory is null)
                 throw new ApplicationException("Unauthorized access for this category");
+
+            if (foundCategory.UserId != userId)
+                throw new ApplicationException("Unauthorized access for this category"); 
             var list = _customInterestAssetRepo
                 .List(c => c.CustomInterestAssetInfoId == foundCategory.Id); 
             return list.ToList();
