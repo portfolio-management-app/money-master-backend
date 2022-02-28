@@ -24,12 +24,6 @@ namespace PublicAPI.Endpoints.User
                 return NotFound();
             return Ok(foundUser.Adapt<MeResponse>());
         }
-
-        private int GetUserIdFromToken()
-        {
-            var userId = int.Parse(HttpContext.User.Claims.First(c => c.Type == "ID").Value);
-            return userId;
-        }
         
     }
 }
