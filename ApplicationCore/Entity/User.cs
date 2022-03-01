@@ -22,6 +22,7 @@ namespace ApplicationCore.Entity
         public List<RealEstateAsset> RealEstateAssets { get; set; } = new List<RealEstateAsset>();
         public CashAsset CashAsset { get; set; } = new CashAsset();
         public List<InterestAsset> InterestAssets = new List<InterestAsset>();
+        public List<Portfolio> Portfolios = new List<Portfolio>();
 
         public User(string email, string password)
         {

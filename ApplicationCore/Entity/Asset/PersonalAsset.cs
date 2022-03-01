@@ -13,5 +13,8 @@ namespace ApplicationCore.Entity.Asset
        public int UserId { get; set; }
        public User User { get; set; }
        
+       public int PortfolioId { get; set; }
+       public Portfolio Portfolio { get; set; }
+       
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using ApplicationCore.InterestAssetAggregate;
 using ApplicationCore.Interfaces;
+using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.UserAggregate;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -50,6 +51,7 @@ namespace PublicAPI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
             services.AddScoped<IInterestAssetService, InterestAssetService>();
+            services.AddScoped<IPortfolioService, PortfolioService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

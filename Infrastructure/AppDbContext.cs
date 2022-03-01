@@ -9,7 +9,8 @@ namespace Infrastructure
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options){}
         
         public DbSet<User> Users { get; set; }
-        
+        public DbSet<Portfolio> Portfolios { get; set; }
+
         public DbSet<BankSavingAsset> BankSavingAssets { get; set; }
         public DbSet<CustomInterestAsset> CustomInterestAssets { get; set; }
         public DbSet<CustomInterestAssetInfo> CustomInterestAssetInfos { get; set; }
