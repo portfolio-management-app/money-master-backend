@@ -17,6 +17,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
     public class CreateCustomInterestAssetRequest
     {
         [FromRoute(Name = "customInfoId")] public int CustomInterestAssetInfoId { get; set; } 
+        [FromRoute(Name = "portfolioId")] public int PortfolioId { get; set; }
         [FromBody] public CreateCustomInterestAssetCommand CustomInterestAssetCommand { get; set; }
     }
 }

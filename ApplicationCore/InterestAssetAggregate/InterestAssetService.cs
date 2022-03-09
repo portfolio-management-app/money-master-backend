@@ -10,22 +10,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.InterestAssetAggregate
 {
-    public class InterestAssetService: IInterestAssetService
+    public class InterestAssetService : IInterestAssetService
     {
         private readonly IBaseRepository<User> _userRepository;
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
         private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
+        private readonly IBaseRepository<Portfolio> _portfolioRepo;
 
-        public InterestAssetService(IBaseRepository<User> userRepository, IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo, IBaseRepository<CustomInterestAsset> customInterestAssetRepo)
+        public InterestAssetService(IBaseRepository<User> userRepository,
+            IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
+            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
             _customInterestAssetRepo = customInterestAssetRepo;
+            _portfolioRepo = portfolioRepo;
         }
 
         public InterestAsset GetInterestedAssetById(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName)
@@ -43,61 +47,41 @@ namespace ApplicationCore.InterestAssetAggregate
             _customInterestAssetInfoRepo.Insert(newCustomCategory);
 
             return newCustomCategory;
-
-
         }
 
-        public CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, string name, DateTime inputDay,
-            double inputMoneyAmount, string inputCurrency, string description, double interestRate, int termRange)
+
+
+        public CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
+            CreateNewCustomInterestAssetDto dto)
         {
-            // check is user master of this category
+
+            var foundPortfolio = _portfolioRepo.GetFirst(p => p.Id == portfolioId);
+            if (foundPortfolio.UserId != userId)
+                throw new ApplicationException("Unauthorized to access this portfolio"); 
             var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
-            if (foundCustomCategory.Id != userId)
-                throw new ApplicationException("Unauthorized to access this category");
-            var newCustomInterestAsset = new CustomInterestAsset()
-            {
-                UserId = userId,
-                CustomInterestAssetInfo = foundCustomCategory,
-                Description = description,
-                InputCurrency = inputCurrency,
-                InputDay = inputDay,
-                InputMoneyAmount = inputMoneyAmount,
-                InterestRate = interestRate,
-                LastChanged = DateTime.Now,
-                TermRange = termRange
-
-            };
-
-            _customInterestAssetRepo.Insert(newCustomInterestAsset);
-            return newCustomInterestAsset;
-        }
-
-        public CustomInterestAsset AddCustomInterestAsset(int userId,int customInterestInfoId,CreateNewCustomInterestAssetDto dto)
-        {
-            var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
-            if (foundCustomCategory.UserId != userId)
+            if (foundCustomCategory.UserId!= userId)
                 throw new ApplicationException("Unauthorized to access this category");
 
             var newCustomInterestAsset = dto.Adapt<CustomInterestAsset>();
             newCustomInterestAsset.UserId = userId;
             newCustomInterestAsset.CustomInterestAssetInfo = foundCustomCategory;
+            newCustomInterestAsset.Portfolio = foundPortfolio;
             _customInterestAssetRepo.Insert(newCustomInterestAsset);
             return newCustomInterestAsset;
         }
 
         public List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId)
         {
-            var foundCategory = 
+            var foundCategory =
                 _customInterestAssetInfoRepo.GetFirst(ci => ci.Id == customInterestInfoId);
             if (foundCategory is null)
                 throw new ApplicationException("Unauthorized access for this category");
 
             if (foundCategory.UserId != userId)
-                throw new ApplicationException("Unauthorized access for this category"); 
+                throw new ApplicationException("Unauthorized access for this category");
             var list = _customInterestAssetRepo
-                .List(c => c.CustomInterestAssetInfoId == foundCategory.Id); 
+                .List(c => c.CustomInterestAssetInfoId == foundCategory.Id);
             return list.ToList();
-
         }
 
         public List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId)

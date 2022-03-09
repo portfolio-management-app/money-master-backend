@@ -3,7 +3,7 @@ using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.PortfolioAggregate
 {
-    public class PortfolioService: IPortfolioService
+    public class PortfolioService : IPortfolioService
     {
         private readonly IBaseRepository<Portfolio> _portfolioRepository;
 

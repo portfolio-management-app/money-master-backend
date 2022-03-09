@@ -9,7 +9,9 @@ namespace ApplicationCore.InterestAssetAggregate
     {
         InterestAsset GetInterestedAssetById(int id);
         CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName);
-        CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId ,CreateNewCustomInterestAssetDto dto);
+
+        CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId,int portfolioId,
+            CreateNewCustomInterestAssetDto dto);
 
         List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId);
 

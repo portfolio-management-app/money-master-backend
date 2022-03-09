@@ -12,7 +12,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
     
     [Authorize]
-    [Route("personalAsset/interest")]
+    [Route("portfolio/{portfolioId}")]
+    
     public class Create: EndpointBaseSync.WithRequest<CreateCustomInterestAssetRequest>
         .WithActionResult<CreateCustomInterestAssetResponse>
     {
@@ -32,7 +33,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
                 var userId = (int) HttpContext.Items["userId"]!;
                 var dto = request.CustomInterestAssetCommand.Adapt<CreateNewCustomInterestAssetDto>();
                 var newAsset = 
-                    _interestAssetService.AddCustomInterestAsset(userId,request.CustomInterestAssetInfoId,dto);
+                    _interestAssetService.AddCustomInterestAsset(userId,request.CustomInterestAssetInfoId,request.PortfolioId,dto);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)

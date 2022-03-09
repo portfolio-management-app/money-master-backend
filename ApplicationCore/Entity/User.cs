@@ -17,12 +17,12 @@ namespace ApplicationCore.Entity
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        
+
         // relationships to others table 
-        public List<RealEstateAsset> RealEstateAssets { get; set; } = new List<RealEstateAsset>();
-        public CashAsset CashAsset { get; set; } = new CashAsset();
-        public List<InterestAsset> InterestAssets = new List<InterestAsset>();
-        public List<Portfolio> Portfolios = new List<Portfolio>();
+        public List<RealEstateAsset> RealEstateAssets { get; set; } = new();
+        public CashAsset CashAsset { get; set; } = new();
+        public List<InterestAsset> InterestAssets = new();
+        public List<Portfolio> Portfolios = new();
 
         public User(string email, string password)
         {
@@ -55,7 +55,7 @@ namespace ApplicationCore.Entity
         public string GenerateToken(string signingKey)
         {
             var hourToRefresh = 48;
-            
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
@@ -65,7 +65,7 @@ namespace ApplicationCore.Entity
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("ID",Id.ToString()),
+                    new Claim("ID", Id.ToString()),
                     new Claim(ClaimTypes.Email, Email)
                 }),
                 SigningCredentials = credentials,

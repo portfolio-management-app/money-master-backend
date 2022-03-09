@@ -9,7 +9,6 @@ namespace ApplicationCore.Interfaces
 {
     public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     {
-
         TEntity GetFirst(Expression<Func<TEntity, bool>> predicate,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null);
 

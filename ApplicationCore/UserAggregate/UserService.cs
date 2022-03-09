@@ -4,7 +4,7 @@ using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.UserAggregate
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _userRepository;
 
@@ -20,7 +20,7 @@ namespace ApplicationCore.UserAggregate
 
         public User GetUserByEmail(string email)
         {
-            return _userRepository.GetFirst(u => u.Email == email); 
+            return _userRepository.GetFirst(u => u.Email == email);
         }
 
         public User AddNewUser(string email, string password)

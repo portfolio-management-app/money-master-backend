@@ -4,6 +4,6 @@ namespace ApplicationCore.PortfolioAggregate
 {
     public interface IPortfolioService
     {
-        public Portfolio CreatePortfolio(int userId, string name, double initialCash, string initialCurrency); 
+        public Portfolio CreatePortfolio(int userId, string name, double initialCash, string initialCurrency);
     }
 }

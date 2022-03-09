@@ -1,6 +1,6 @@
 namespace ApplicationCore.Entity.Asset
 {
-    public class InterestAsset: PersonalAsset
+    public class InterestAsset : PersonalAsset
     {
         public string Description { get; set; }
         public double InterestRate { get; set; }

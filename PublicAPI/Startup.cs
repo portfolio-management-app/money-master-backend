@@ -36,7 +36,7 @@ namespace PublicAPI
             });
             services.AddDbContext<AppDbContext>(builder =>
                 builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
-                    .LogTo(Console.WriteLine, LogLevel.Information));
+                    .LogTo(Console.WriteLine, LogLevel.Critical));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicAPI", Version = "v1" });

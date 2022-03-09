@@ -3,7 +3,7 @@ using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.AssetAggregate.CashAggregate
 {
-    public class CashService: ICashService
+    public class CashService : ICashService
     {
         private readonly IBaseRepository<CashAsset> _cashRepository;
 
