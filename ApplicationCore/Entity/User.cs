@@ -19,9 +19,9 @@ namespace ApplicationCore.Entity
         public byte[] PasswordSalt { get; set; }
 
         // relationships to others table 
-        public List<RealEstateAsset> RealEstateAssets { get; set; } = new();
-        public CashAsset CashAsset { get; set; } = new();
-        public List<InterestAsset> InterestAssets = new();
+
+        //public CashAsset CashAsset { get; set; } = new();
+
         public List<Portfolio> Portfolios = new();
 
         public User(string email, string password)
