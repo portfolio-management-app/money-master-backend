@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.InterestAssetAggregate.DTOs;
 
-namespace ApplicationCore.InterestAssetAggregate
+namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
 {
     public interface IInterestAssetService
     {
@@ -16,5 +15,6 @@ namespace ApplicationCore.InterestAssetAggregate
         List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId);
 
         List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId);
+        BankSavingAsset AddBankSavingAsset(int userId, int portfolioId, CreateNewBankSavingAssetDto commandDto);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.InterestAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;

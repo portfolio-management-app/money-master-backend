@@ -1,4 +1,5 @@
 using System;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.InterestAssetAggregate;
 using ApplicationCore.Interfaces;
 using ApplicationCore.PortfolioAggregate;

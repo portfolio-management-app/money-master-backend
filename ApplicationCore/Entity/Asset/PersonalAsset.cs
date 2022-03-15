@@ -10,9 +10,6 @@ namespace ApplicationCore.Entity.Asset
         public double InputMoneyAmount { get; set; }
         public string InputCurrency { get; set; }
         public DateTime LastChanged { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
-
         public int PortfolioId { get; set; }
         public Portfolio Portfolio { get; set; }
     }

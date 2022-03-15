@@ -12,14 +12,6 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             _cashRepository = cashRepository;
         }
 
-        public CashAsset GetCashByUser(int userId)
-        {
-            return _cashRepository.GetFirst(c => c.UserId == userId);
-        }
 
-        public CashAsset EditCashValue(int userId, double newValue)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

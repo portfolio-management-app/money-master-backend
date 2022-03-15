@@ -6,9 +6,8 @@ using ApplicationCore.Entity.Asset;
 using ApplicationCore.InterestAssetAggregate.DTOs;
 using ApplicationCore.Interfaces;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationCore.InterestAssetAggregate
+namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
 {
     public class InterestAssetService : IInterestAssetService
     {
@@ -16,15 +15,18 @@ namespace ApplicationCore.InterestAssetAggregate
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
         private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
         private readonly IBaseRepository<Portfolio> _portfolioRepo;
+        private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
 
         public InterestAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
-            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo)
+            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
+            IBaseRepository<BankSavingAsset> bankSavingRepository)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
             _customInterestAssetRepo = customInterestAssetRepo;
             _portfolioRepo = portfolioRepo;
+            _bankSavingRepository = bankSavingRepository;
         }
 
         public InterestAsset GetInterestedAssetById(int id)
@@ -57,13 +59,12 @@ namespace ApplicationCore.InterestAssetAggregate
 
             var foundPortfolio = _portfolioRepo.GetFirst(p => p.Id == portfolioId);
             if (foundPortfolio.UserId != userId)
-                throw new ApplicationException("Unauthorized to access this portfolio"); 
+                throw new ApplicationException("Unauthorized to access this portfolio");
             var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
-            if (foundCustomCategory.UserId!= userId)
+            if (foundCustomCategory.UserId != userId)
                 throw new ApplicationException("Unauthorized to access this category");
 
             var newCustomInterestAsset = dto.Adapt<CustomInterestAsset>();
-            newCustomInterestAsset.UserId = userId;
             newCustomInterestAsset.CustomInterestAssetInfo = foundCustomCategory;
             newCustomInterestAsset.Portfolio = foundPortfolio;
             _customInterestAssetRepo.Insert(newCustomInterestAsset);
@@ -89,6 +90,15 @@ namespace ApplicationCore.InterestAssetAggregate
             var foundCategories =
                 _customInterestAssetInfoRepo.List(ci => ci.UserId == userId);
             return foundCategories.ToList();
+        }
+
+        public BankSavingAsset AddBankSavingAsset(int userId, int portfolioId, CreateNewBankSavingAssetDto commandDto)
+        {
+            BankSavingAsset newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
+            newBankSavingAsset.LastChanged = DateTime.Now;
+            newBankSavingAsset.PortfolioId = portfolioId;
+            _bankSavingRepository.Insert(newBankSavingAsset);
+            return newBankSavingAsset;
         }
     }
 }
