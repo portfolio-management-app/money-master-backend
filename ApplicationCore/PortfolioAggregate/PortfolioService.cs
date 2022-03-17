@@ -14,7 +14,7 @@ namespace ApplicationCore.PortfolioAggregate
             _portfolioRepository = portfolioRepository;
         }
 
-        public Portfolio CreatePortfolio(int userId, string name, double initialCash, string initialCurrency)
+        public Portfolio CreatePortfolio(int userId, string name, decimal initialCash, string initialCurrency)
         {
             var newPortfolio = new Portfolio(userId, name, initialCash, initialCurrency);
             _portfolioRepository.Insert(newPortfolio);

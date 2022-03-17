@@ -11,7 +11,7 @@ namespace PublicAPI.Endpoints.Portfolio
 {
     [Authorize]
     [Route("portfolio")]
-    public class GetList: EndpointBaseSync.WithoutRequest.WithActionResult<List<object>>
+    public class GetList: EndpointBaseSync.WithoutRequest.WithActionResult<List<GetListPortfolioResponse>>
     {
         private readonly IPortfolioService _portfolioService;
 
@@ -21,7 +21,7 @@ namespace PublicAPI.Endpoints.Portfolio
         }
         
         [HttpGet]
-        public override ActionResult<List<object>> Handle()
+        public override ActionResult<List<GetListPortfolioResponse>> Handle()
         {
             int userId = (int)HttpContext.Items["userId"]!;
             var listPortfolio = _portfolioService.GetPortfolioList(userId);

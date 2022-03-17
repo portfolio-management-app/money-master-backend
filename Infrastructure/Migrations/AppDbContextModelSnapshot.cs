@@ -26,6 +26,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("BankCode")
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -35,11 +38,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("InputDay")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("InputMoneyAmount")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InputMoneyAmount")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("InterestRate")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InterestRate")
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("IsGoingToReinState")
                         .HasColumnType("boolean");
@@ -73,14 +76,17 @@ namespace Infrastructure.Migrations
                     b.Property<double>("CurrentAmount")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("InputCurrency")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("InputDay")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("InputMoneyAmount")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InputMoneyAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp without time zone");
@@ -117,11 +123,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("InputDay")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("InputMoneyAmount")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InputMoneyAmount")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("InterestRate")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InterestRate")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp without time zone");
@@ -171,8 +177,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<double>("CurrentPrice")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("CurrentPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -183,8 +189,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("InputDay")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("InputMoneyAmount")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InputMoneyAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp without time zone");
@@ -209,8 +215,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<double>("InitialCash")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("InitialCash")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("InitialCurrency")
                         .HasColumnType("text");

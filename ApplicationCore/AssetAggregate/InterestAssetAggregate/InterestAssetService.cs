@@ -100,5 +100,13 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             _bankSavingRepository.Insert(newBankSavingAsset);
             return newBankSavingAsset;
         }
+
+        public List<BankSavingAsset> GetAllPortfolioBankSavingAssets(int portfolioId)
+        {
+            var listBankSavingAsset = _bankSavingRepository
+                .List(b => b.PortfolioId == portfolioId)
+                .ToList();
+            return listBankSavingAsset;
+        }
     }
 }

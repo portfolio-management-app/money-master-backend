@@ -10,10 +10,10 @@ namespace ApplicationCore.Entity
         public string Name { get; set; }
         public User User { get; set; }
         public int UserId { get; set; }
-        public double InitialCash { get; set; }
+        public decimal InitialCash { get; set; }
         public string InitialCurrency { get; set; }
 
-        public Portfolio(int userId, string name, double initialCash, string initialCurrency)
+        public Portfolio(int userId, string name, decimal initialCash, string initialCurrency)
         {
             Name = name;
             UserId = userId;
