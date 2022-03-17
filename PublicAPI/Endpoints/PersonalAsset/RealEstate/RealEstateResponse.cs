@@ -1,17 +1,18 @@
 using System;
 
-namespace ApplicationCore.Entity.Asset
+namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
 {
-    public class PersonalAsset : BaseEntity
+    public class RealEstateResponse
     {
+        
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime InputDay { get; set; } = DateTime.Now;
         public decimal InputMoneyAmount { get; set; }
         public string InputCurrency { get; set; } = "VND"; 
         public DateTime LastChanged { get; set; } = DateTime.Now;
-        public int PortfolioId { get; set; }
-        public Portfolio Portfolio { get; set; }
         public string Description { get; set; }
+        public decimal BuyPrice { get; set; }
+        public decimal CurrentPrice { get; set; }
     }
 }

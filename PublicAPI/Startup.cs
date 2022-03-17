@@ -1,5 +1,6 @@
 using System;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.InterestAssetAggregate;
 using ApplicationCore.Interfaces;
 using ApplicationCore.PortfolioAggregate;
@@ -53,6 +54,7 @@ namespace PublicAPI
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
             services.AddScoped<IInterestAssetService, InterestAssetService>();
             services.AddScoped<IPortfolioService, PortfolioService>();
+            services.AddScoped<IRealEstateService, RealEstateService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

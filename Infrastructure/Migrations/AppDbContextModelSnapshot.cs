@@ -177,6 +177,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<decimal>("BuyPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<decimal>("CurrentPrice")
                         .HasColumnType("numeric");
 
