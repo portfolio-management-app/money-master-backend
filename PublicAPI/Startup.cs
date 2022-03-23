@@ -1,7 +1,6 @@
 using System;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
-using ApplicationCore.InterestAssetAggregate;
 using ApplicationCore.Interfaces;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.UserAggregate;

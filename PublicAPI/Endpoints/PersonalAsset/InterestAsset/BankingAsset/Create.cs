@@ -1,6 +1,6 @@
 using System.Reflection.Metadata;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
-using ApplicationCore.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +11,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public class Create: EndpointBaseSync.WithRequest<CreateNewBankingAssetRequest>.WithActionResult<object>
+    public class Create: EndpointBaseSync.WithRequest<CreateNewBankingAssetRequest>.WithActionResult<BankingAssetResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
 
@@ -21,13 +21,13 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
         }
 
         [HttpPost("bankSaving")]
-        public override ActionResult<object> Handle([FromMultipleSource]CreateNewBankingAssetRequest request)
+        public override ActionResult<BankingAssetResponse> Handle([FromMultipleSource]CreateNewBankingAssetRequest request)
         {
             var userId = (int) HttpContext.Items["userId"]!;
             var dto = request.CreateNewBankingAssetCommand.Adapt<CreateNewBankSavingAssetDto>();
-            var newBankSavingAsset = _interestAssetService.AddBankSavingAsset(userId, request.PortfolioId, dto);
+            var newBankSavingAsset = _interestAssetService.AddBankSavingAsset( request.PortfolioId,dto);
 
-            return newBankSavingAsset.Adapt<CreateNewBankingAssetResponse>();
+            return newBankSavingAsset.Adapt<BankingAssetResponse>();
         }
     }
 }

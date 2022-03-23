@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
-using ApplicationCore.InterestAssetAggregate.DTOs;
 using ApplicationCore.Interfaces;
 using Mapster;
 
@@ -29,10 +29,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             _bankSavingRepository = bankSavingRepository;
         }
 
-        public InterestAsset GetInterestedAssetById(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         public CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName)
         {
@@ -92,7 +88,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return foundCategories.ToList();
         }
 
-        public BankSavingAsset AddBankSavingAsset(int userId, int portfolioId, CreateNewBankSavingAssetDto commandDto)
+        public BankSavingAsset AddBankSavingAsset( int portfolioId, CreateNewBankSavingAssetDto commandDto)
         {
             BankSavingAsset newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
             newBankSavingAsset.LastChanged = DateTime.Now;
@@ -107,6 +103,31 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
                 .List(b => b.PortfolioId == portfolioId)
                 .ToList();
             return listBankSavingAsset;
+        }
+
+        public BankSavingAsset EditBankSavingAsset(int portfolioId, int bankingAssetId, EditBankSavingAssetDto dto)
+        {
+            var foundBankingAsset =
+                _bankSavingRepository
+                    .GetFirst(b => b.Id == bankingAssetId
+                                   && b.PortfolioId == portfolioId);
+            if (foundBankingAsset is null)
+                return null;
+            foundBankingAsset
+                .Update(dto.Name,
+                    dto.InputDay,
+                    dto.InputMoneyAmount,
+                    dto.InputCurrency,
+                    dto.Description,
+                    dto.InterestRate,
+                    dto.TermRange,
+                    dto.BankCode,
+                    dto.IsGoingToReinState);
+            
+            // TODO: deal with change interest rate (continue with the current amount or reset from start)
+
+            _bankSavingRepository.Update(foundBankingAsset);
+            return foundBankingAsset;
         }
     }
 }

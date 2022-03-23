@@ -1,10 +1,10 @@
 using System;
 
-namespace ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs
+namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 {
-    public class CreateNewBankSavingAssetDto
+    public class BankingAssetResponse
     {
-        
+        public int Id { get; set; }
         public string Name { get; set; }
         public string BankCode { get; set; }
         public DateTime InputDay { get; set; }

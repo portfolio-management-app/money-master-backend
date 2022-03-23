@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
-using ApplicationCore.InterestAssetAggregate;
-using ApplicationCore.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;

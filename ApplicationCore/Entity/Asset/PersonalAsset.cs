@@ -1,4 +1,5 @@
 using System;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 
 namespace ApplicationCore.Entity.Asset
 {
@@ -13,5 +14,15 @@ namespace ApplicationCore.Entity.Asset
         public int PortfolioId { get; set; }
         public Portfolio Portfolio { get; set; }
         public string Description { get; set; }
+
+        protected void Update(string name, DateTime inputDay,decimal inputMoneyAmount, string inputCurrency, string description)
+        {
+            Name = name;
+            InputDay = inputDay;
+            InputMoneyAmount = inputMoneyAmount;
+            InputCurrency = inputCurrency;
+            Description = description;
+            LastChanged = DateTime.Now;
+        }
     }
 }
