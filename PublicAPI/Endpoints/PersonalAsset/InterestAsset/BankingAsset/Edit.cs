@@ -28,7 +28,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 
            if (result is null)
                return NotFound("Could not find the asset");
-           return Ok(result);
+           return Ok(result.Adapt<BankingAssetResponse>()); 
         }
     }
 }
