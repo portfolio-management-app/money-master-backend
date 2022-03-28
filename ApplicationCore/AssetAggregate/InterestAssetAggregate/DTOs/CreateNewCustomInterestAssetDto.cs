@@ -4,7 +4,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs
 {
     public class CreateNewCustomInterestAssetDto
     {
-
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
         public double InputMoneyAmount { get; set; }

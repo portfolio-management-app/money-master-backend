@@ -8,7 +8,7 @@ using Mapster;
 
 namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 {
-    public class RealEstateService: IRealEstateService
+    public class RealEstateService : IRealEstateService
     {
         private IBaseRepository<RealEstateAsset> _realEstaterepository;
 
@@ -22,7 +22,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             var newRealEstate = dto.Adapt<RealEstateAsset>();
             newRealEstate.PortfolioId = portfolioId;
             _realEstaterepository.Insert(newRealEstate);
-            return newRealEstate; 
+            return newRealEstate;
         }
 
         public List<RealEstateAsset> GetAllRealEstateAssetByPortfolio(int portfolioId)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PublicAPI.Filters
 {
-    public class SetUserIdFilter: IActionFilter
+    public class SetUserIdFilter : IActionFilter
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
@@ -19,7 +19,6 @@ namespace PublicAPI.Filters
             {
                 context.HttpContext.Items.Add("userId", null);
             }
-
         }
 
         public void OnActionExecuted(ActionExecutedContext context)

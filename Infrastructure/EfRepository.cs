@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Infrastructure
 {
-    public class EfRepository <TEntity>: IBaseRepository<TEntity> where TEntity: BaseEntity
+    public class EfRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly AppDbContext _dbSet;
 
@@ -29,10 +29,8 @@ namespace Infrastructure
         }
 
 
-
         public void Delete(TEntity entity)
         {
-
             _ = _dbSet.Set<TEntity>().Remove(entity);
 
             _dbSet.SaveChanges();
@@ -88,6 +86,5 @@ namespace Infrastructure
 
             return query.Count();
         }
-        
     }
 }

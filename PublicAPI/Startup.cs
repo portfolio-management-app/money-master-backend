@@ -5,6 +5,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.UserAggregate;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PublicAPI.AuthorizationsPolicies;
 using PublicAPI.Configures;
 using PublicAPI.Filters;
 
@@ -31,10 +33,7 @@ namespace PublicAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers(options =>
-            {
-                options.Filters.Add<SetUserIdFilter>();
-            });
+            services.AddControllers(options => { options.Filters.Add<SetUserIdFilter>(); });
             services.AddDbContext<AppDbContext>(builder =>
                 builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
                     .LogTo(Console.WriteLine, LogLevel.Critical));
@@ -44,16 +43,24 @@ namespace PublicAPI
                 c.EnableAnnotations();
             });
             services.ConfigureJwtAuthenticationScheme(Configuration["JWTSigningKey"]);
-            services.AddAuthorization();
-            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanAccessPortfolioSpecificContent",
+                    builder => builder.AddRequirements(
+                        new IsPortfolioOwnerRequirement()
+                    ));
+            });
+
+
             // configure DI services
-            
+
             services.AddSingleton(Configuration);
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
             services.AddScoped<IInterestAssetService, InterestAssetService>();
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRealEstateService, RealEstateService>();
+            services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,7 +74,6 @@ namespace PublicAPI
             }
 
 
-
             app.UseRouting();
             app.UseCors(x => x
                 .AllowAnyMethod()
@@ -77,10 +83,7 @@ namespace PublicAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

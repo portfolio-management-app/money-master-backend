@@ -11,7 +11,5 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
         {
             _cashRepository = cashRepository;
         }
-
-
     }
 }

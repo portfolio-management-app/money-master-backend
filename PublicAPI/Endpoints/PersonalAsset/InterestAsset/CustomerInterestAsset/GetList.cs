@@ -11,9 +11,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
     [Authorize]
     [Route("personalAsset/interest")]
-    public class GetList: EndpointBaseSync.WithRequest<int>.WithActionResult<List<object>>
+    public class GetList : EndpointBaseSync.WithRequest<int>.WithActionResult<List<object>>
     {
-
         private readonly IInterestAssetService _interestAssetService;
 
         public GetList(IInterestAssetService interestAssetService)
@@ -27,17 +26,14 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
         {
             try
             {
-                var userId = (int) HttpContext.Items["userId"]!;
-                var listCustomAsset = _interestAssetService.GetAllUserCustomInterestAsset(userId,customInfoId);
+                var userId = (int)HttpContext.Items["userId"]!;
+                var listCustomAsset = _interestAssetService.GetAllUserCustomInterestAsset(userId, customInfoId);
                 return Ok(listCustomAsset.Adapt<List<SingleCustomInterestAssetResponse>>());
             }
             catch (ApplicationException ex)
             {
                 return Unauthorized(ex.Message);
-                
             }
         }
-        
-
     }
 }

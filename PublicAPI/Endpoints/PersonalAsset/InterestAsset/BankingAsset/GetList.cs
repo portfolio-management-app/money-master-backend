@@ -9,7 +9,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 {
     [Authorize]
     [Route("portfolio/{portfolioId}/bankSaving")]
-    public class GetList: EndpointBaseSync.WithRequest<int>.WithActionResult<List<GetListBankSavingAssetResponse>>
+    public class GetList : EndpointBaseSync.WithRequest<int>.WithActionResult<List<GetListBankSavingAssetResponse>>
     {
         private readonly IInterestAssetService _interestAssetService;
 
@@ -21,7 +21,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
         [HttpGet]
         public override ActionResult<List<GetListBankSavingAssetResponse>> Handle(int portfolioId)
         {
-            var list = _interestAssetService.GetAllPortfolioBankSavingAssets(portfolioId); 
+            var list = _interestAssetService.GetAllPortfolioBankSavingAssets(portfolioId);
             return Ok(list.Adapt<List<GetListBankSavingAssetResponse>>());
         }
     }

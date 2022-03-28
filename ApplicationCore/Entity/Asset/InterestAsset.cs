@@ -10,7 +10,7 @@ namespace ApplicationCore.Entity.Asset
         protected void Update(string name, DateTime inputDay, decimal inputMoneyAmount
             , string inputCurrency, string description, decimal interestRate, int termRange)
         {
-            base.Update(name,inputDay,inputMoneyAmount,inputCurrency,description);
+            base.Update(name, inputDay, inputMoneyAmount, inputCurrency, description);
             InterestRate = interestRate;
             TermRange = termRange;
         }

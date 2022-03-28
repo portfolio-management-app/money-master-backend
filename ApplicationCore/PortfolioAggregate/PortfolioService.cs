@@ -21,6 +21,12 @@ namespace ApplicationCore.PortfolioAggregate
             return newPortfolio;
         }
 
+        public Portfolio GetPortfolioById(int portfolioId)
+        {
+            var foundPortfolio = _portfolioRepository.GetFirst(p => p.Id == portfolioId);
+            return foundPortfolio;
+        }
+
         public List<Portfolio> GetPortfolioList(int userId)
         {
             var listPortfolio = _portfolioRepository.List(p => p.UserId == userId).ToList();

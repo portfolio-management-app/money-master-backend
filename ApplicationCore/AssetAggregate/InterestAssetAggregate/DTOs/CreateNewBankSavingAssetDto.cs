@@ -4,7 +4,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs
 {
     public class CreateNewBankSavingAssetDto
     {
-        
         public string Name { get; set; }
         public string BankCode { get; set; }
         public DateTime InputDay { get; set; }

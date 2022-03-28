@@ -10,30 +10,29 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    
-    public class Create: EndpointBaseSync.WithRequest<CreateCustomInterestAssetRequest>
+    public class Create : EndpointBaseSync.WithRequest<CreateCustomInterestAssetRequest>
         .WithActionResult<CreateCustomInterestAssetResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
+
         public Create(IInterestAssetService interestAssetService)
         {
             _interestAssetService = interestAssetService;
         }
-        
+
         [HttpPost("custom/{customInfoId}")]
         public override ActionResult<CreateCustomInterestAssetResponse> Handle
-            ([FromMultipleSource]CreateCustomInterestAssetRequest request)
+            ([FromMultipleSource] CreateCustomInterestAssetRequest request)
         {
             try
             {
-                
-                var userId = (int) HttpContext.Items["userId"]!;
+                var userId = (int)HttpContext.Items["userId"]!;
                 var dto = request.CustomInterestAssetCommand.Adapt<CreateNewCustomInterestAssetDto>();
-                var newAsset = 
-                    _interestAssetService.AddCustomInterestAsset(userId,request.CustomInterestAssetInfoId,request.PortfolioId,dto);
+                var newAsset =
+                    _interestAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
+                        request.PortfolioId, dto);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)
@@ -41,7 +40,5 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
                 return Unauthorized(ex.Message);
             }
         }
-        
-
     }
 }

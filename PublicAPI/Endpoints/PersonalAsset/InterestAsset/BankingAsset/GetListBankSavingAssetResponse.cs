@@ -4,7 +4,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 {
     public class GetListBankSavingAssetResponse
     {
-        
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime InputDay { get; set; }

@@ -12,7 +12,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs
         public bool IsGoingToReinState { get; set; }
         public string Description { get; set; }
         public decimal InterestRate { get; set; }
-        public string ChangeInterestRateType { get; set; } = "CONTINUE_WITH_RATE";  
+        public string ChangeInterestRateType { get; set; } = "CONTINUE_WITH_RATE";
         public int TermRange { get; set; } // in day 
     }
 }

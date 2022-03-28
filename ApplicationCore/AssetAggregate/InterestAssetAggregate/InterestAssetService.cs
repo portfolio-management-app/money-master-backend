@@ -48,11 +48,9 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
         }
 
 
-
         public CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
             CreateNewCustomInterestAssetDto dto)
         {
-
             var foundPortfolio = _portfolioRepo.GetFirst(p => p.Id == portfolioId);
             if (foundPortfolio.UserId != userId)
                 throw new ApplicationException("Unauthorized to access this portfolio");
@@ -88,9 +86,9 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return foundCategories.ToList();
         }
 
-        public BankSavingAsset AddBankSavingAsset( int portfolioId, CreateNewBankSavingAssetDto commandDto)
+        public BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto)
         {
-            BankSavingAsset newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
+            var newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
             newBankSavingAsset.LastChanged = DateTime.Now;
             newBankSavingAsset.PortfolioId = portfolioId;
             _bankSavingRepository.Insert(newBankSavingAsset);
@@ -123,7 +121,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
                     dto.TermRange,
                     dto.BankCode,
                     dto.IsGoingToReinState);
-            
+
             // TODO: deal with change interest rate (continue with the current amount or reset from start)
 
             _bankSavingRepository.Update(foundBankingAsset);

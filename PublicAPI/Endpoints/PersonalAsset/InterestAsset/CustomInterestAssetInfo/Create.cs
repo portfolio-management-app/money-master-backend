@@ -10,7 +10,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
 {
     [Route("personalAsset/interest")]
     [Authorize]
-    public class Create: EndpointBaseSync.WithRequest<CreateCustomInterestAssetInfoRequest>.WithActionResult<CreateCustomInterestAssetInfoResponse>
+    public class Create : EndpointBaseSync.WithRequest<CreateCustomInterestAssetInfoRequest>.WithActionResult<
+        CreateCustomInterestAssetInfoResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
 
@@ -18,22 +19,22 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
         {
             _interestAssetService = interestAssetService;
         }
-        
+
         [HttpPost("custom")]
-        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(CreateCustomInterestAssetInfoRequest request)
+        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(
+            CreateCustomInterestAssetInfoRequest request)
         {
-            var userId = (int) HttpContext.Items["userId"]!;
+            var userId = (int)HttpContext.Items["userId"]!;
             try
             {
                 var result =
                     _interestAssetService.AddCustomInterestAssetInfo(userId, request.Name);
                 return result.Adapt<CreateCustomInterestAssetInfoResponse>();
             }
-            catch(ApplicationException ex)
+            catch (ApplicationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }

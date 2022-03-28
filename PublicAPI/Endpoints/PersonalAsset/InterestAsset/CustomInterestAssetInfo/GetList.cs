@@ -9,7 +9,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
 {
     [Authorize]
     [Route("personalAsset/interest")]
-    public class GetList: EndpointBaseSync.WithoutRequest.WithActionResult<List<CreateCustomInterestAssetInfoResponse>>
+    public class GetList : EndpointBaseSync.WithoutRequest.WithActionResult<List<CreateCustomInterestAssetInfoResponse>>
     {
         private readonly IInterestAssetService _interestAssetService;
 
@@ -17,16 +17,14 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomInterestAssetInf
         {
             _interestAssetService = interestAssetService;
         }
-        
-        [HttpGet("custom")]
 
+        [HttpGet("custom")]
         public override ActionResult<List<CreateCustomInterestAssetInfoResponse>> Handle()
         {
-            var userId = (int) HttpContext.Items["userId"]!;
+            var userId = (int)HttpContext.Items["userId"]!;
             var foundCategories = _interestAssetService.GetAllUserCustomInterestAssetCategory(userId);
 
             return Ok(foundCategories.Adapt<List<CreateCustomInterestAssetInfoResponse>>());
         }
-
     }
 }

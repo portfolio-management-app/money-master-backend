@@ -8,15 +8,14 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
     {
         CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName);
 
-        CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId,int portfolioId,
+        CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
             CreateNewCustomInterestAssetDto dto);
 
         List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId);
 
         List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId);
-        BankSavingAsset AddBankSavingAsset( int portfolioId, CreateNewBankSavingAssetDto commandDto);
+        BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto);
         List<BankSavingAsset> GetAllPortfolioBankSavingAssets(int portfolioId);
         BankSavingAsset EditBankSavingAsset(int portfolioId, int bankingAssetId, EditBankSavingAssetDto dto);
     }
-    
 }

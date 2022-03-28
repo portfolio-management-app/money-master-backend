@@ -15,9 +15,10 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day 
     }
+
     public class CreateNewBankingAssetRequest
     {
-        [FromBody] public CreateNewBankingAssetCommand CreateNewBankingAssetCommand { get; set; } 
+        [FromBody] public CreateNewBankingAssetCommand CreateNewBankingAssetCommand { get; set; }
         [FromRoute(Name = "portfolioId")] public int PortfolioId { get; set; }
     }
 }

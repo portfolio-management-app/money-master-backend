@@ -9,7 +9,6 @@ namespace PublicAPI.Configures
     {
         public static void ConfigureJwtAuthenticationScheme(this IServiceCollection services, string signingKey)
         {
-            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

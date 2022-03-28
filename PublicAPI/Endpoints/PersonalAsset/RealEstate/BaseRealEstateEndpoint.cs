@@ -1,4 +1,7 @@
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
+using ApplicationCore.PortfolioAggregate;
 using Ardalis.ApiEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,16 +11,27 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
     [Authorize]
     [Route("portfolio/{portfolioId}")]
     public abstract class
-        BaseRealEstateEndpoint<TRequest, TResponse> : EndpointBaseSync.WithRequest<TRequest>.WithActionResult<TResponse>
+        BaseRealEstateEndpoint<TRequest, TResponse> : EndpointBaseAsync.WithRequest<TRequest>.WithActionResult<TResponse>
     {
         protected readonly IRealEstateService RealEstateService;
+        private IAuthorizationService _authorizationService; 
 
-        protected int? CurrentUser =>
+        protected int? CurrentUserId =>
             (int)HttpContext.Items["userId"]!;
 
-        public BaseRealEstateEndpoint(IRealEstateService realEstateService)
+        protected async Task<bool> IsAllowedToExecute(int portfolioId)
+        {
+            var authResult =
+                await _authorizationService
+                    .AuthorizeAsync(User, portfolioId, "CanAccessPortfolioSpecificContent");
+            return authResult.Succeeded;
+        }
+
+
+        public BaseRealEstateEndpoint(IRealEstateService realEstateService, IAuthorizationService authorizationService)
         {
             RealEstateService = realEstateService;
+            _authorizationService = authorizationService;
         }
     }
 }
