@@ -9,24 +9,20 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class Create: EndpointBaseSync.WithRequest<CreateNewRealEstateAssetRequest>.WithActionResult<List<object>>
+    public class Create : BaseRealEstateEndpoint<CreateNewRealEstateAssetRequest, RealEstateResponse>
     {
-        private readonly IRealEstateService _realEstateService;
-
-        public Create(IRealEstateService realEstateService)
-        {
-            _realEstateService = realEstateService;
-        }
-
         [HttpPost("realEstate")]
-        public override ActionResult<List<object>> Handle([FromMultipleSource]CreateNewRealEstateAssetRequest request)
+        public override ActionResult<RealEstateResponse> Handle(
+            [FromMultipleSource] CreateNewRealEstateAssetRequest request)
         {
             var dto = request.CreateNewRealEstateAssetCommand.Adapt<RealEstateDto>();
-            var newRealEstate = _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
+            var newRealEstate = RealEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
 
-            return Ok(newRealEstate.Adapt<RealEstateResponse>()); 
+            return Ok(newRealEstate.Adapt<RealEstateResponse>());
+        }
+
+        public Create(IRealEstateService realEstateService) : base(realEstateService)
+        {
         }
     }
 }

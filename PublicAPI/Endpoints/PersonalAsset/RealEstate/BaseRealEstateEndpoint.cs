@@ -7,16 +7,17 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public abstract class BaseRealEstateEndpoint<TRequest, TResponse>: EndpointBaseSync.WithRequest<TRequest>.WithActionResult<TResponse>
+    public abstract class
+        BaseRealEstateEndpoint<TRequest, TResponse> : EndpointBaseSync.WithRequest<TRequest>.WithActionResult<TResponse>
     {
         protected readonly IRealEstateService RealEstateService;
-        protected int? CurrentUser => 
-             (int) HttpContext.Items["userId"]!;
+
+        protected int? CurrentUser =>
+            (int)HttpContext.Items["userId"]!;
+
         public BaseRealEstateEndpoint(IRealEstateService realEstateService)
         {
             RealEstateService = realEstateService;
         }
-        
     }
-    
 }

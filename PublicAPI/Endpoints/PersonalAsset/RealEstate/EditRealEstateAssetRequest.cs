@@ -13,11 +13,11 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
         public decimal CurrentPrice { get; set; }
         public string Description { get; set; }
     }
+
     public class EditRealEstateAssetRequest
     {
         [FromRoute] public int PortfolioId { get; set; }
         [FromRoute] public int RealEstateId { get; set; }
-        
         [FromBody] public EditRealEstateAssetCommand EditRealEstateAssetCommand { get; set; }
     }
 }
