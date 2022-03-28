@@ -23,7 +23,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
         [HttpPost("realEstate")]
         public override ActionResult<List<object>> Handle([FromMultipleSource]CreateNewRealEstateAssetRequest request)
         {
-            var dto = request.CreateNewRealEstateAssetCommand.Adapt<CreateNewRealEstateDto>();
+            var dto = request.CreateNewRealEstateAssetCommand.Adapt<RealEstateDto>();
             var newRealEstate = _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
 
             return Ok(newRealEstate.Adapt<RealEstateResponse>()); 

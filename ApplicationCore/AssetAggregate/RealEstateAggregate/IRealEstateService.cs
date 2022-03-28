@@ -6,7 +6,8 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 {
     public interface IRealEstateService
     {
-        RealEstateAsset CreateNewRealEstateAsset(int portfolioId, CreateNewRealEstateDto dto);
-        List<RealEstateAsset> GetAllRealEstateAssetByPortfolio(int portfolioId); 
+        RealEstateAsset CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto);
+        List<RealEstateAsset> GetAllRealEstateAssetByPortfolio(int portfolioId);
+        RealEstateAsset UpdateRealEstateAsset(int portfolioId, int realEstateId, RealEstateDto dto);
     }
 }

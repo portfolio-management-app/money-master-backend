@@ -2,7 +2,7 @@ using System;
 
 namespace ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs
 {
-    public class CreateNewRealEstateDto
+    public class RealEstateDto
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
