@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using ApplicationCore.AssetAggregate.CryptoAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
@@ -23,6 +25,12 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             _cryptoRepository.Insert(newCryptoAsset);
 
             return newCryptoAsset;
+        }
+
+        public List<Crypto> GetCryptoAssetByPortfolio(int portfolioId)
+        {
+            var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId);
+            return listCrypto.ToList(); 
         }
     }
 }
