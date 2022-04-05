@@ -1,5 +1,6 @@
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
+using ApplicationCore.Entity.Transactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure
@@ -18,6 +19,8 @@ namespace Infrastructure
         public DbSet<CustomInterestAssetInfo> CustomInterestAssetInfos { get; set; }
         public DbSet<CashAsset> CashAssets { get; set; }
         public DbSet<RealEstateAsset> RealEstateAssets { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Crypto> Cryptos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

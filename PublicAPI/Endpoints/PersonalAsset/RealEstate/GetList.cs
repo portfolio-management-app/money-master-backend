@@ -12,7 +12,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
     public class GetList : BaseRealEstateEndpoint<int, List<RealEstateResponse>>
     {
         [HttpGet("realEstate")]
-        public override async Task<ActionResult<List<RealEstateResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<RealEstateResponse>>> HandleAsync
+            (int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
             if (!await IsAllowedToExecute(portfolioId))
             {

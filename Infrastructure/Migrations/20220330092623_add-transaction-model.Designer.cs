@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220330092623_add-transaction-model")]
+    partial class addtransactionmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,47 +104,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PortfolioId");
 
                     b.ToTable("CashAssets");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entity.Asset.Crypto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("CryptoCoinCode")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("CurrentPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InputCurrency")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("InputDay")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<decimal>("InputMoneyAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("PortfolioId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PortfolioId");
-
-                    b.ToTable("Cryptos");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAsset", b =>
@@ -353,17 +314,6 @@ namespace Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CashAsset", b =>
-                {
-                    b.HasOne("ApplicationCore.Entity.Portfolio", "Portfolio")
-                        .WithMany()
-                        .HasForeignKey("PortfolioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Portfolio");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entity.Asset.Crypto", b =>
                 {
                     b.HasOne("ApplicationCore.Entity.Portfolio", "Portfolio")
                         .WithMany()

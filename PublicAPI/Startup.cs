@@ -1,6 +1,8 @@
 using System;
+using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
+using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.UserAggregate;
@@ -61,6 +63,8 @@ namespace PublicAPI
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
+            services.AddSingleton(typeof(TransactionFactory));
+            services.AddScoped<ICryptoService, CryptoService>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
