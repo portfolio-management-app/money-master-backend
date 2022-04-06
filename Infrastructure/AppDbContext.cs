@@ -21,6 +21,7 @@ namespace Infrastructure
         public DbSet<RealEstateAsset> RealEstateAssets { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Crypto> Cryptos { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
