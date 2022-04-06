@@ -7,8 +7,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; } 
-        public decimal InputMoneyAmount { get; set; }
-        public string InputCurrency { get; set; } = "VND";
+        public decimal CurrentAmountHolding { get; set; }
         public string Description { get; set; }
         public string CryptoCoinCode { get; set; }
     }

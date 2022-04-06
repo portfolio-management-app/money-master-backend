@@ -114,9 +114,9 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             foundBankingAsset
                 .Update(dto.Name,
                     dto.InputDay,
+                    dto.Description,
                     dto.InputMoneyAmount,
                     dto.InputCurrency,
-                    dto.Description,
                     dto.InterestRate,
                     dto.TermRange,
                     dto.BankCode,

@@ -11,7 +11,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
         public string InputCurrency { get; set; } = "VND";
         public DateTime LastChanged { get; set; } = DateTime.Now;
         public string Description { get; set; }
-        public decimal BuyPrice { get; set; }
         public decimal CurrentPrice { get; set; }
     }
 }

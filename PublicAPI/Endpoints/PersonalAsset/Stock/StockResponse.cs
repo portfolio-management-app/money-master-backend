@@ -7,8 +7,6 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime InputDay { get; set; } 
-        public decimal InputMoneyAmount { get; set; }
-        public string InputCurrency { get; set; } = "VND";
         public DateTime LastChanged { get; set; } 
         public string Description { get; set; }
         public decimal CurrentAmountHolding { get; set; }
