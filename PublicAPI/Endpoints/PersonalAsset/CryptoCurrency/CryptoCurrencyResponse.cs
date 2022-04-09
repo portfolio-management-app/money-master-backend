@@ -12,7 +12,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         public DateTime LastChanged { get; set; } 
         public int PortfolioId { get; set; }
         public string Description { get; set; }
-        
+        public decimal BuyPrice { get; set; }
+        public string CurrencyCode { get; set; }
         public string CryptoCoinCode { get; set; }
         public decimal CurrentPrice { get; set; }
     }

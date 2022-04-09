@@ -7,8 +7,8 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate.DTOs
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; } = DateTime.Now;
-        public decimal InputMoneyAmount { get; set; }
-        public string InputCurrency { get; set; } = "VND";
+        public decimal BuyPrice { get; set; }
+        public string CurrencyCode { get; set; }
         public string Description { get; set; }
         public string CryptoCoinCode { get; set; }
     }
