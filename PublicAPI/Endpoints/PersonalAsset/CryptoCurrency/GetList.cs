@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
+using ApplicationCore.Interfaces;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
 {
     [Route("portfolio/{portfolioId}")]
-    public class GetList: EndpointBaseSync.WithRequest<int>.WithActionResult<List<CryptoCurrencyResponse>>
+    public class GetList: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<CryptoCurrencyResponse>>
     {
         private readonly ICryptoService _cryptoService;
 
@@ -17,9 +20,12 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         }
 
         [HttpGet("crypto")]
-        public override ActionResult<List<CryptoCurrencyResponse>> Handle(int portfolioId)
+        public override async Task<ActionResult<List<CryptoCurrencyResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
-            return (_cryptoService.GetCryptoAssetByPortfolio(portfolioId)).Adapt<List<CryptoCurrencyResponse>>(); 
+            var list = await _cryptoService.GetCryptoAssetByPortfolio(portfolioId); 
+            return list.Adapt<List<CryptoCurrencyResponse>>(); 
         }
+
+ 
     }
 }

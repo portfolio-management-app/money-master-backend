@@ -54,7 +54,8 @@ namespace PublicAPI
                     ));
             });
 
-
+            // configure HTTP client
+            services.AddHttpClient(); 
             // configure DI services
 
             services.AddSingleton(Configuration);
@@ -66,7 +67,8 @@ namespace PublicAPI
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
             services.AddSingleton(typeof(TransactionFactory));
             services.AddScoped<ICryptoService, CryptoService>();
-            services.AddScoped<IStockService, StockService>(); 
+            services.AddScoped<IStockService, StockService>();
+            services.AddScoped<ICryptoRateRepository, CryptoRateRepository>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
