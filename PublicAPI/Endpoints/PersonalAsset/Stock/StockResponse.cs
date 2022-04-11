@@ -14,6 +14,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         public string MarketCode { get; set; } // NYSE, HOSE
         public decimal CurrentPrice { get; set; }
         public string CurrencyCode { get; set; }
+        public decimal PurchasePrice { get; set; }
         public decimal CurrentAmountInCurrency => CurrentPrice * CurrentAmountHolding;
     }
 }

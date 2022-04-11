@@ -9,7 +9,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         public DateTime InputDay { get; set; } 
         public decimal CurrentAmountHolding { get; set; }
         public string Description { get; set; }
-        public decimal BuyPrice { get; set; }
+        public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
         public string CryptoCoinCode { get; set; }
     }
