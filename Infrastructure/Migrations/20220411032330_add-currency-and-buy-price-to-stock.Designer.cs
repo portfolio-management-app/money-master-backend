@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220411032330_add-currency-and-buy-price-to-stock")]
+    partial class addcurrencyandbuypricetostock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,6 +255,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("BuyPrice")
+                        .HasColumnType("text");
+
                     b.Property<string>("CurrencyCode")
                         .HasColumnType("text");
 
@@ -276,9 +281,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("PortfolioId")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("numeric");
 
                     b.Property<string>("StockCode")
                         .HasColumnType("text");
