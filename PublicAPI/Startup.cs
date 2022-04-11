@@ -69,6 +69,7 @@ namespace PublicAPI
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<ICryptoRateRepository, CryptoRateRepository>();
+            services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>(); 
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
         }
 
