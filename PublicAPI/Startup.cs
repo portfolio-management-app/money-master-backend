@@ -68,7 +68,8 @@ namespace PublicAPI
             services.AddSingleton(typeof(TransactionFactory));
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IStockService, StockService>();
-            services.AddScoped<ICryptoRateRepository, CryptoRateRepository>(); 
+            services.AddScoped<ICryptoRateRepository, CryptoRateRepository>();
+            services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

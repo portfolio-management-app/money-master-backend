@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
@@ -10,10 +11,11 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
     public class StockService: IStockService
     {
         private readonly IBaseRepository<Stock> _stockRepository;
-
-        public StockService(IBaseRepository<Stock> stockRepository)
+        private readonly IStockPriceRepository _stockPriceRepository;
+        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository)
         {
             _stockRepository = stockRepository;
+            _stockPriceRepository = stockPriceRepository;
         }
 
         public Stock CreateNewStockAsset(int portfolioId, StockDto dto)
@@ -24,9 +26,15 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
             return newStock;
         }
 
-        public List<Stock> GetListStockByPortfolio(int portfolioId)
+        public async Task<List<Stock>> GetListStockByPortfolio(int portfolioId)
         {
-            return _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
+            var stocks = _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
+            foreach (var stock in stocks)
+            {
+                var priceDto = await _stockPriceRepository.GetPrice(stock.StockCode);
+                stock.CurrentPrice = priceDto.CurrentPrice;
+            }
+            return stocks;
         }
     }
 }

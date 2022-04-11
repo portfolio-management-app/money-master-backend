@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Interfaces;
 using Ardalis.ApiEndpoints;
@@ -10,7 +12,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public class GetList: EndpointBaseSync.WithRequest<int>.WithActionResult<List<StockResponse>>
+    public class GetList: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<StockResponse>>
     {
         private readonly IStockService _stockService;
 
@@ -20,10 +22,10 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         }
 
         [HttpGet("stock")]
-        public override ActionResult<List<StockResponse>> Handle(int portfolioId)
+        public override async Task<ActionResult<List<StockResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
-            var stockList = _stockService.GetListStockByPortfolio(portfolioId);
-            return Ok(stockList.Adapt<List<StockResponse>>()); 
+             var stockList = await _stockService.GetListStockByPortfolio(portfolioId);
+             return Ok(stockList.Adapt<List<StockResponse>>()); 
         }
     }
 }
