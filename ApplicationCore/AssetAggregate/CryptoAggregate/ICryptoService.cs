@@ -7,7 +7,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
 {
     public interface ICryptoService
     {
-        Crypto CreateNewCryptoAsset(int portfolioId, CryptoDto dto);
+        Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto);
         Task<List<Crypto>> GetCryptoAssetByPortfolio(int portfolioId);
     }
 }

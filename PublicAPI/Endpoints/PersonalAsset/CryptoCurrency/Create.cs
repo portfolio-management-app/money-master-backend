@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate.DTOs;
 using Ardalis.ApiEndpoints;
@@ -10,7 +12,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
 {
     [Authorize]
     [Route("/portfolio/{portfolioId}")]
-    public class Create: EndpointBaseSync.WithRequest<CreateNewCryptoCurrencyAssetRequest>.WithActionResult<CryptoCurrencyResponse>
+    public class Create: EndpointBaseAsync.WithRequest<CreateNewCryptoCurrencyAssetRequest>.WithActionResult<CryptoCurrencyResponse>
     {
         private readonly ICryptoService _cryptoService;
 
@@ -20,12 +22,12 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         }
 
         [HttpPost("crypto")]
-        public override ActionResult<CryptoCurrencyResponse> Handle([FromMultipleSource]CreateNewCryptoCurrencyAssetRequest request)
+        public override async Task<ActionResult<CryptoCurrencyResponse>> HandleAsync([FromMultipleSource]CreateNewCryptoCurrencyAssetRequest request,
+            CancellationToken cancellationToken = new CancellationToken())
         {
-            var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
-            var createdCrypto = _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
-            
-            return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>()); 
+             var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
+             var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
+             return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>()); 
         }
     }
 }

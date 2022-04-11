@@ -19,13 +19,15 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
         }
 
     
-        public Crypto CreateNewCryptoAsset(int portfolioId, CryptoDto dto)
+        public async Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto)
         {
             var newCryptoAsset = new Crypto();
             dto.Adapt(newCryptoAsset);
             newCryptoAsset.PortfolioId = portfolioId; 
 
             _cryptoRepository.Insert(newCryptoAsset);
+            newCryptoAsset.CurrentPrice =
+                await _cryptoRateRepository.GetCurrentPrice(newCryptoAsset.CryptoCoinCode, newCryptoAsset.CurrencyCode);
 
             return newCryptoAsset;
         }
