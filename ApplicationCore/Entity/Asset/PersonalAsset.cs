@@ -1,9 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.Entity.Asset
 {
-    public class PersonalAsset : BaseEntity
+    public abstract class PersonalAsset : BaseEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -21,5 +23,8 @@ namespace ApplicationCore.Entity.Asset
             Description = description;
             LastChanged = DateTime.Now;
         }
+
+        public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository);
     }
 }

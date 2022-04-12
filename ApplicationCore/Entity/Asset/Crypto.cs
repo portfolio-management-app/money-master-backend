@@ -1,3 +1,8 @@
+using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.CryptoAggregate;
+using ApplicationCore.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ApplicationCore.Entity.Asset
 {
     public class Crypto: PersonalAsset
@@ -8,5 +13,11 @@ namespace ApplicationCore.Entity.Asset
         public decimal CurrentAmountHolding { get; set; }
         public string CryptoCoinCode { get; set; }
         public decimal CurrentPrice { get; set; }
+        public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
+        {
+            return await cryptoRateRepository.GetCurrentPrice(CryptoCoinCode, destinationCurrencyCode) 
+                   * CurrentAmountHolding ;
+        }
     }
 }

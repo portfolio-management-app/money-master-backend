@@ -1,19 +1,11 @@
 using System;
 using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using ApplicationCore;
-using ApplicationCore.Interfaces;
-using Mapster;
 
-namespace Infrastructure
+namespace ApplicationCore
 {
-    public class CurrencyRateRepository : ICurrencyRateRepository
+    public class CurrencyRate
     {
-        private class Rates
-        {
-            public decimal Usd { get; set; }
+       public decimal Usd { get; set; }
             public decimal Aed { get; set; }
             public decimal Afn { get; set; }
             public decimal All { get; set; }
@@ -174,59 +166,14 @@ namespace Infrastructure
             public decimal Zar { get; set; }
             public decimal Zmw { get; set; }
             public decimal Zwl { get; set; }
-        }
 
-        private class CurrencyExchangeApiDto
-        {
-            public string Result { get; set; }
-            public string Provider { get; set; }
-            public string Documentation { get; set; }
-            public string TermsOfUse { get; set; }
-            public int TimeLastUpdateUnix { get; set; }
-            public string TimeLastUpdateUtc { get; set; }
-            public int TimeNextUpdateUnix { get; set; }
-            public string TimeNextUpdateUtc { get; set; }
-            public int TimeEolUnix { get; set; }
-            public string BaseCode { get; set; }
-            public Rates Rates { get; set; }
-        }
-
-        private readonly IHttpClientFactory _clientFactory;
-        private readonly string _baseUrl = "https://v6.exchangerate-api.com/v6/31e60ff5a47b690153426c43/latest";
-
-        public CurrencyRateRepository(IHttpClientFactory clientFactory)
-        {
-            _clientFactory = clientFactory;
-        }
-
-        public async Task<decimal> Exchange(string sourceCurrency, string destinationCurrency)
-        {
-            CurrencyRate rates = await GetRatesObject(sourceCurrency);
-            if (rates is null)
-                return 0; 
-            var destinationValue = (decimal)rates.GetType().GetProperties()
-                .First(pr => string.Equals(pr.Name, destinationCurrency, StringComparison.CurrentCultureIgnoreCase))
-                .GetValue(rates, null)!;
-
-            return destinationValue;
-        }
-
-        public async Task<CurrencyRate> GetRatesObject(string sourceCurrency)
-        {
-            var client = _clientFactory.CreateClient();
-            client.BaseAddress = new Uri(_baseUrl);
-
-            var apiResult = await client.GetAsync(sourceCurrency);
-            if (!apiResult.IsSuccessStatusCode)
-                throw new ApplicationException("Error while calling the currency API");
-            var apiResultString = await apiResult.Content.ReadAsStringAsync();
-            var currencyApiDto = JsonSerializer.Deserialize<CurrencyExchangeApiDto>(apiResultString);
-
-            if (currencyApiDto?.Result != "success")
-                return null;
-
-            var rates = currencyApiDto.Rates;
-            return rates.Adapt<CurrencyRate>();
-        }
+            public decimal GetValue(string currencyCode)
+            {
+                return (decimal)GetType()
+                    .GetProperties()
+                    .First(pr
+                        => String.Equals(pr.Name, currencyCode, StringComparison.CurrentCultureIgnoreCase))
+                    .GetValue(this, null)!;
+            }
     }
 }
