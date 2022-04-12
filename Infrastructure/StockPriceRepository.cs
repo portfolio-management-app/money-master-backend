@@ -14,14 +14,14 @@ namespace Infrastructure
     {
         private class StockPriceApiDto
         {
-            public decimal C { get; set; }
-            public decimal D { get; set; }
-            public decimal Dp { get; set; }
-            public decimal H { get; set; }
-            public decimal L { get; set; }
-            public decimal O { get; set; }
-            public decimal Pc  { get; set; }
-            public decimal T { get; set; }
+            public decimal c { get; set; }
+            public decimal d { get; set; }
+            public decimal dp { get; set; }
+            public decimal h { get; set; }
+            public decimal l { get; set; }
+            public decimal o { get; set; }
+            public decimal pc  { get; set; }
+            public decimal t { get; set; }
             
         }
         private readonly IHttpClientFactory _clientFactory;
@@ -50,17 +50,17 @@ namespace Infrastructure
 
             var resultString = await apiResult.Content.ReadAsStringAsync();
             var stockPriceApiDto = JsonSerializer.Deserialize<StockPriceApiDto>(resultString);
-            if (stockPriceApiDto?.C == 0)
+            if (stockPriceApiDto?.c == 0)
                 return null; 
             TypeAdapterConfig<StockPriceApiDto, StockPriceDto>
                     .NewConfig()
-                    .Map(dest => dest.CurrentPrice, src => src.C)
-                    .Map(dest => dest.Change, src => src.D)
-                    .Map(dest => dest.PercentChange, src => src.Dp)
-                    .Map(dest => dest.HighPriceOfTheDay, src => src.H)
-                    .Map(dest => dest.LowPriceOfTheDay, src => src.L)
-                    .Map(dest => dest.OpenPriceOfTheDay, src => src.O)
-                    .Map(dest => dest.PreviousClosePrice, src => src.Pc);
+                    .Map(dest => dest.CurrentPrice, src => src.c)
+                    .Map(dest => dest.Change, src => src.d)
+                    .Map(dest => dest.PercentChange, src => src.dp)
+                    .Map(dest => dest.HighPriceOfTheDay, src => src.h)
+                    .Map(dest => dest.LowPriceOfTheDay, src => src.l)
+                    .Map(dest => dest.OpenPriceOfTheDay, src => src.o)
+                    .Map(dest => dest.PreviousClosePrice, src => src.pc);
 
             var stockPriceResultDto = new StockPriceDto();
             stockPriceApiDto.Adapt(stockPriceResultDto);
