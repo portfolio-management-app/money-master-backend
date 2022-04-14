@@ -6,6 +6,7 @@ using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
 {
@@ -65,7 +66,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return newCustomInterestAsset;
         }
 
-        public List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId)
+        public List<CustomInterestAsset> GetAllUserCustomInterestAssetInCategory(int userId, int customInterestInfoId)
         {
             var foundCategory =
                 _customInterestAssetInfoRepo.GetFirst(ci => ci.Id == customInterestInfoId);
@@ -77,6 +78,16 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             var list = _customInterestAssetRepo
                 .List(c => c.CustomInterestAssetInfoId == foundCategory.Id);
             return list.ToList();
+        }
+
+        public List<CustomInterestAsset> GetALlCustomInterestAssets(int portfolioId)
+        {
+            var foundCustomInterestAsset = _customInterestAssetRepo
+                .List(ca => ca.PortfolioId == portfolioId, null
+                    , c => c.Include(ca => ca.CustomInterestAssetInfo));
+
+            return foundCustomInterestAsset.ToList();
+
         }
 
         public List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId)

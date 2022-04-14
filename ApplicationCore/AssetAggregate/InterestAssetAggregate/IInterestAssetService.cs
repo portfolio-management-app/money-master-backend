@@ -11,7 +11,8 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
         CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
             CreateNewCustomInterestAssetDto dto);
 
-        List<CustomInterestAsset> GetAllUserCustomInterestAsset(int userId, int customInterestInfoId);
+        List<CustomInterestAsset> GetAllUserCustomInterestAssetInCategory(int userId, int customInterestInfoId);
+        List<CustomInterestAsset> GetALlCustomInterestAssets(int portfolioId); 
 
         List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId);
         BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto);
