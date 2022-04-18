@@ -2,7 +2,7 @@ namespace ApplicationCore.ReportAggregate.Models
 {
     public class PieChartElementModel
     {
-        public string AssetType;
-        public decimal SumValue;
+        public string AssetType { get; set; }
+        public decimal SumValue { get; set; }
     }
 }
