@@ -24,7 +24,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
         [HttpGet("custom")]
         public override async Task<ActionResult<List<GetAllCustomAssetResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
-            var listAssets = _interestAssetService.GetALlCustomInterestAssets(portfolioId);
+            var listAssets = _interestAssetService.GetAllCustomInterestAssets(portfolioId);
 
             var groups = listAssets
                 .GroupBy(asset

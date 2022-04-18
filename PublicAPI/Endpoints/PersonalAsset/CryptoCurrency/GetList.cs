@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +23,15 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         [HttpGet("crypto")]
         public override async Task<ActionResult<List<CryptoCurrencyResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
-            var list = await _cryptoService.GetCryptoAssetByPortfolio(portfolioId); 
-            return list.Adapt<List<CryptoCurrencyResponse>>(); 
+            try
+            {
+                var list = await _cryptoService.GetCryptoAssetByPortfolio(portfolioId);
+                return list.Adapt<List<CryptoCurrencyResponse>>();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
         }
 
  

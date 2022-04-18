@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 
@@ -9,5 +10,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
         RealEstateAsset CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto);
         List<RealEstateAsset> GetAllRealEstateAssetByPortfolio(int portfolioId);
         RealEstateAsset UpdateRealEstateAsset(int portfolioId, int realEstateId, RealEstateDto dto);
+
+        Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode); 
     }
 }

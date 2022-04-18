@@ -39,25 +39,42 @@ namespace ApplicationCore.ReportAggregate
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
         {
             var foundPortfolio = _portfolioService.GetPortfolioById(portfolioId);
-            
-            var result = new List<PieChartElementModel>();
-
-            decimal sumCash = await _cashService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
             // get all cash
+            decimal sumCash = await _cashService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
 
             // get all real estate
-
+            decimal sumRealEstate =
+                await _realEstateService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
             // get all bank asset
-
+            decimal sumBankAsset =
+                await _interestAssetService.CalculateSumBankSavingByPortfolio(portfolioId,
+                    foundPortfolio.InitialCurrency);
             // get all custom asset 
 
-            // get all 
+            // get all crypto 
+            //decimal sumCrypto =
+             //   await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
             return new List<PieChartElementModel>()
             {
                 new()
                 {
-                    AssetType = "cash",
+                    AssetType = "Cash",
                     SumValue = sumCash
+                },
+                new()
+                {
+                    AssetType = "RealEstate",
+                    SumValue = sumRealEstate
+                },
+                new()
+                {
+                    AssetType = "BankSavingAsset",
+                    SumValue = sumBankAsset
+                },
+                new()
+                {
+                    AssetType = "Crypto",
+                    SumValue = 0
                 }
             };
         }

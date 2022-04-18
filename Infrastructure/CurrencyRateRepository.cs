@@ -220,7 +220,9 @@ namespace Infrastructure
             if(_lastCachedDay.Date != DateTime.Now.Date)
                 _cachedCurrencyRates.Clear();
             rates = await GetRatesObjectThroughApi(sourceCurrency);
-            _cachedCurrencyRates.Add(sourceCurrency, rates);
+            
+            if(!_cachedCurrencyRates.ContainsKey(sourceCurrency))
+                _cachedCurrencyRates.Add(sourceCurrency, rates);
             _lastCachedDay = DateTime.Now;
             return rates;
 

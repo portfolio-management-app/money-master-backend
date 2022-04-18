@@ -13,11 +13,10 @@ namespace ApplicationCore.Entity.Asset
         public decimal CurrentAmountHolding { get; set; }
         public string CryptoCoinCode { get; set; }
         public decimal CurrentPrice { get; set; }
-        public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+        public override Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
         {
-            return await cryptoRateRepository.GetCurrentPrice(CryptoCoinCode, destinationCurrencyCode) 
-                   * CurrentAmountHolding ;
+            return Task.FromResult(CurrentPrice * CurrentAmountHolding) ;
         }
     }
 }

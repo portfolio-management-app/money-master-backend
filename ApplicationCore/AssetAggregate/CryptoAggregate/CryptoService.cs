@@ -12,10 +12,12 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
     {
         private readonly IBaseRepository<Crypto> _cryptoRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
-        public CryptoService(IBaseRepository<Crypto> cryptoRepository, ICryptoRateRepository cryptoRateRepository)
+        private readonly ICurrencyRateRepository _currencyRateRepository;
+        public CryptoService(IBaseRepository<Crypto> cryptoRepository, ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
         {
             this._cryptoRepository = cryptoRepository;
             _cryptoRateRepository = cryptoRateRepository;
+            _currencyRateRepository = currencyRateRepository;
         }
 
     
@@ -27,7 +29,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
 
             _cryptoRepository.Insert(newCryptoAsset);
             newCryptoAsset.CurrentPrice =
-                await _cryptoRateRepository.GetCurrentPrice(newCryptoAsset.CryptoCoinCode, newCryptoAsset.CurrencyCode);
+                await _cryptoRateRepository.GetCurrentPriceInCurrency(newCryptoAsset.CryptoCoinCode, newCryptoAsset.CurrencyCode);
 
             return newCryptoAsset;
         }
@@ -37,9 +39,20 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
             foreach (var crypto in listCrypto)
             {
-                crypto.CurrentPrice = await _cryptoRateRepository.GetCurrentPrice(crypto.CryptoCoinCode, crypto.CurrencyCode);
+                crypto.CurrentPrice = await _cryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
             }
             return listCrypto.ToList(); 
+        }
+
+        public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
+        {
+            var cryptoAssets = await GetCryptoAssetByPortfolio(portfolioId);
+            var unifyCurrencyValue =
+                cryptoAssets.Select(stock =>
+                    stock.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository));
+            var resultCalc = await Task.WhenAll(unifyCurrencyValue);
+            var sumCash = resultCalc.Sum();
+            return sumCash; 
         }
     }
 }

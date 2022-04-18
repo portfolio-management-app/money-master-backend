@@ -4,6 +4,6 @@ namespace ApplicationCore.Interfaces
 {
     public interface ICryptoRateRepository
     {
-        public Task<decimal> GetCurrentPrice(string cryptoId, string currencyCode);
+        public Task<decimal> GetCurrentPriceInCurrency(string cryptoId, string currencyCode);
     }
 }

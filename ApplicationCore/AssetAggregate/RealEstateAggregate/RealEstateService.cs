@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
@@ -15,13 +16,17 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
     {
         private readonly IBaseRepository<RealEstateAsset> _realEstateRepository;
         private readonly IBaseRepository<Transaction> _transactionRepository;
+        private readonly ICryptoRateRepository _cryptoRateRepository;
+        private readonly ICurrencyRateRepository _currencyRateRepository;
         private TransactionFactory TransactionFactory { get; set; }
 
-        public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository, IBaseRepository<Transaction> transactionRepository, TransactionFactory transactionFactory)
+        public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository, IBaseRepository<Transaction> transactionRepository, TransactionFactory transactionFactory, ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
         {
             _realEstateRepository = realEstateRepository;
             _transactionRepository = transactionRepository;
             TransactionFactory = transactionFactory;
+            _cryptoRateRepository = cryptoRateRepository;
+            _currencyRateRepository = currencyRateRepository;
         }
 
         public RealEstateAsset CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto)
@@ -64,6 +69,20 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             _realEstateRepository.Update(foundRealEstate);
 
             return foundRealEstate;
+        }
+
+        public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
+        {
+              var cashAssets = GetAllRealEstateAssetByPortfolio(portfolioId);
+                        var unifyCurrencyValue = 
+                            cashAssets
+                                .Select
+                                ( cash =>
+                                     cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
+                                        _cryptoRateRepository));
+                        var resultCalc = await Task.WhenAll(unifyCurrencyValue);
+                        var sumCash = resultCalc.Sum();
+                        return sumCash;
         }
     }
 }
