@@ -4,7 +4,6 @@ namespace ApplicationCore.Interfaces
 {
     public interface ICurrencyRateRepository
     {
-        Task<decimal> Exchange(string sourceCurrency, string destinationCurrency);
-        Task<CurrencyRate> GetRatesObject(string sourceCurrency);
+        Task<CurrencyRate> GetRateObject(string sourceCurrency);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -11,6 +12,17 @@ namespace Infrastructure
 {
     public class CurrencyRateRepository : ICurrencyRateRepository
     {
+        // cache using dictionary 
+        private DateTime _lastCachedDay = DateTime.Now;
+        private Dictionary<string, CurrencyRate> _cachedCurrencyRates = new();
+
+        public CurrencyRateRepository()
+        {
+            _lastCachedDay = DateTime.Now;
+            _cachedCurrencyRates = new Dictionary<string, CurrencyRate>();
+        }
+
+
         private class Rates
         {
             public decimal Usd { get; set; }
@@ -192,26 +204,29 @@ namespace Infrastructure
         }
 
         private readonly IHttpClientFactory _clientFactory;
-        private readonly string _baseUrl = "https://v6.exchangerate-api.com/v6/31e60ff5a47b690153426c43/latest";
+        private readonly string _baseUrl = "https://open.er-api.com/v6/latest/";
 
         public CurrencyRateRepository(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<decimal> Exchange(string sourceCurrency, string destinationCurrency)
+        public async Task<CurrencyRate> GetRateObject(string sourceCurrency)
         {
-            CurrencyRate rates = await GetRatesObject(sourceCurrency);
-            if (rates is null)
-                return 0; 
-            var destinationValue = (decimal)rates.GetType().GetProperties()
-                .First(pr => string.Equals(pr.Name, destinationCurrency, StringComparison.CurrentCultureIgnoreCase))
-                .GetValue(rates, null)!;
+            if ( _lastCachedDay.Date == DateTime.Now.Date  &&
+                 _cachedCurrencyRates.TryGetValue(sourceCurrency, out var rates)) return rates;
+            
+            // call api 
+            if(_lastCachedDay.Date != DateTime.Now.Date)
+                _cachedCurrencyRates.Clear();
+            rates = await GetRatesObjectThroughApi(sourceCurrency);
+            _cachedCurrencyRates.Add(sourceCurrency, rates);
+            _lastCachedDay = DateTime.Now;
+            return rates;
 
-            return destinationValue;
         }
 
-        public async Task<CurrencyRate> GetRatesObject(string sourceCurrency)
+        private async Task<CurrencyRate> GetRatesObjectThroughApi(string sourceCurrency)
         {
             var client = _clientFactory.CreateClient();
             client.BaseAddress = new Uri(_baseUrl);
@@ -220,7 +235,11 @@ namespace Infrastructure
             if (!apiResult.IsSuccessStatusCode)
                 throw new ApplicationException("Error while calling the currency API");
             var apiResultString = await apiResult.Content.ReadAsStringAsync();
-            var currencyApiDto = JsonSerializer.Deserialize<CurrencyExchangeApiDto>(apiResultString);
+            var currencyApiDto = JsonSerializer.Deserialize<CurrencyExchangeApiDto>(apiResultString,
+                new JsonSerializerOptions()
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             if (currencyApiDto?.Result != "success")
                 return null;
