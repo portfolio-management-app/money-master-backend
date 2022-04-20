@@ -54,7 +54,7 @@ namespace ApplicationCore.ReportAggregate
             // get all crypto 
             //decimal sumCrypto =
              //   await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
-            return new List<PieChartElementModel>()
+            return new List<PieChartElementModel>
             {
                 new()
                 {
