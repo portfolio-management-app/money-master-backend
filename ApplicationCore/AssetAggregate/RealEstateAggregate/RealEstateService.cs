@@ -18,15 +18,19 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
         private readonly IBaseRepository<Transaction> _transactionRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
+        private readonly IStockPriceRepository _stockPriceRepository;
         private TransactionFactory TransactionFactory { get; set; }
 
-        public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository, IBaseRepository<Transaction> transactionRepository, TransactionFactory transactionFactory, ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
+        public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository,
+            IBaseRepository<Transaction> transactionRepository, TransactionFactory transactionFactory,
+            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository)
         {
             _realEstateRepository = realEstateRepository;
             _transactionRepository = transactionRepository;
             TransactionFactory = transactionFactory;
             _cryptoRateRepository = cryptoRateRepository;
             _currencyRateRepository = currencyRateRepository;
+            _stockPriceRepository = stockPriceRepository;
         }
 
         public RealEstateAsset GetById(int assetId)
@@ -34,17 +38,16 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             return _realEstateRepository.GetFirst(r => r.Id == assetId);
         }
 
-    
 
         public RealEstateAsset CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto)
         {
             var newRealEstate = dto.Adapt<RealEstateAsset>();
             newRealEstate.PortfolioId = portfolioId;
             _realEstateRepository.Insert(newRealEstate);
-            
+
             // create a transaction
-         
-            var newTransaction =  TransactionFactory
+
+            var newTransaction = TransactionFactory
                 .CreateNewTransaction
                 (SingleAssetTransactionType.NewAsset,
                     "None",
@@ -53,7 +56,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
                     newRealEstate.Id,
                     100
                 );
-            _transactionRepository.Insert(newTransaction); 
+            _transactionRepository.Insert(newTransaction);
             return newRealEstate;
         }
 
@@ -77,16 +80,16 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-              var cashAssets = ListByPortfolio(portfolioId);
-                        var unifyCurrencyValue = 
-                            cashAssets
-                                .Select
-                                ( cash =>
-                                     cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                                        _cryptoRateRepository));
-                        var resultCalc = await Task.WhenAll(unifyCurrencyValue);
-                        var sumCash = resultCalc.Sum();
-                        return sumCash;
+            var cashAssets = ListByPortfolio(portfolioId);
+            var unifyCurrencyValue =
+                cashAssets
+                    .Select
+                    (cash =>
+                        cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
+                            _cryptoRateRepository,_stockPriceRepository));
+            var resultCalc = await Task.WhenAll(unifyCurrencyValue);
+            var sumCash = resultCalc.Sum();
+            return sumCash;
         }
     }
 }

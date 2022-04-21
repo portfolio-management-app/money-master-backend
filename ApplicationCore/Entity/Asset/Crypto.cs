@@ -5,22 +5,28 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Entity.Asset
 {
-    public class Crypto: PersonalAsset
+    public class Crypto : PersonalAsset
     {
-        
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
         public decimal CurrentAmountHolding { get; set; }
         public string CryptoCoinCode { get; set; }
+
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
-            var currentPriceInCurrency = await cryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
-            return currentPriceInCurrency * CurrentAmountHolding ;
+            var currentPriceInCurrency =
+                await cryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
+            return currentPriceInCurrency * CurrentAmountHolding;
         }
 
-        public override string GetAssetType() => "crypto";
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        public override string GetAssetType()
+        {
+            return "crypto";
+        }
+
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository)
         {
             throw new System.NotImplementedException();
         }

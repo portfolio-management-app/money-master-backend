@@ -6,6 +6,6 @@ namespace ApplicationCore.ReportAggregate
 {
     public interface IReportService
     {
-        Task<List<PieChartElementModel>> GetPieChart(int portfolioId); 
+        Task<List<PieChartElementModel>> GetPieChart(int portfolioId);
     }
 }

@@ -20,11 +20,13 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
         private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
+        private readonly IStockPriceRepository _stockPriceRepository;
 
         public InterestAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
             IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
-            IBaseRepository<BankSavingAsset> bankSavingRepository, ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
+            IBaseRepository<BankSavingAsset> bankSavingRepository, ICurrencyRateRepository currencyRateRepository,
+            ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
@@ -33,12 +35,13 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             _bankSavingRepository = bankSavingRepository;
             _currencyRateRepository = currencyRateRepository;
             _cryptoRateRepository = cryptoRateRepository;
+            _stockPriceRepository = stockPriceRepository;
         }
 
 
         public BankSavingAsset GetBankSavingAssetById(int assetId)
         {
-            return _bankSavingRepository.GetFirst(b => b.Id == assetId); 
+            return _bankSavingRepository.GetFirst(b => b.Id == assetId);
         }
 
         public CustomInterestAsset GetCustomAssetById(int assetId)
@@ -102,7 +105,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
                     , c => c.Include(ca => ca.CustomInterestAssetInfo));
 
             return foundCustomInterestAsset.ToList();
-
         }
 
         public List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId)
@@ -159,10 +161,10 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             var bankSavingAsset = GetAllPortfolioBankSavingAssets(portfolioId);
             var unifyCurrencyValue =
                 bankSavingAsset.Select(bankSaving =>
-                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository));
+                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository, _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
-            return sumCash; 
+            return sumCash;
         }
 
         public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
@@ -170,10 +172,10 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             var customAsset = GetAllCustomInterestAssetsByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
-                    ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository));
+                    ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository, _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
-            return sumCash; 
+            return sumCash;
         }
     }
 }

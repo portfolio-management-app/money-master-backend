@@ -20,7 +20,9 @@ namespace ApplicationCore.PortfolioAggregate
         private readonly IStockService _stockService;
         private readonly IRealEstateService _realEstateService;
 
-        public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService, ICryptoService cryptoService, IInterestAssetService interestAssetService, IStockService stockService, IRealEstateService realEstateService)
+        public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService,
+            ICryptoService cryptoService, IInterestAssetService interestAssetService, IStockService stockService,
+            IRealEstateService realEstateService)
         {
             _portfolioRepository = portfolioRepository;
             _cashService = cashService;

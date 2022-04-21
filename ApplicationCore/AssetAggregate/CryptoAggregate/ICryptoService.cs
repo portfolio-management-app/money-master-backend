@@ -6,9 +6,9 @@ using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.AssetAggregate.CryptoAggregate
 {
-    public interface ICryptoService: IBaseAssetService<Crypto>
+    public interface ICryptoService : IBaseAssetService<Crypto>
     {
         Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto);
-        Task<decimal>  CalculateSumByPortfolio(int portfolioId, string currencyCode);
+        Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode);
     }
 }

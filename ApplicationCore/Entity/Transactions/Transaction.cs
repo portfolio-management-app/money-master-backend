@@ -2,21 +2,21 @@ using System;
 
 namespace ApplicationCore.Entity.Transactions
 {
-    public class Transaction: BaseEntity
+    public class Transaction : BaseEntity
     {
         public int Id { get; set; }
-        
+
         public int ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
-        
+
         public decimal Amount { get; set; }
-        public string  CurrencyCode { get; set; }
-        
-        public DateTime CreatedAt { get; set; } =DateTime.Now;
-        
+        public string CurrencyCode { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         public DateTime LastChanged { get; set; } = DateTime.Now;
 
-        public Transaction( string referentialAssetType, int referentialAssetId, decimal amount, 
+        public Transaction(string referentialAssetType, int referentialAssetId, decimal amount,
             string currencyCode)
         {
             ReferentialAssetId = referentialAssetId;
@@ -27,6 +27,8 @@ namespace ApplicationCore.Entity.Transactions
             LastChanged = DateTime.Now;
         }
 
-        public Transaction(){}
+        public Transaction()
+        {
+        }
     }
 }

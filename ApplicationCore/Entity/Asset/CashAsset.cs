@@ -11,22 +11,24 @@ namespace ApplicationCore.Entity.Asset
         public string CurrencyCode { get; set; }
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
             var rateObj = await currencyRateRepository.GetRateObject(CurrencyCode);
             return Amount * rateObj.GetValue(destinationCurrencyCode);
         }
 
-        public override string GetAssetType() => "cash";
-        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        public override string GetAssetType()
+        {
+            return "cash";
+        }
+
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository)
         {
             var rateObject = await currencyRateRepository.GetRateObject(currencyCode);
-            var rateToWithdraw = rateObject.GetValue(this.CurrencyCode);
+            var rateToWithdraw = rateObject.GetValue(CurrencyCode);
             var valueToWithdraw = rateToWithdraw * withdrawAmount;
-            if (valueToWithdraw > Amount)
-            {
-                return false; 
-            }
+            if (valueToWithdraw > Amount) return false;
 
             Amount -= valueToWithdraw;
             return true;

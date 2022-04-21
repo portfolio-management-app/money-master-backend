@@ -3,7 +3,7 @@ using ApplicationCore.Entity.Transactions;
 
 namespace ApplicationCore.Entity
 {
-    public class InvestFund: BaseEntity
+    public class InvestFund : BaseEntity
     {
         public int Id { get; set; }
         public int PortfolioId { get; set; }

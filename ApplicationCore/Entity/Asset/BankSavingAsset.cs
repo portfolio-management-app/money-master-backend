@@ -12,7 +12,7 @@ namespace ApplicationCore.Entity.Asset
 
         // Reinstate: continue to keep in asset and keep interest rate 
         // Not Reinstate:  withdraw to cash at the end of term 
-        public void Update(string name, DateTime inputDay, 
+        public void Update(string name, DateTime inputDay,
             string description,
             decimal inputMoneyAmount,
             string inputCurrency,
@@ -26,10 +26,15 @@ namespace ApplicationCore.Entity.Asset
             IsGoingToReinState = isGoingToReinState;
         }
 
-        public override string GetAssetType() => "bankSaving";
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        public override string GetAssetType()
         {
-            throw new NotImplementedException(); 
+            return "bankSaving";
+        }
+
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository)
+        {
+            throw new NotImplementedException();
         }
     }
 }

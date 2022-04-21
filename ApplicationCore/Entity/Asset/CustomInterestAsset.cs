@@ -8,8 +8,14 @@ namespace ApplicationCore.Entity.Asset
     {
         public CustomInterestAssetInfo CustomInterestAssetInfo { get; set; }
         public int CustomInterestAssetInfoId { get; set; }
-        public override string GetAssetType() => "custom";
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+
+        public override string GetAssetType()
+        {
+            return "custom";
+        }
+
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository)
         {
             throw new NotImplementedException();
         }

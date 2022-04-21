@@ -8,14 +8,19 @@ using Mapster;
 
 namespace ApplicationCore.AssetAggregate.StockAggregate
 {
-    public class StockService: IStockService
+    public class StockService : IStockService
     {
         private readonly IBaseRepository<Stock> _stockRepository;
         private readonly IStockPriceRepository _stockPriceRepository;
-        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository)
+        private readonly ICurrencyRateRepository _currencyRateRepository;
+        private readonly ICryptoRateRepository _cryptoRateRepository;
+
+        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository, ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
         {
             _stockRepository = stockRepository;
             _stockPriceRepository = stockPriceRepository;
+            _cryptoRateRepository = cryptoRateRepository;
+            _currencyRateRepository = currencyRateRepository;
         }
 
         public Stock CreateNewStockAsset(int portfolioId, StockDto dto)
@@ -26,6 +31,21 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
             return newStock;
         }
 
+        public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
+        {
+            
+            var cashAssets = ListByPortfolio(portfolioId);
+            var unifyCurrencyValue =
+                cashAssets
+                    .Select
+                    (stock =>
+                        stock.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
+                            _cryptoRateRepository,_stockPriceRepository));
+            var resultCalc = await Task.WhenAll(unifyCurrencyValue);
+            var sumCash = resultCalc.Sum();
+            return sumCash;
+        }
+
         public Stock GetById(int assetId)
         {
             return _stockRepository.GetFirst(s => s.Id == assetId);
@@ -34,7 +54,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         public List<Stock> ListByPortfolio(int portfolioId)
         {
             var stocks = _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
-      
+
             return stocks;
         }
     }

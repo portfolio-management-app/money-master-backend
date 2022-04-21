@@ -9,8 +9,7 @@ namespace ApplicationCore.Entity.Transactions
             string targetType, int targetAssetId,
             decimal amount)
         {
-            throw new NotImplementedException(); 
-
+            throw new NotImplementedException();
         }
     }
 }
