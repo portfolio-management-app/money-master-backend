@@ -26,5 +26,8 @@ namespace ApplicationCore.Entity.Asset
 
         public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository);
+
+        public abstract string GetAssetType();
+        public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository); 
     }
 }

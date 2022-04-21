@@ -26,14 +26,15 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
             return newStock;
         }
 
-        public async Task<List<Stock>> GetListStockByPortfolio(int portfolioId)
+        public Stock GetById(int assetId)
+        {
+            return _stockRepository.GetFirst(s => s.Id == assetId);
+        }
+
+        public List<Stock> ListByPortfolio(int portfolioId)
         {
             var stocks = _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
-            foreach (var stock in stocks)
-            {
-                var priceDto = await _stockPriceRepository.GetPrice(stock.StockCode);
-                stock.CurrentPrice = priceDto.CurrentPrice;
-            }
+      
             return stocks;
         }
     }

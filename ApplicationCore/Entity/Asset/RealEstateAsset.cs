@@ -16,5 +16,11 @@ namespace ApplicationCore.Entity.Asset
             var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * CurrentPrice; 
         }
+
+        public override string GetAssetType() => "realEstate";
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

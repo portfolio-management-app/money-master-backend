@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
 {
@@ -14,7 +15,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
         public string Description { get; set; }
         public double InterestRate { get; set; }
 
-        [CustomChangeInterestRateValidation(AllowableValues = new[] { "CONTINUE_WITH_RATE", "RESET_TERM_RATE" })]
+        [CustomAllowedInputValidation(AllowableValues = new[] { "CONTINUE_WITH_RATE", "RESET_TERM_RATE" })]
         public string ChangeInterestRateType { get; set; } = "CONTINUE_WITH_RATE";
 
         public int TermRange { get; set; } // in day 

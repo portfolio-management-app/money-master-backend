@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset
+namespace PublicAPI.Attributes
 {
-    public class CustomChangeInterestRateValidationAttribute : ValidationAttribute
+    public class CustomAllowedInputValidationAttribute : ValidationAttribute
     {
         public string[] AllowableValues { get; set; }
 

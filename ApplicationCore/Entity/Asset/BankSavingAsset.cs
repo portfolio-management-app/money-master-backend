@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.Entity.Asset
 {
@@ -22,6 +24,12 @@ namespace ApplicationCore.Entity.Asset
             base.Update(name, inputDay, description, inputMoneyAmount, inputCurrency, interestRate, termRange);
             BankCode = bankCode;
             IsGoingToReinState = isGoingToReinState;
+        }
+
+        public override string GetAssetType() => "bankSaving";
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        {
+            throw new NotImplementedException(); 
         }
     }
 }

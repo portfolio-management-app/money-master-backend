@@ -5,10 +5,9 @@ using ApplicationCore.Entity.Asset;
 
 namespace ApplicationCore.AssetAggregate.CashAggregate
 {
-    public interface ICashService
+    public interface ICashService: IBaseAssetService<CashAsset>
     {
         CashAsset CreateNewCashAsset(int portfolioId, CashDto dto);
-        List<CashAsset> GetCashAssetsByPortfolio(int portfolioId);
 
         Task<decimal>  CalculateSumByPortfolio(int portfolioId, string currencyCode);
     }

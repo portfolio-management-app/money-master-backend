@@ -6,6 +6,7 @@ using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate;
 using ApplicationCore.UserAggregate;
@@ -74,7 +75,8 @@ namespace PublicAPI
             services.AddScoped<ICashService, CashService>(); 
             services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>(); 
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
-            services.AddScoped<IReportService, ReportService>(); 
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IInvestFundService, InvestFundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

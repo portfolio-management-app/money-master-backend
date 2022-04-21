@@ -36,6 +36,16 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
         }
 
 
+        public BankSavingAsset GetBankSavingAssetById(int assetId)
+        {
+            return _bankSavingRepository.GetFirst(b => b.Id == assetId); 
+        }
+
+        public CustomInterestAsset GetCustomAssetById(int assetId)
+        {
+            return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
+        }
+
         public CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName)
         {
             var foundUser = _userRepository.GetFirst(user => user.Id == userId);

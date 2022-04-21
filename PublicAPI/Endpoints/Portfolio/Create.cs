@@ -1,4 +1,5 @@
 using System.Net.Http;
+using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.PortfolioAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
@@ -12,10 +13,12 @@ namespace PublicAPI.Endpoints.Portfolio
     public class Create : EndpointBaseSync.WithRequest<CreatePortfolioRequest>.WithActionResult<CreatePortfolioResponse>
     {
         private readonly IPortfolioService _portfolioService;
+        private readonly IInvestFundService _investFundService;
 
-        public Create(IPortfolioService portfolioService)
+        public Create(IPortfolioService portfolioService, IInvestFundService investFundService)
         {
             _portfolioService = portfolioService;
+            _investFundService = investFundService;
         }
 
         [HttpPost]
@@ -25,7 +28,6 @@ namespace PublicAPI.Endpoints.Portfolio
 
             var newPortfolio
                 = _portfolioService.CreatePortfolio(userId, request.Name, request.InitialCash, request.InitialCurrency);
-
             return Ok(newPortfolio.Adapt<CreatePortfolioResponse>());
         }
     }

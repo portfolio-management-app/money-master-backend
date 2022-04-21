@@ -7,6 +7,8 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
 {
     public interface IInterestAssetService
     {
+        BankSavingAsset GetBankSavingAssetById(int assetId);
+        CustomInterestAsset GetCustomAssetById(int assetId); 
         CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName);
 
         CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,

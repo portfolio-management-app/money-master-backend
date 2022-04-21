@@ -3,11 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.ReportAggregate;
 using Ardalis.ApiEndpoints;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.Report
 {
-    
+    [Authorize]
     [Route("portfolio/{portfolioId}")]
     public class GetPieChart: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<PieChartResponse>>
     {

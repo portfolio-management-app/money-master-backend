@@ -12,11 +12,17 @@ namespace ApplicationCore.Entity.Asset
         public string CurrencyCode { get; set; }
         public decimal CurrentAmountHolding { get; set; }
         public string CryptoCoinCode { get; set; }
-        public decimal CurrentPrice { get; set; }
-        public override Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+        public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
         {
-            return Task.FromResult(CurrentPrice * CurrentAmountHolding) ;
+            var currentPriceInCurrency = await cryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
+            return currentPriceInCurrency * CurrentAmountHolding ;
+        }
+
+        public override string GetAssetType() => "crypto";
+        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode, ICurrencyRateRepository currencyRateRepository)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

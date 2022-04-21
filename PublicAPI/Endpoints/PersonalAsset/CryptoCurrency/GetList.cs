@@ -25,7 +25,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         {
             try
             {
-                var list = await _cryptoService.GetCryptoAssetByPortfolio(portfolioId);
+                var list =  _cryptoService.ListByPortfolio(portfolioId);
                 return list.Adapt<List<CryptoCurrencyResponse>>();
             }
             catch (Exception ex)

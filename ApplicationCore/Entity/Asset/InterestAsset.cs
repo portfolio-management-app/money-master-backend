@@ -4,7 +4,7 @@ using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.Entity.Asset
 {
-    public class InterestAsset : PersonalAsset
+    public abstract class InterestAsset : PersonalAsset
     {
         public decimal InputMoneyAmount { get; set; } 
         public string  InputCurrency { get; set; }

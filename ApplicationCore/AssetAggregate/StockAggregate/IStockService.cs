@@ -5,9 +5,8 @@ using ApplicationCore.Entity.Asset;
 
 namespace ApplicationCore.AssetAggregate.StockAggregate
 {
-    public interface IStockService
+    public interface IStockService: IBaseAssetService<Stock>
     {
         Stock CreateNewStockAsset(int portfolioId, StockDto dto);
-        Task<List<Stock>> GetListStockByPortfolio(int portfolioId); 
     }
 }

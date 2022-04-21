@@ -24,7 +24,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         [HttpGet("stock")]
         public override async Task<ActionResult<List<StockResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
-             var stockList = await _stockService.GetListStockByPortfolio(portfolioId);
+             var stockList =  _stockService.ListByPortfolio(portfolioId);
              return Ok(stockList.Adapt<List<StockResponse>>()); 
         }
     }

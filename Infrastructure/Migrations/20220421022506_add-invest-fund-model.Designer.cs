@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220421022506_add-invest-fund-model")]
+    partial class addinvestfundmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +117,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal>("CurrentAmountHolding")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("CurrentPrice")
                         .HasColumnType("numeric");
 
                     b.Property<string>("Description")
@@ -259,6 +264,9 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("CurrentAmountHolding")
                         .HasColumnType("numeric");
 
+                    b.Property<decimal>("CurrentPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -336,7 +344,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Portfolios");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Entity.Transactions.InvestFundTransaction", b =>
+            modelBuilder.Entity("ApplicationCore.Entity.Transactions.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -352,11 +360,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CurrencyCode")
                         .HasColumnType("text");
 
-                    b.Property<int>("InvestFundId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsIngoing")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp without time zone");
@@ -369,42 +375,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InvestFundId");
+                    b.ToTable("Transactions");
 
-                    b.ToTable("InvestFundTransactions");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entity.Transactions.SingleAssetTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("CurrencyCode")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ReferentialAssetId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ReferentialAssetType")
-                        .HasColumnType("text");
-
-                    b.Property<int>("SingleAssetTransactionType")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SingleAssetTransactions");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Transaction");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.User", b =>
@@ -426,6 +399,31 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entity.Transactions.InvestFundTransaction", b =>
+                {
+                    b.HasBaseType("ApplicationCore.Entity.Transactions.Transaction");
+
+                    b.Property<int>("InvestFundId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsIngoing")
+                        .HasColumnType("boolean");
+
+                    b.HasIndex("InvestFundId");
+
+                    b.HasDiscriminator().HasValue("InvestFundTransaction");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entity.Transactions.SingleAssetTransaction", b =>
+                {
+                    b.HasBaseType("ApplicationCore.Entity.Transactions.Transaction");
+
+                    b.Property<int>("SingleAssetTransactionType")
+                        .HasColumnType("integer");
+
+                    b.HasDiscriminator().HasValue("SingleAssetTransaction");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.Asset.BankSavingAsset", b =>
@@ -464,7 +462,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAsset", b =>
                 {
                     b.HasOne("ApplicationCore.Entity.Asset.CustomInterestAssetInfo", "CustomInterestAssetInfo")
-                        .WithMany("CustomInterestAssets")
+                        .WithMany("RrCustomInterestAssets")
                         .HasForeignKey("CustomInterestAssetInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -548,7 +546,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("ApplicationCore.Entity.Asset.CustomInterestAssetInfo", b =>
                 {
-                    b.Navigation("CustomInterestAssets");
+                    b.Navigation("RrCustomInterestAssets");
                 });
 #pragma warning restore 612, 618
         }

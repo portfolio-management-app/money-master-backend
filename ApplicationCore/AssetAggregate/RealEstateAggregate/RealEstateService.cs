@@ -29,6 +29,13 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             _currencyRateRepository = currencyRateRepository;
         }
 
+        public RealEstateAsset GetById(int assetId)
+        {
+            return _realEstateRepository.GetFirst(r => r.Id == assetId);
+        }
+
+    
+
         public RealEstateAsset CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto)
         {
             var newRealEstate = dto.Adapt<RealEstateAsset>();
@@ -39,21 +46,18 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
          
             var newTransaction =  TransactionFactory
                 .CreateNewTransaction
-                (TransactionType.NewAsset,
-                    "Create new real estate",
+                (SingleAssetTransactionType.NewAsset,
                     "None",
                     newRealEstate.Id,
                     "realEstate",
                     newRealEstate.Id,
-                    newRealEstate.InputMoneyAmount,
-                    newRealEstate.InputCurrency,
                     100
                 );
             _transactionRepository.Insert(newTransaction); 
             return newRealEstate;
         }
 
-        public List<RealEstateAsset> GetAllRealEstateAssetByPortfolio(int portfolioId)
+        public List<RealEstateAsset> ListByPortfolio(int portfolioId)
         {
             return _realEstateRepository.List(realEstate => realEstate.PortfolioId == portfolioId).ToList();
         }
@@ -73,7 +77,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-              var cashAssets = GetAllRealEstateAssetByPortfolio(portfolioId);
+              var cashAssets = ListByPortfolio(portfolioId);
                         var unifyCurrencyValue = 
                             cashAssets
                                 .Select

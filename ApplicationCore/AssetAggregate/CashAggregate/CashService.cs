@@ -20,6 +20,11 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             _currencyRateRepository = currencyRateRepository;
         }
 
+        public CashAsset GetById(int assetId)
+        {
+            return _cashRepository.GetFirst(c => c.Id == assetId); 
+        }
+
         public CashAsset CreateNewCashAsset(int portfolioId, CashDto dto)
         {
             CashAsset newCashAsset = dto.Adapt<CashAsset>();
@@ -29,14 +34,14 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             return newCashAsset; 
         }
 
-        public List<CashAsset> GetCashAssetsByPortfolio(int portfolioId)
+        public List<CashAsset> ListByPortfolio(int portfolioId)
         {
             return _cashRepository.List(c => c.PortfolioId == portfolioId).ToList(); 
         }
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cashAssets = GetCashAssetsByPortfolio(portfolioId);
+            var cashAssets = ListByPortfolio(portfolioId);
             var unifyCurrencyValue = 
                 cashAssets
                     .Select

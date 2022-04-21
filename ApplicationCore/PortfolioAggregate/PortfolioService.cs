@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using ApplicationCore.AssetAggregate.CashAggregate;
+using ApplicationCore.AssetAggregate.CryptoAggregate;
+using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.RealEstateAggregate;
+using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity;
+using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.PortfolioAggregate
@@ -8,10 +14,20 @@ namespace ApplicationCore.PortfolioAggregate
     public class PortfolioService : IPortfolioService
     {
         private readonly IBaseRepository<Portfolio> _portfolioRepository;
+        private readonly ICashService _cashService;
+        private readonly ICryptoService _cryptoService;
+        private readonly IInterestAssetService _interestAssetService;
+        private readonly IStockService _stockService;
+        private readonly IRealEstateService _realEstateService;
 
-        public PortfolioService(IBaseRepository<Portfolio> portfolioRepository)
+        public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService, ICryptoService cryptoService, IInterestAssetService interestAssetService, IStockService stockService, IRealEstateService realEstateService)
         {
             _portfolioRepository = portfolioRepository;
+            _cashService = cashService;
+            _cryptoService = cryptoService;
+            _interestAssetService = interestAssetService;
+            _stockService = stockService;
+            _realEstateService = realEstateService;
         }
 
         public Portfolio CreatePortfolio(int userId, string name, decimal initialCash, string initialCurrency)
@@ -31,6 +47,20 @@ namespace ApplicationCore.PortfolioAggregate
         {
             var listPortfolio = _portfolioRepository.List(p => p.UserId == userId).ToList();
             return listPortfolio;
+        }
+
+        public PersonalAsset GetAssetByPortfolioAndAssetId(int portfolioId, string assetType, int assetId)
+        {
+            PersonalAsset foundAsset = assetType switch
+            {
+                "cash" => _cashService.GetById(assetId),
+                "crypto" => _cryptoService.GetById(assetId),
+                "realEstate" => _realEstateService.GetById(assetId),
+                "stock" => _stockService.GetById(assetId),
+                _ => null
+            };
+
+            return foundAsset;
         }
     }
 }

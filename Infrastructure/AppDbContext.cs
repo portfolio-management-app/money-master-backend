@@ -19,9 +19,11 @@ namespace Infrastructure
         public DbSet<CustomInterestAssetInfo> CustomInterestAssetInfos { get; set; }
         public DbSet<CashAsset> CashAssets { get; set; }
         public DbSet<RealEstateAsset> RealEstateAssets { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Crypto> Cryptos { get; set; }
         public DbSet<Stock> Stocks { get; set; }
+        public DbSet<InvestFund> InvestFunds { get; set; }
+        public DbSet<SingleAssetTransaction> SingleAssetTransactions { get; set; }
+        public DbSet<InvestFundTransaction> InvestFundTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

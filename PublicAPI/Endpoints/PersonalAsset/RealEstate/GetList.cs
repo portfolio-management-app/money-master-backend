@@ -19,7 +19,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
             {
                 return Unauthorized($"You are not allowed to this portfolio: {portfolioId}"); 
             }
-            var list = RealEstateService.GetAllRealEstateAssetByPortfolio(portfolioId);
+            var list = RealEstateService.ListByPortfolio(portfolioId);
             return Ok(list.Adapt<List<RealEstateResponse>>());
         }
         public GetList(IRealEstateService realEstateService, IAuthorizationService authorizationService) 

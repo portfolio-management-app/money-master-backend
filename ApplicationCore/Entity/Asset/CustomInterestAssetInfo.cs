@@ -9,6 +9,6 @@ namespace ApplicationCore.Entity.Asset
         public int UserId { get; set; }
         public string Name { get; set;}
 
-        public List<CustomInterestAsset> RrCustomInterestAssets { get; set; }
+        public List<CustomInterestAsset> CustomInterestAssets { get; set; }
     }
 }

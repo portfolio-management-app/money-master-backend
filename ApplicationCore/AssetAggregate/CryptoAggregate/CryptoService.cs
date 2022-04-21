@@ -20,7 +20,12 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             _currencyRateRepository = currencyRateRepository;
         }
 
-    
+
+        public Crypto GetById(int assetId)
+        {
+            return _cryptoRepository.GetFirst(c => c.Id == assetId); 
+        }
+
         public async Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto)
         {
             var newCryptoAsset = new Crypto();
@@ -28,28 +33,24 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             newCryptoAsset.PortfolioId = portfolioId; 
 
             _cryptoRepository.Insert(newCryptoAsset);
-            newCryptoAsset.CurrentPrice =
-                await _cryptoRateRepository.GetCurrentPriceInCurrency(newCryptoAsset.CryptoCoinCode, newCryptoAsset.CurrencyCode);
+
 
             return newCryptoAsset;
         }
 
-        public async Task<List<Crypto>> GetCryptoAssetByPortfolio(int portfolioId)
+        public List<Crypto> ListByPortfolio(int portfolioId)
         {
             var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
-            foreach (var crypto in listCrypto)
-            {
-                crypto.CurrentPrice = await _cryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
-            }
+           
             return listCrypto.ToList(); 
         }
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cryptoAssets = await GetCryptoAssetByPortfolio(portfolioId);
+            var cryptoAssets = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
-                cryptoAssets.Select(stock =>
-                    stock.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository));
+                cryptoAssets.Select(crypto =>
+                    crypto.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash; 
