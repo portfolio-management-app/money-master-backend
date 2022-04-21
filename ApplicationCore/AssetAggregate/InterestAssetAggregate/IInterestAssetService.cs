@@ -13,12 +13,13 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             CreateNewCustomInterestAssetDto dto);
 
         List<CustomInterestAsset> GetAllUserCustomInterestAssetInCategory(int userId, int customInterestInfoId);
-        List<CustomInterestAsset> GetAllCustomInterestAssets(int portfolioId); 
+        List<CustomInterestAsset> GetAllCustomInterestAssetsByPortfolio(int portfolioId); 
 
         List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId);
         BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto);
         List<BankSavingAsset> GetAllPortfolioBankSavingAssets(int portfolioId);
         BankSavingAsset EditBankSavingAsset(int portfolioId, int bankingAssetId, EditBankSavingAssetDto dto);
          Task<decimal>  CalculateSumBankSavingByPortfolio(int portfolioId, string currencyCode);
+         Task<decimal>  CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode); 
     }
 }
