@@ -1,14 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ApplicationCore.Interfaces;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
 
 namespace Infrastructure
 {

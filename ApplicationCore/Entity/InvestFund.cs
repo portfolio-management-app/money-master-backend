@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using ApplicationCore.Entity.Transactions;
-
 namespace ApplicationCore.Entity
 {
     public class InvestFund : BaseEntity

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml;
 using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;

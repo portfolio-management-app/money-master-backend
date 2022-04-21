@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using ApplicationCore.Entity.Asset;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ApplicationCore.Entity
