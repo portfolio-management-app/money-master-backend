@@ -15,7 +15,7 @@ namespace PublicAPI.Filters
                     .Parse(context.HttpContext.User.Claims.First(c => c.Type == "ID").Value);
                 context.HttpContext.Items.Add("userId", userId);
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 context.HttpContext.Items.Add("userId", null);
             }

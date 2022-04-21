@@ -31,10 +31,18 @@ namespace ApplicationCore.Entity.Asset
             return "bankSaving";
         }
 
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository)
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
-            throw new NotImplementedException();
+            await WithdrawAll();
+            return true; 
+        }
+
+        public override async Task<bool> WithdrawAll()
+        {
+            this.InputMoneyAmount = 0;
+            LastChanged = DateTime.Now;
+            return true;
         }
     }
 }

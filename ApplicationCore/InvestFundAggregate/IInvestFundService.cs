@@ -10,7 +10,7 @@ namespace ApplicationCore.InvestFundAggregate
         InvestFund GetInvestFundByPortfolio(int portfolioId);
 
         Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
-            string currencyCode);
+            string currencyCode, bool isTransferringAll);
 
         Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
             string currencyCode);

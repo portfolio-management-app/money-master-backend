@@ -30,6 +30,8 @@ namespace ApplicationCore.Entity.Asset
         public abstract string GetAssetType();
 
         public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository);
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository);
+
+        public abstract Task<bool> WithdrawAll();
     }
 }

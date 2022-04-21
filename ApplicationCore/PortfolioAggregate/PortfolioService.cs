@@ -59,6 +59,8 @@ namespace ApplicationCore.PortfolioAggregate
                 "crypto" => _cryptoService.GetById(assetId),
                 "realEstate" => _realEstateService.GetById(assetId),
                 "stock" => _stockService.GetById(assetId),
+                "bankSaving" => _interestAssetService.GetBankSavingAssetById(assetId),
+                "custom" => _interestAssetService.GetCustomAssetById(assetId),
                 _ => null
             };
 

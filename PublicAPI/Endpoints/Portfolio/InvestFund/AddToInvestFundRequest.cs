@@ -11,6 +11,7 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
         public string ReferentialAssetType { get; set; }
         public decimal Amount { get; set; }
         public string  CurrencyCode { get; set; }
+        public bool IsTransferringAll { get; set; }
     }
     public class AddToInvestFundRequest
     {

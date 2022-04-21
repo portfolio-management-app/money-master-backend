@@ -33,7 +33,7 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             {
                 var result = await _investFundService
                     .AddToInvestFund(request.PortfolioId, personalAsset, request.AddToInvestFundCommand.Amount,
-                        request.AddToInvestFundCommand.CurrencyCode);
+                        request.AddToInvestFundCommand.CurrencyCode, request.AddToInvestFundCommand.IsTransferringAll);
 
                 return Ok(result);
             }

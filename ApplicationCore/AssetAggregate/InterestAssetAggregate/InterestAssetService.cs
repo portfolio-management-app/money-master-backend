@@ -167,7 +167,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return sumCash;
         }
 
-        public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
+        public async Task<decimal>CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
         {
             var customAsset = GetAllCustomInterestAssetsByPortfolio(portfolioId);
             var unifyCurrencyValue =

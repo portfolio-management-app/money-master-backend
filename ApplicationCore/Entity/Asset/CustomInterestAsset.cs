@@ -15,9 +15,15 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
             throw new NotImplementedException();
+        }
+
+        public override async Task<bool> WithdrawAll()
+        {
+            InputMoneyAmount = decimal.Zero;
+            return true;
         }
     }
 }

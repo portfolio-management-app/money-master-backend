@@ -25,6 +25,10 @@ namespace ApplicationCore.Entity.Asset
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
+            if (InputCurrency == destinationCurrencyCode)
+            {
+                return InputMoneyAmount;
+            }
             var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * InputMoneyAmount;
         }

@@ -13,6 +13,8 @@ namespace ApplicationCore.Entity.Asset
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
+            if (destinationCurrencyCode == InputCurrency)
+                return InputMoneyAmount;
             var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * CurrentPrice;
         }
@@ -22,10 +24,17 @@ namespace ApplicationCore.Entity.Asset
             return "realEstate";
         }
 
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository)
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
         {
-            throw new System.NotImplementedException();
+            await WithdrawAll();
+            return true;
+        }
+
+        public override async Task<bool> WithdrawAll()
+        {
+            InputMoneyAmount = decimal.Zero;
+            return true;
         }
     }
 }

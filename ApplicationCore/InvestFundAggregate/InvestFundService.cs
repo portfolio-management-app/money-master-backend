@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
@@ -13,15 +14,20 @@ namespace ApplicationCore.InvestFundAggregate
         private readonly IBaseRepository<InvestFund> _investFundRepository;
         private readonly IBaseRepository<InvestFundTransaction> _investFundTransactionRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
+        private readonly IStockPriceRepository _stockPriceRepository;
+        private readonly ICryptoRateRepository _cryptoRateRepository;
         private string LackAmountErrorMessage => "Insufficient value left in asset";
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
             IBaseRepository<InvestFundTransaction> investFundTransactionRepository,
-            ICurrencyRateRepository currencyRateRepository)
+            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository,
+            ICryptoRateRepository cryptoRateRepository)
         {
             _investFundRepository = investFundRepository;
             _investFundTransactionRepository = investFundTransactionRepository;
             _currencyRateRepository = currencyRateRepository;
+            _stockPriceRepository = stockPriceRepository;
+            _cryptoRateRepository = cryptoRateRepository;
         }
 
         private InvestFund AddNewInvestFundToPortfolio(int portfolioId)
@@ -42,28 +48,48 @@ namespace ApplicationCore.InvestFundAggregate
         }
 
         public async Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
-            string currencyCode)
+            string currencyCode, bool isTransferringAll)
         {
             var investFund = GetInvestFundByPortfolio(portfolioId) ?? AddNewInvestFundToPortfolio(portfolioId);
-
-            if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository))
-                throw new OperationCanceledException(LackAmountErrorMessage);
-            ;
-            if (investFund.Portfolio.InitialCurrency == currencyCode)
+            var assetType = asset.GetAssetType();
+            var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
+            var fundCurrencyCode = investFund.Portfolio.InitialCurrency;
+            decimal withdrawAmount = 0;
+            if (isTransferringAll)
             {
-                investFund.CurrentAmount += amount;
+                withdrawAmount = await asset.CalculateValueInCurrency(fundCurrencyCode,
+                    _currencyRateRepository,
+                    _cryptoRateRepository, _stockPriceRepository);
+                investFund.CurrentAmount += withdrawAmount;
+                await asset.WithdrawAll();
             }
             else
             {
-                var rateObj = await _currencyRateRepository.GetRateObject(currencyCode);
-                var realAmountToAdd = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
-                investFund.CurrentAmount += realAmountToAdd;
+                if (mandatoryWithdrawAll.Contains(assetType))
+                    throw new OperationCanceledException($"Not allowed for partial withdraw: {assetType}");
+                if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository,_cryptoRateRepository,_stockPriceRepository))
+                    throw new OperationCanceledException(LackAmountErrorMessage);
+                if (investFund.Portfolio.InitialCurrency == currencyCode)
+                {
+                    investFund.CurrentAmount += amount;
+                }
+                else
+                {
+                    var rateObj = await _currencyRateRepository.GetRateObject(currencyCode);
+                    var realAmountToAdd = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
+                    investFund.CurrentAmount += realAmountToAdd;
+                    withdrawAmount = amount;
+                }
             }
-
             _investFundRepository.Update(investFund);
-
             var newFundTransaction =
-                new InvestFundTransaction(asset.GetAssetType(), asset.Id, amount, currencyCode, investFund.Id, true);
+                new InvestFundTransaction
+                    (asset.GetAssetType()
+                        , asset.Id, 
+                        isTransferringAll ? withdrawAmount : amount,
+                        currencyCode, 
+                        investFund.Id,
+                        true);
             _investFundTransactionRepository.Insert(newFundTransaction);
             return newFundTransaction;
         }
