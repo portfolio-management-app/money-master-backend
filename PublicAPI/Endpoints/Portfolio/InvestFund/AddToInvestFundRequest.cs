@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Attributes;
-using PublicAPI.Endpoints.PersonalAsset.InterestAsset.BankingAsset;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {

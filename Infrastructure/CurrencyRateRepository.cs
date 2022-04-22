@@ -13,7 +13,7 @@ namespace Infrastructure
     {
         // cache using dictionary 
         private DateTime _lastCachedDay = DateTime.Now;
-        private Dictionary<string, CurrencyRate> _cachedCurrencyRates = new();
+        private readonly Dictionary<string, CurrencyRate> _cachedCurrencyRates = new();
 
         public CurrencyRateRepository()
         {

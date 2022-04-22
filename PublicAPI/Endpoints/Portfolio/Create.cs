@@ -16,14 +16,12 @@ namespace PublicAPI.Endpoints.Portfolio
     public class Create : EndpointBaseSync.WithRequest<CreatePortfolioRequest>.WithActionResult<CreatePortfolioResponse>
     {
         private readonly IPortfolioService _portfolioService;
-        private readonly IInvestFundService _investFundService;
         private readonly ICashService _cashService;
 
-        public Create(IPortfolioService portfolioService, IInvestFundService investFundService,
+        public Create(IPortfolioService portfolioService,
             ICashService cashService)
         {
             _portfolioService = portfolioService;
-            _investFundService = investFundService;
             _cashService = cashService;
         }
 
