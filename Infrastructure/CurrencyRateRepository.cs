@@ -212,19 +212,18 @@ namespace Infrastructure
 
         public async Task<CurrencyRate> GetRateObject(string sourceCurrency)
         {
-            if ( _lastCachedDay.Date == DateTime.Now.Date  &&
-                 _cachedCurrencyRates.TryGetValue(sourceCurrency, out var rates)) return rates;
-            
+            if (_lastCachedDay.Date == DateTime.Now.Date &&
+                _cachedCurrencyRates.TryGetValue(sourceCurrency, out var rates)) return rates;
+
             // call api 
-            if(_lastCachedDay.Date != DateTime.Now.Date)
+            if (_lastCachedDay.Date != DateTime.Now.Date)
                 _cachedCurrencyRates.Clear();
             rates = await GetRatesObjectThroughApi(sourceCurrency);
-            
-            if(!_cachedCurrencyRates.ContainsKey(sourceCurrency))
+
+            if (!_cachedCurrencyRates.ContainsKey(sourceCurrency))
                 _cachedCurrencyRates.Add(sourceCurrency, rates);
             _lastCachedDay = DateTime.Now;
             return rates;
-
         }
 
         private async Task<CurrencyRate> GetRatesObjectThroughApi(string sourceCurrency)

@@ -58,7 +58,7 @@ namespace PublicAPI
             });
 
             // configure HTTP client
-            services.AddHttpClient(); 
+            services.AddHttpClient();
             // configure DI services
 
             services.AddSingleton(Configuration);
@@ -72,8 +72,8 @@ namespace PublicAPI
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<ICryptoRateRepository, CryptoRateRepository>();
-            services.AddScoped<ICashService, CashService>(); 
-            services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>(); 
+            services.AddScoped<ICashService, CashService>();
+            services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();

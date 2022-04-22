@@ -6,12 +6,9 @@ namespace PublicAPI.Endpoints.PersonalAsset.Cash
 {
     public class CreateCashCommand
     {
-        [Required]
-        public string CurrencyCode { get; set; }
-        [Required]
-        public decimal Amount { get; set; }
-        [Required]
-        public string Name { get; set; }
+        [Required] public string CurrencyCode { get; set; }
+        [Required] public decimal Amount { get; set; }
+        [Required] public string Name { get; set; }
         public DateTime InputDay { get; set; } = DateTime.Now;
         public string Description { get; set; }
     }

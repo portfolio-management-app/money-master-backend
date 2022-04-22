@@ -11,7 +11,8 @@ namespace ApplicationCore.Entity.Asset
 
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
             if (destinationCurrencyCode == InputCurrency)
                 return InputMoneyAmount;
@@ -25,7 +26,8 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
             await WithdrawAll();
             return true;

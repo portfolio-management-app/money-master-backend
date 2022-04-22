@@ -51,7 +51,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
                     .Select
                     (cash =>
                         cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository,_stockPriceRepository));
+                            _cryptoRateRepository, _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

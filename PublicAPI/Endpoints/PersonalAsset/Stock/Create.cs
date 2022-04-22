@@ -11,9 +11,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public class Create: EndpointBaseSync.WithRequest<CreateNewStockRequest>.WithActionResult<StockResponse>
+    public class Create : EndpointBaseSync.WithRequest<CreateNewStockRequest>.WithActionResult<StockResponse>
     {
-
         private readonly IStockService _stockService;
 
         public Create(IStockService stockService)
@@ -25,8 +24,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         public override ActionResult<StockResponse> Handle([FromMultipleSource] CreateNewStockRequest request)
         {
             var dto = request.CreateNewStockCommand.Adapt<StockDto>();
-            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto); 
-            return Ok(newStock.Adapt<StockResponse>()); 
+            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto);
+            return Ok(newStock.Adapt<StockResponse>());
         }
     }
 }

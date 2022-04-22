@@ -10,7 +10,7 @@ namespace PublicAPI.Endpoints.Portfolio.Report
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public class GetPieChart: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<PieChartResponse>>
+    public class GetPieChart : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<PieChartResponse>>
     {
         private readonly IReportService _reportService;
 
@@ -20,12 +20,12 @@ namespace PublicAPI.Endpoints.Portfolio.Report
         }
 
         [HttpGet("pieChart")]
-        public override async Task<ActionResult<List<PieChartResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<PieChartResponse>>> HandleAsync(int portfolioId,
+            CancellationToken cancellationToken = new())
         {
             var result = await _reportService.GetPieChart(portfolioId);
 
-            return Ok(result); 
-
+            return Ok(result);
         }
     }
 }

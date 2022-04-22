@@ -19,7 +19,8 @@ namespace PublicAPI.Endpoints.Portfolio
         private readonly IInvestFundService _investFundService;
         private readonly ICashService _cashService;
 
-        public Create(IPortfolioService portfolioService, IInvestFundService investFundService, ICashService cashService)
+        public Create(IPortfolioService portfolioService, IInvestFundService investFundService,
+            ICashService cashService)
         {
             _portfolioService = portfolioService;
             _investFundService = investFundService;

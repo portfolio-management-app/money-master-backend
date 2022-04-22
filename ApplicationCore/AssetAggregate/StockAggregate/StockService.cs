@@ -15,7 +15,8 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
 
-        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository, ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
+        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository,
+            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
         {
             _stockRepository = stockRepository;
             _stockPriceRepository = stockPriceRepository;
@@ -33,14 +34,13 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            
             var cashAssets = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cashAssets
                     .Select
                     (stock =>
                         stock.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository,_stockPriceRepository));
+                            _cryptoRateRepository, _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

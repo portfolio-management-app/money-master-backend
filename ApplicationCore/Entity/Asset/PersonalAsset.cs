@@ -25,12 +25,14 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository);
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository);
 
         public abstract string GetAssetType();
 
         public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository);
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository);
 
         public abstract Task<bool> WithdrawAll();
     }

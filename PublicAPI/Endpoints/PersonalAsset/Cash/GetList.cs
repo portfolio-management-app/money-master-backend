@@ -21,7 +21,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Cash
         [HttpGet("cash")]
         public override ActionResult<List<CashResponse>> Handle(int portfolioId)
         {
-            return Ok(_cashService.ListByPortfolio(portfolioId).Adapt<List<CashResponse>>()); 
+            return Ok(_cashService.ListByPortfolio(portfolioId).Adapt<List<CashResponse>>());
         }
     }
 }

@@ -23,12 +23,10 @@ namespace ApplicationCore.Entity.Asset
 
         // TODO: deal with change interest rate (continue with the current amount or reset from start)
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
-            if (InputCurrency == destinationCurrencyCode)
-            {
-                return InputMoneyAmount;
-            }
+            if (InputCurrency == destinationCurrencyCode) return InputMoneyAmount;
             var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * InputMoneyAmount;
         }

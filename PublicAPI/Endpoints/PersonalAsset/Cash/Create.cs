@@ -13,7 +13,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Cash
 {
     [Route("portfolio/{portfolioId}")]
     [Authorize]
-    public class Create: EndpointBaseAsync.WithRequest<CreateCashRequest>.WithActionResult<CashResponse>
+    public class Create : EndpointBaseAsync.WithRequest<CreateCashRequest>.WithActionResult<CashResponse>
     {
         private readonly ICashService _cashService;
 
@@ -23,10 +23,11 @@ namespace PublicAPI.Endpoints.PersonalAsset.Cash
         }
 
         [HttpPost("cash")]
-        public override Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource]CreateCashRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] CreateCashRequest request,
+            CancellationToken cancellationToken = new())
         {
             var dto = request.CreateCashCommand.Adapt<CashDto>();
-            CashAsset newCashAsset = _cashService.CreateNewCashAsset(request.PortfolioId, dto); 
+            var newCashAsset = _cashService.CreateNewCashAsset(request.PortfolioId, dto);
             return Task.FromResult<ActionResult<CashResponse>>(Ok(newCashAsset.Adapt<CashResponse>()));
         }
     }

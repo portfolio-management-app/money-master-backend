@@ -13,17 +13,16 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
     {
         [HttpGet("realEstate")]
         public override async Task<ActionResult<List<RealEstateResponse>>> HandleAsync
-            (int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+            (int portfolioId, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(portfolioId))
-            {
-                return Unauthorized($"You are not allowed to this portfolio: {portfolioId}"); 
-            }
+                return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");
             var list = RealEstateService.ListByPortfolio(portfolioId);
             return Ok(list.Adapt<List<RealEstateResponse>>());
         }
-        public GetList(IRealEstateService realEstateService, IAuthorizationService authorizationService) 
-            : base(realEstateService,authorizationService )
+
+        public GetList(IRealEstateService realEstateService, IAuthorizationService authorizationService)
+            : base(realEstateService, authorizationService)
         {
         }
     }

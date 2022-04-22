@@ -67,7 +67,8 @@ namespace ApplicationCore.InvestFundAggregate
             {
                 if (mandatoryWithdrawAll.Contains(assetType))
                     throw new OperationCanceledException($"Not allowed for partial withdraw: {assetType}");
-                if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository,_cryptoRateRepository,_stockPriceRepository))
+                if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository, _cryptoRateRepository,
+                        _stockPriceRepository))
                     throw new OperationCanceledException(LackAmountErrorMessage);
                 if (investFund.Portfolio.InitialCurrency == currencyCode)
                 {
@@ -81,15 +82,16 @@ namespace ApplicationCore.InvestFundAggregate
                     withdrawAmount = amount;
                 }
             }
+
             _investFundRepository.Update(investFund);
             var newFundTransaction =
                 new InvestFundTransaction
-                    (asset.GetAssetType()
-                        , asset.Id, 
-                        isTransferringAll ? withdrawAmount : amount,
-                        currencyCode, 
-                        investFund.Id,
-                        true);
+                (asset.GetAssetType()
+                    , asset.Id,
+                    isTransferringAll ? withdrawAmount : amount,
+                    currencyCode,
+                    investFund.Id,
+                    true);
             _investFundTransactionRepository.Insert(newFundTransaction);
             return newFundTransaction;
         }

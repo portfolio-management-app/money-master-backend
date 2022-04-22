@@ -8,8 +8,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.Cash
         public decimal Amount { get; set; }
         public string CurrencyCode { get; set; }
         public string Name { get; set; }
-        public DateTime InputDay { get; set; } 
-        public DateTime LastChanged { get; set; } 
+        public DateTime InputDay { get; set; }
+        public DateTime LastChanged { get; set; }
         public int PortfolioId { get; set; }
         public string Description { get; set; }
     }

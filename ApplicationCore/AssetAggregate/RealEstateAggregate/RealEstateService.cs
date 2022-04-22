@@ -22,7 +22,8 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
         public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository,
             IBaseRepository<Transaction> transactionRepository, TransactionFactory transactionFactory,
-            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository)
+            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
             _realEstateRepository = realEstateRepository;
             _transactionRepository = transactionRepository;
@@ -85,7 +86,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
                     .Select
                     (cash =>
                         cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository,_stockPriceRepository));
+                            _cryptoRateRepository, _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

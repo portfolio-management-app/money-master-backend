@@ -54,7 +54,8 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var cryptoAssets = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cryptoAssets.Select(crypto =>
-                    crypto.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository, _stockPriceRepository));
+                    crypto.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
+                        _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

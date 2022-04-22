@@ -12,7 +12,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
 {
     [Authorize]
     [Route("/portfolio/{portfolioId}")]
-    public class Create: EndpointBaseAsync.WithRequest<CreateNewCryptoCurrencyAssetRequest>.WithActionResult<CryptoCurrencyResponse>
+    public class Create : EndpointBaseAsync.WithRequest<CreateNewCryptoCurrencyAssetRequest>.WithActionResult<
+        CryptoCurrencyResponse>
     {
         private readonly ICryptoService _cryptoService;
 
@@ -22,12 +23,13 @@ namespace PublicAPI.Endpoints.PersonalAsset.CryptoCurrency
         }
 
         [HttpPost("crypto")]
-        public override async Task<ActionResult<CryptoCurrencyResponse>> HandleAsync([FromMultipleSource]CreateNewCryptoCurrencyAssetRequest request,
-            CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CryptoCurrencyResponse>> HandleAsync(
+            [FromMultipleSource] CreateNewCryptoCurrencyAssetRequest request,
+            CancellationToken cancellationToken = new())
         {
-             var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
-             var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
-             return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>()); 
+            var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
+            var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
+            return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>());
         }
     }
 }

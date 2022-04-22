@@ -15,7 +15,8 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
             throw new NotImplementedException();
         }

@@ -12,7 +12,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
     [Authorize]
     [Route("portfolio/{portfolioId:int}")]
-    public class GetAllCustomAsset: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<GetAllCustomAssetResponse>>
+    public class
+        GetAllCustomAsset : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<GetAllCustomAssetResponse>>
     {
         private readonly IInterestAssetService _interestAssetService;
 
@@ -22,18 +23,19 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
         }
 
         [HttpGet("custom")]
-        public override async Task<ActionResult<List<GetAllCustomAssetResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<GetAllCustomAssetResponse>>> HandleAsync(int portfolioId,
+            CancellationToken cancellationToken = new())
         {
             var listAssets = _interestAssetService.GetAllCustomInterestAssetsByPortfolio(portfolioId);
 
             var groups = listAssets
                 .GroupBy(asset
-                        => new {asset.CustomInterestAssetInfo.Id,asset.CustomInterestAssetInfo.Name},
-                    (key,g)
-                        => new {CategoryId = key.Id, CategoryName = key.Name, Assets = g.ToList()} )
+                        => new { asset.CustomInterestAssetInfo.Id, asset.CustomInterestAssetInfo.Name },
+                    (key, g)
+                        => new { CategoryId = key.Id, CategoryName = key.Name, Assets = g.ToList() })
                 .ToList();
 
-            return await Task.FromResult(Ok(groups.Adapt<List<GetAllCustomAssetResponse>>())); 
+            return await Task.FromResult(Ok(groups.Adapt<List<GetAllCustomAssetResponse>>()));
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
 {
     [Authorize]
     [Route("portfolio/{portfolioId}")]
-    public class GetList: EndpointBaseAsync.WithRequest<int>.WithActionResult<List<StockResponse>>
+    public class GetList : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<StockResponse>>
     {
         private readonly IStockService _stockService;
 
@@ -22,10 +22,11 @@ namespace PublicAPI.Endpoints.PersonalAsset.Stock
         }
 
         [HttpGet("stock")]
-        public override async Task<ActionResult<List<StockResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<StockResponse>>> HandleAsync(int portfolioId,
+            CancellationToken cancellationToken = new())
         {
-             var stockList =  _stockService.ListByPortfolio(portfolioId);
-             return Ok(stockList.Adapt<List<StockResponse>>()); 
+            var stockList = _stockService.ListByPortfolio(portfolioId);
+            return Ok(stockList.Adapt<List<StockResponse>>());
         }
     }
 }

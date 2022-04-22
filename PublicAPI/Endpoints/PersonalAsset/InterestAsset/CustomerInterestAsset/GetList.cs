@@ -27,7 +27,8 @@ namespace PublicAPI.Endpoints.PersonalAsset.InterestAsset.CustomerInterestAsset
             try
             {
                 var userId = (int)HttpContext.Items["userId"]!;
-                var listCustomAsset = _interestAssetService.GetAllUserCustomInterestAssetInCategory(userId, customInfoId);
+                var listCustomAsset =
+                    _interestAssetService.GetAllUserCustomInterestAssetInCategory(userId, customInfoId);
                 return Ok(listCustomAsset.Adapt<List<SingleCustomInterestAssetResponse>>());
             }
             catch (ApplicationException ex)

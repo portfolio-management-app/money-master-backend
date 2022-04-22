@@ -32,15 +32,16 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
+            IStockPriceRepository stockPriceRepository)
         {
             await WithdrawAll();
-            return true; 
+            return true;
         }
 
         public override async Task<bool> WithdrawAll()
         {
-            this.InputMoneyAmount = 0;
+            InputMoneyAmount = 0;
             LastChanged = DateTime.Now;
             return true;
         }

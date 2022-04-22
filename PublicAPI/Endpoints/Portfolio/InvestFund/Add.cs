@@ -11,7 +11,7 @@ using ApplicationCore.PortfolioAggregate;
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
     [Route("portfolio/{portfolioId}/fund")]
-    public class Add: EndpointBaseAsync.WithRequest<AddToInvestFundRequest>.WithActionResult<object>
+    public class Add : EndpointBaseAsync.WithRequest<AddToInvestFundRequest>.WithActionResult<object>
     {
         private readonly IInvestFundService _investFundService;
         private readonly IPortfolioService _portfolioService;
@@ -21,14 +21,14 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             _investFundService = investFundService;
             _portfolioService = portfolioService;
         }
-        
+
         [HttpPost]
         public override async Task<ActionResult<object>> HandleAsync
-            ([FromMultipleSource]AddToInvestFundRequest request, CancellationToken cancellationToken = new CancellationToken())
+            ([FromMultipleSource] AddToInvestFundRequest request, CancellationToken cancellationToken = new())
         {
             var personalAsset = _portfolioService.GetAssetByPortfolioAndAssetId(request.PortfolioId,
-                    request.AddToInvestFundCommand.ReferentialAssetType,
-                    request.AddToInvestFundCommand.ReferentialAssetId);
+                request.AddToInvestFundCommand.ReferentialAssetType,
+                request.AddToInvestFundCommand.ReferentialAssetId);
             try
             {
                 var result = await _investFundService

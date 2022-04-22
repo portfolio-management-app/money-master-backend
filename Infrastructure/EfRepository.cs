@@ -78,7 +78,8 @@ namespace Infrastructure
             return query.ToList();
         }
 
-        public decimal CalculateSum(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
+        public decimal CalculateSum(Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
         {
             throw new NotImplementedException();
         }

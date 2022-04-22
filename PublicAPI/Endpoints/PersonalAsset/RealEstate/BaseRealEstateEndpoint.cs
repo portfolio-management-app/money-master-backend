@@ -11,10 +11,11 @@ namespace PublicAPI.Endpoints.PersonalAsset.RealEstate
     [Authorize]
     [Route("portfolio/{portfolioId}")]
     public abstract class
-        BaseRealEstateEndpoint<TRequest, TResponse> : EndpointBaseAsync.WithRequest<TRequest>.WithActionResult<TResponse>
+        BaseRealEstateEndpoint<TRequest, TResponse> : EndpointBaseAsync.WithRequest<TRequest>.WithActionResult<
+            TResponse>
     {
         protected readonly IRealEstateService RealEstateService;
-        private IAuthorizationService _authorizationService; 
+        private IAuthorizationService _authorizationService;
 
         protected int? CurrentUserId =>
             (int)HttpContext.Items["userId"]!;

@@ -161,18 +161,20 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             var bankSavingAsset = GetAllPortfolioBankSavingAssets(portfolioId);
             var unifyCurrencyValue =
                 bankSavingAsset.Select(bankSaving =>
-                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository, _stockPriceRepository));
+                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
+                        _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;
         }
 
-        public async Task<decimal>CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
+        public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
         {
             var customAsset = GetAllCustomInterestAssetsByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
-                    ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository, _stockPriceRepository));
+                    ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
+                        _stockPriceRepository));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

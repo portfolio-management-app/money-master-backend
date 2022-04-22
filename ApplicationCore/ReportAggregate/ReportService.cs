@@ -21,7 +21,8 @@ namespace ApplicationCore.ReportAggregate
         private readonly IStockService _stockService;
 
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
-            IRealEstateService realEstateService, IInterestAssetService interestAssetService, IStockService stockService)
+            IRealEstateService realEstateService, IInterestAssetService interestAssetService,
+            IStockService stockService)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
