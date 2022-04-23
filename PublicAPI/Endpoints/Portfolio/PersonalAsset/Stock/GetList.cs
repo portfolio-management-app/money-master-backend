@@ -9,21 +9,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class GetList : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<StockResponse>>
+    public class GetList : BasePortfolioRelatedEndpoint<int, List<StockResponse>>
     {
         private readonly IStockService _stockService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetList(IStockService stockService)
+        public GetList(IStockService stockService, IAuthorizationService authorizationService)
         {
             _stockService = stockService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("stock")]
         public override async Task<ActionResult<List<StockResponse>>> HandleAsync(int portfolioId,
             CancellationToken cancellationToken = new())
         {
+            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+                return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");
             var stockList = _stockService.ListByPortfolio(portfolioId);
             return Ok(stockList.Adapt<List<StockResponse>>());
         }

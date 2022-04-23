@@ -7,7 +7,7 @@ namespace PublicAPI.Configures
 {
     public static class ConfigureJwtTokenScheme
     {
-        public static void ConfigureJwtAuthenticationScheme(this IServiceCollection services, string signingKey)
+        public static void AddJwtAuthenticationScheme(this IServiceCollection services, string signingKey)
         {
             services.AddAuthentication(options =>
             {

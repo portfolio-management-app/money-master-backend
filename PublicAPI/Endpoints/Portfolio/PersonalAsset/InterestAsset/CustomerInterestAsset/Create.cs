@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using Ardalis.ApiEndpoints;
@@ -9,22 +11,24 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class Create : EndpointBaseSync.WithRequest<CreateCustomInterestAssetRequest>
-        .WithActionResult<CreateCustomInterestAssetResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateCustomInterestAssetRequest,CreateCustomInterestAssetResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
-
-        public Create(IInterestAssetService interestAssetService)
+        private readonly IAuthorizationService _authorizationService;
+        public Create(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
         {
             _interestAssetService = interestAssetService;
+            _authorizationService = authorizationService;
         }
 
         [HttpPost("custom/{customInfoId}")]
-        public override ActionResult<CreateCustomInterestAssetResponse> Handle
-            ([FromMultipleSource] CreateCustomInterestAssetRequest request)
+        public override async Task<ActionResult<CreateCustomInterestAssetResponse>> HandleAsync(CreateCustomInterestAssetRequest request,
+            CancellationToken cancellationToken = new CancellationToken())
         {
+            
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return  Unauthorized(NotAllowedPortfolioMessage);
+            
             try
             {
                 var userId = (int)HttpContext.Items["userId"]!;

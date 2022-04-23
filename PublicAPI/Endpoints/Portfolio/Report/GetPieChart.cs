@@ -8,21 +8,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.Report
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class GetPieChart : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<PieChartResponse>>
+    public class GetPieChart : BasePortfolioRelatedEndpoint<int, List<PieChartResponse>>
     {
         private readonly IReportService _reportService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetPieChart(IReportService reportService)
+        public GetPieChart(IReportService reportService, IAuthorizationService authorizationService)
         {
             _reportService = reportService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("pieChart")]
         public override async Task<ActionResult<List<PieChartResponse>>> HandleAsync(int portfolioId,
             CancellationToken cancellationToken = new())
         {
+            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+                return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");
+
             var result = await _reportService.GetPieChart(portfolioId);
 
             return Ok(result);

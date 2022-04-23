@@ -9,24 +9,26 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-    public class Create : BaseRealEstateEndpoint<CreateNewRealEstateAssetRequest, RealEstateResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateNewRealEstateAssetRequest, RealEstateResponse>
     {
-        public Create(IRealEstateService realEstateService, IAuthorizationService authorizationService) : base(
-            realEstateService, authorizationService)
-        {
-        }
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IRealEstateService _realEstateService;
 
+        public Create(IAuthorizationService authorizationService, IRealEstateService realEstateService)
+        {
+            _authorizationService = authorizationService;
+            _realEstateService = realEstateService;
+        }
 
         [HttpPost("realEstate")]
         public override async Task<ActionResult<RealEstateResponse>> HandleAsync(
             [FromMultipleSource] CreateNewRealEstateAssetRequest request,
             CancellationToken cancellationToken = new())
         {
-            if (!await IsAllowedToExecute(request.PortfolioId))
-                return Unauthorized($"You are not allowed to this portfolio: {request.PortfolioId}");
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewRealEstateAssetCommand.Adapt<RealEstateDto>();
-            var newRealEstate = RealEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
-
+            var newRealEstate = _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
             return Ok(newRealEstate.Adapt<RealEstateResponse>());
         }
     }

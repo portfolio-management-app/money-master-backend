@@ -10,22 +10,25 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId:int}")]
     public class
-        GetAllCustomAsset : EndpointBaseAsync.WithRequest<int>.WithActionResult<List<GetAllCustomAssetResponse>>
+        GetAllCustomAsset : BasePortfolioRelatedEndpoint<int,List<GetAllCustomAssetResponse>>
     {
         private readonly IInterestAssetService _interestAssetService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetAllCustomAsset(IInterestAssetService interestAssetService)
+        public GetAllCustomAsset(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
         {
             _interestAssetService = interestAssetService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("custom")]
         public override async Task<ActionResult<List<GetAllCustomAssetResponse>>> HandleAsync(int portfolioId,
             CancellationToken cancellationToken = new())
         {
+            
+            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+                return  Unauthorized(NotAllowedPortfolioMessage);
             var listAssets = _interestAssetService.GetAllCustomInterestAssetsByPortfolio(portfolioId);
 
             var groups = listAssets

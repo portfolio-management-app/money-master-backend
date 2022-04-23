@@ -9,24 +9,31 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-    public class Edit : BaseRealEstateEndpoint<EditRealEstateAssetRequest, RealEstateResponse>
+    public class Edit : BasePortfolioRelatedEndpoint<EditRealEstateAssetRequest, RealEstateResponse>
     {
+
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IRealEstateService _realEstateService;
+
+        public Edit(IAuthorizationService authorizationService, IRealEstateService realEstateService)
+        {
+            _authorizationService = authorizationService;
+            _realEstateService = realEstateService;
+        }
+
         [HttpPut("realEstate/{realEstateId}")]
         public override async Task<ActionResult<RealEstateResponse>> HandleAsync(
             [FromMultipleSource] EditRealEstateAssetRequest request, CancellationToken cancellationToken = new())
         {
-            if (!await IsAllowedToExecute(request.PortfolioId))
-                return Unauthorized($"You are not allowed to this portfolio: {request.PortfolioId}");
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.EditRealEstateAssetCommand.Adapt<RealEstateDto>();
-            var result = RealEstateService.UpdateRealEstateAsset(request.PortfolioId, request.RealEstateId, dto);
+            var result = _realEstateService.UpdateRealEstateAsset(request.PortfolioId, request.RealEstateId, dto);
             if (result is null)
                 return NotFound("Could not find your asset");
             return Ok(result.Adapt<RealEstateResponse>());
         }
 
-        public Edit(IRealEstateService realEstateService, IAuthorizationService authorizationService) : base(
-            realEstateService, authorizationService)
-        {
-        }
+
     }
 }

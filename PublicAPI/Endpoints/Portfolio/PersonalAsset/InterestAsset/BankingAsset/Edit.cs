@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using Ardalis.ApiEndpoints;
@@ -8,21 +10,23 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}/bankSaving/{bankSavingId}")]
-    public class Edit : EndpointBaseSync.WithRequest<EditBankingAssetRequest>.WithActionResult<BankingAssetResponse>
+    public class Edit : BasePortfolioRelatedEndpoint<EditBankingAssetRequest, BankingAssetResponse>
     {
         private IInterestAssetService _interestAssetService;
-
-        public Edit(IInterestAssetService interestAssetService)
+        private IAuthorizationService _authorizationService;
+        public Edit(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
         {
             _interestAssetService = interestAssetService;
+            _authorizationService = authorizationService;
         }
 
-        [HttpPut]
-        public override ActionResult<BankingAssetResponse> Handle(
-            [FromMultipleSource] EditBankingAssetRequest request)
+        [HttpPut("bankSaving/{bankSavingId}")]
+        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync(
+            [FromMultipleSource] EditBankingAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
+            
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return  Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.EditBankAssetCommand.Adapt<EditBankSavingAssetDto>();
             var result = _interestAssetService.EditBankSavingAsset(request.PortfolioId, request.BankSavingId, dto);
 

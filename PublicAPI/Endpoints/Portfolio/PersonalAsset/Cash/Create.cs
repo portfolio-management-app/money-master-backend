@@ -10,24 +10,29 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    [Route("portfolio/{portfolioId}")]
-    [Authorize]
-    public class Create : EndpointBaseAsync.WithRequest<CreateCashRequest>.WithActionResult<CashResponse>
+    
+    public class Create : BasePortfolioRelatedEndpoint<CreateCashRequest, CashResponse>
     {
         private readonly ICashService _cashService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public Create(ICashService cashService)
+        public Create(ICashService cashService, IAuthorizationService authorizationService)
         {
             _cashService = cashService;
+            _authorizationService = authorizationService;
         }
 
         [HttpPost("cash")]
-        public override Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] CreateCashRequest request,
+        public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] CreateCashRequest request,
             CancellationToken cancellationToken = new())
         {
+            
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return  Unauthorized(NotAllowedPortfolioMessage);
+            
             var dto = request.CreateCashCommand.Adapt<CashDto>();
             var newCashAsset = _cashService.CreateNewCashAsset(request.PortfolioId, dto);
-            return Task.FromResult<ActionResult<CashResponse>>(Ok(newCashAsset.Adapt<CashResponse>()));
+            return Ok(newCashAsset.Adapt<CashResponse>());
         }
     }
 }

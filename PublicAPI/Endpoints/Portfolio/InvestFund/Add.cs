@@ -7,25 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Attributes;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.PortfolioAggregate;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    [Route("portfolio/{portfolioId}/fund")]
-    public class Add : EndpointBaseAsync.WithRequest<AddToInvestFundRequest>.WithActionResult<object>
+    public class Add : BasePortfolioRelatedEndpoint<AddToInvestFundRequest,object>
     {
         private readonly IInvestFundService _investFundService;
         private readonly IPortfolioService _portfolioService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public Add(IInvestFundService investFundService, IPortfolioService portfolioService)
+        public Add(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService)
         {
             _investFundService = investFundService;
             _portfolioService = portfolioService;
+            _authorizationService = authorizationService;
         }
 
-        [HttpPost]
+        [HttpPost("fund")]
         public override async Task<ActionResult<object>> HandleAsync
             ([FromMultipleSource] AddToInvestFundRequest request, CancellationToken cancellationToken = new())
         {
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return Unauthorized("You are allowed for this portfolio"); 
+            
             var personalAsset = _portfolioService.GetAssetByPortfolioAndAssetId(request.PortfolioId,
                 request.AddToInvestFundCommand.ReferentialAssetType,
                 request.AddToInvestFundCommand.ReferentialAssetId);

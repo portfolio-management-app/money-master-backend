@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
@@ -7,20 +9,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class GetList : EndpointBaseSync.WithRequest<int>.WithActionResult<List<CashResponse>>
+
+    public class GetList : BasePortfolioRelatedEndpoint<int,List<CashResponse>>
     {
         private readonly ICashService _cashService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetList(ICashService cashService)
+        public GetList(ICashService cashService, IAuthorizationService authorizationService)
         {
             _cashService = cashService;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("cash")]
-        public override ActionResult<List<CashResponse>> Handle(int portfolioId)
+        public override async Task<ActionResult<List<CashResponse>>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+                            return  Unauthorized(NotAllowedPortfolioMessage);
             return Ok(_cashService.ListByPortfolio(portfolioId).Adapt<List<CashResponse>>());
         }
     }

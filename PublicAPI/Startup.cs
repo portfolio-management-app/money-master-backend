@@ -48,7 +48,7 @@ namespace PublicAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicAPI", Version = "v1" });
                 c.EnableAnnotations();
             });
-            services.ConfigureJwtAuthenticationScheme(Configuration["JWTSigningKey"]);
+            services.AddJwtAuthenticationScheme(Configuration["JWTSigningKey"]);
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CanAccessPortfolioSpecificContent",

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
@@ -7,20 +9,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}/bankSaving")]
-    public class GetList : EndpointBaseSync.WithRequest<int>.WithActionResult<List<GetListBankSavingAssetResponse>>
+    public class GetList : BasePortfolioRelatedEndpoint<int, GetListBankSavingAssetResponse>
     {
         private readonly IInterestAssetService _interestAssetService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetList(IInterestAssetService interestAssetService)
+        public GetList(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
         {
             _interestAssetService = interestAssetService;
+            _authorizationService = authorizationService;
         }
 
-        [HttpGet]
-        public override ActionResult<List<GetListBankSavingAssetResponse>> Handle(int portfolioId)
+        [HttpGet("bankSaving")]
+        public override async Task<ActionResult<GetListBankSavingAssetResponse>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
         {
+            
+            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+                return  Unauthorized(NotAllowedPortfolioMessage);
             var list = _interestAssetService.GetAllPortfolioBankSavingAssets(portfolioId);
             return Ok(list.Adapt<List<GetListBankSavingAssetResponse>>());
         }

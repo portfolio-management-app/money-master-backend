@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate.DTOs;
 using Ardalis.ApiEndpoints;
@@ -8,22 +10,26 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    [Authorize]
-    [Route("portfolio/{portfolioId}")]
-    public class Create : EndpointBaseSync.WithRequest<CreateNewStockRequest>.WithActionResult<StockResponse>
+
+    public class Create : BasePortfolioRelatedEndpoint<CreateNewStockRequest, StockResponse>
     {
         private readonly IStockService _stockService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public Create(IStockService stockService)
+        public Create(IStockService stockService, IAuthorizationService authorizationService)
         {
             _stockService = stockService;
+            _authorizationService = authorizationService;
         }
 
         [HttpPost("stock")]
-        public override ActionResult<StockResponse> Handle([FromMultipleSource] CreateNewStockRequest request)
-        {
-            var dto = request.CreateNewStockCommand.Adapt<StockDto>();
-            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto);
+
+        public override async Task<ActionResult<StockResponse>> HandleAsync(CreateNewStockRequest request, CancellationToken cancellationToken = new CancellationToken())
+        {  
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
+                return Unauthorized(NotAllowedPortfolioMessage);
+            var dto = request.CreateNewStockCommand.Adapt<StockDto>(); 
+            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto); 
             return Ok(newStock.Adapt<StockResponse>());
         }
     }
