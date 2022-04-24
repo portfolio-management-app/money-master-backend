@@ -6,6 +6,7 @@ using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
+using ApplicationCore.TransactionAggregate;
 using Mapster;
 using Transaction = ApplicationCore.Entity.Transactions.Transaction;
 
@@ -49,7 +50,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
             var newTransaction = TransactionFactory
                 .CreateNewTransaction
-                (SingleAssetTransactionType.NewAsset,
+                (SingleAssetTransactionTypes.NewAsset,
                     "None",
                     newRealEstate.Id,
                     "realEstate",

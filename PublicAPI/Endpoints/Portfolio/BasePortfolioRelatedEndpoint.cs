@@ -8,7 +8,7 @@ using PublicAPI.Attributes;
 namespace PublicAPI.Endpoints.Portfolio
 {
     [Authorize]
-    [Route("portfolio/{portfolioId}")]
+    [Route("portfolio/{portfolioId:int}")]
     public abstract class BasePortfolioRelatedEndpoint<TRequest, TResponse>: EndpointBaseAsync.WithRequest<TRequest>.WithActionResult<TResponse>
     {
         protected int? CurrentUserId =>

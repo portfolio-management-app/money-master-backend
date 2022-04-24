@@ -9,6 +9,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate;
+using ApplicationCore.TransactionAggregate;
 using ApplicationCore.UserAggregate;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
@@ -77,6 +78,7 @@ namespace PublicAPI
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
+            services.AddScoped<IAssetTransactionService, AssetTransactionService>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

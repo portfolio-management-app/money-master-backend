@@ -2,13 +2,14 @@ namespace ApplicationCore.Entity.Transactions
 {
     public class SingleAssetTransaction : Transaction
     {
-        public SingleAssetTransactionType SingleAssetTransactionType { get; set; }
+        public SingleAssetTransactionTypes SingleAssetTransactionTypes { get; set; }
+        public SingleAssetTransactionDestination SingleAssetTransactionDestination { get; set; }
 
         public SingleAssetTransaction(string referentialAssetType, int referentialAssetId, decimal amount,
-            string currencyCode, SingleAssetTransactionType singleAssetTransactionType) :
+            string currencyCode, SingleAssetTransactionTypes singleAssetTransactionTypes) :
             base(referentialAssetType, referentialAssetId, amount, currencyCode)
         {
-            SingleAssetTransactionType = singleAssetTransactionType;
+            SingleAssetTransactionTypes = singleAssetTransactionTypes;
         }
 
         public SingleAssetTransaction()

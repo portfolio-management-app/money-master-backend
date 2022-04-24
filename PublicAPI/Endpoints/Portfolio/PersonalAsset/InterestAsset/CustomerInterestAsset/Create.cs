@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.TransactionAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
     {
         private readonly IInterestAssetService _interestAssetService;
         private readonly IAuthorizationService _authorizationService;
-        public Create(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
+        private readonly IAssetTransactionService _assetTransactionService;
+        public Create(IInterestAssetService interestAssetService, IAuthorizationService authorizationService, IAssetTransactionService assetTransactionService)
         {
             _interestAssetService = interestAssetService;
             _authorizationService = authorizationService;
+            _assetTransactionService = assetTransactionService;
         }
 
         [HttpPost("custom/{customInfoId}")]
@@ -36,6 +39,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
                 var newAsset =
                     _interestAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
+                _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
+                    newAsset.InputCurrency);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)

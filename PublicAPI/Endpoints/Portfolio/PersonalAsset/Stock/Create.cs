@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate.DTOs;
+using ApplicationCore.TransactionAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -15,11 +16,13 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
     {
         private readonly IStockService _stockService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IAssetTransactionService _transactionService;
 
-        public Create(IStockService stockService, IAuthorizationService authorizationService)
+        public Create(IStockService stockService, IAuthorizationService authorizationService, IAssetTransactionService transactionService)
         {
             _stockService = stockService;
             _authorizationService = authorizationService;
+            _transactionService = transactionService;
         }
 
         [HttpPost("stock")]
@@ -29,7 +32,9 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewStockCommand.Adapt<StockDto>(); 
-            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto); 
+            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto);
+            _ = _transactionService.AddCreateNewAssetTransaction(newStock,
+                newStock.PurchasePrice * newStock.CurrentAmountHolding, newStock.CurrencyCode);
             return Ok(newStock.Adapt<StockResponse>());
         }
     }
