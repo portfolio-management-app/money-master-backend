@@ -10,7 +10,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<object>>
+    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly IStockService _stockService;
         private readonly IAssetTransactionService _transactionService;
@@ -22,7 +22,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         }
 
         [HttpGet("stock/{assetId}/transactions")]
-        public override async Task<ActionResult<List<object>>> HandleAsync(
+        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync(
             [FromRoute] GetListTransactionRequest request,
             CancellationToken cancellationToken = new())
         {

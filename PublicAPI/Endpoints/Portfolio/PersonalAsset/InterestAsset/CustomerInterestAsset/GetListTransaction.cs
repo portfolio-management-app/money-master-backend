@@ -9,7 +9,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<object>>
+    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly IInterestAssetService _customAssetService;
         private readonly IAssetTransactionService _transactionService;
@@ -21,7 +21,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         }
 
         [HttpGet("custom/{assetId}/transactions")]
-        public override async Task<ActionResult<List<object>>> HandleAsync(
+        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync(
             [FromRoute] GetListTransactionRequest request,
             CancellationToken cancellationToken = new())
         {

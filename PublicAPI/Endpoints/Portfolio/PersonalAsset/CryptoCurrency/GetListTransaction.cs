@@ -11,7 +11,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest,List<object>>
+    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest,List<TransactionResponse>>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAssetTransactionService _transactionService;
@@ -23,7 +23,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         }
 
         [HttpGet("crypto/{assetId}/transactions")]
-        public override async Task<ActionResult<List<object>>> HandleAsync([FromRoute]GetListTransactionRequest request,
+        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync([FromRoute]GetListTransactionRequest request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             var foundCrypto = _cryptoService.GetById(request.AssetId);
