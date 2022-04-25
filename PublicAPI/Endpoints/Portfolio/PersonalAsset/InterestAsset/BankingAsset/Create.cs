@@ -26,7 +26,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         }
 
         [HttpPost("bankSaving")]
-        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync(CreateNewBankingAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync([FromMultipleSource]CreateNewBankingAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);

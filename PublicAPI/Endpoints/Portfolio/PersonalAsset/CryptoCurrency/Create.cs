@@ -11,8 +11,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    [Authorize]
-    [Route("/portfolio/{portfolioId}")]
+
     public class Create : BasePortfolioRelatedEndpoint<CreateNewCryptoCurrencyAssetRequest,CryptoCurrencyResponse>
     {
         private readonly ICryptoService _cryptoService;

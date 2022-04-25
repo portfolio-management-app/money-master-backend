@@ -4,6 +4,7 @@ using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomInterestAssetInfo
 {
@@ -20,7 +21,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomIntere
         }
 
         [HttpPost("custom")]
-        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(
+        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle([FromMultipleSource]
             CreateCustomInterestAssetInfoRequest request)
         {
             var userId = (int)HttpContext.Items["userId"]!;

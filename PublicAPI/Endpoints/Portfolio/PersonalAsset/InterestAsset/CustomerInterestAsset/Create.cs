@@ -25,7 +25,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         }
 
         [HttpPost("custom/{customInfoId}")]
-        public override async Task<ActionResult<CreateCustomInterestAssetResponse>> HandleAsync(CreateCustomInterestAssetRequest request,
+        public override async Task<ActionResult<CreateCustomInterestAssetResponse>> HandleAsync([FromMultipleSource]CreateCustomInterestAssetRequest request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             

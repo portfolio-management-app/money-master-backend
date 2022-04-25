@@ -27,7 +27,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 
         [HttpPost("stock")]
 
-        public override async Task<ActionResult<StockResponse>> HandleAsync(CreateNewStockRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<StockResponse>> HandleAsync([FromMultipleSource]CreateNewStockRequest request, CancellationToken cancellationToken = new CancellationToken())
         {  
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
