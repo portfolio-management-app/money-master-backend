@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate;
 using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using ApplicationCore.TransactionAggregate;
-using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
