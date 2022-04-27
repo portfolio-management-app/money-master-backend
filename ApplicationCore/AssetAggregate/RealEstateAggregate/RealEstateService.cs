@@ -55,6 +55,16 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             return _realEstateRepository.List(realEstate => realEstate.PortfolioId == portfolioId).ToList();
         }
 
+        public RealEstateAsset SetAssetToDelete(int assetId)
+        {
+            
+            var found = _realEstateRepository.GetFirst(c => c.Id == assetId);
+            if (found is null)
+                return null;
+            _realEstateRepository.SetToDeleted(found); 
+            return found; 
+        }
+
         public RealEstateAsset UpdateRealEstateAsset(int portfolioId, int realEstateId, RealEstateDto dto)
         {
             var foundRealEstate =

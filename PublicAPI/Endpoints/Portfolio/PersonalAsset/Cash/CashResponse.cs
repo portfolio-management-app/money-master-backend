@@ -12,5 +12,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         public DateTime LastChanged { get; set; }
         public int PortfolioId { get; set; }
         public string Description { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

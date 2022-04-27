@@ -1,6 +1,6 @@
 using System;
 
-namespace ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs
+namespace ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs
 {
     public class CreateNewCustomInterestAssetDto
     {

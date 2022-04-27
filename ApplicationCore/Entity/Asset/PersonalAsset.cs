@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
 using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.Entity.Asset

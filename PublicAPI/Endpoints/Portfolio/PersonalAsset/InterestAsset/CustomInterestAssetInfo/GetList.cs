@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -11,18 +11,18 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomIntere
     [Route("personalAsset/interest")]
     public class GetList : EndpointBaseSync.WithoutRequest.WithActionResult<List<CreateCustomInterestAssetInfoResponse>>
     {
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
 
-        public GetList(IInterestAssetService interestAssetService)
+        public GetList(ICustomAssetService customAssetService)
         {
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
         }
 
         [HttpGet("custom")]
         public override ActionResult<List<CreateCustomInterestAssetInfoResponse>> Handle()
         {
             var userId = (int)HttpContext.Items["userId"]!;
-            var foundCategories = _interestAssetService.GetAllUserCustomInterestAssetCategory(userId);
+            var foundCategories = _customAssetService.GetAllUserCustomInterestAssetCategory(userId);
 
             return Ok(foundCategories.Adapt<List<CreateCustomInterestAssetInfoResponse>>());
         }

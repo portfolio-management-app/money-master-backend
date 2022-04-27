@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Interfaces;
@@ -17,19 +18,21 @@ namespace ApplicationCore.ReportAggregate
         private readonly ICashService _cashService;
         private readonly ICryptoService _cryptoService;
         private readonly IRealEstateService _realEstateService;
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
         private readonly IStockService _stockService;
+        private readonly IBankSavingService _bankSavingService;
 
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
-            IRealEstateService realEstateService, IInterestAssetService interestAssetService,
-            IStockService stockService)
+            IRealEstateService realEstateService, ICustomAssetService customAssetService,
+            IStockService stockService, IBankSavingService bankSavingService)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
             _cashService = cashService;
             _realEstateService = realEstateService;
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
             _stockService = stockService;
+            _bankSavingService = bankSavingService;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -43,13 +46,13 @@ namespace ApplicationCore.ReportAggregate
                 await _realEstateService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency);
             // get all bank asset
             var sumBankAsset =
-                await _interestAssetService.CalculateSumBankSavingByPortfolio(portfolioId,
+                await _bankSavingService.CalculateSumBankSavingByPortfolio(portfolioId,
                     foundPortfolio.InitialCurrency);
             // get all stock
             var sumStock = await _stockService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency);
             // get all custom asset 
             var sumCustomAsset =
-                await _interestAssetService.CalculateSumCustomInterestAssetByPortfolio(portfolioId,
+                await _customAssetService.CalculateSumCustomInterestAssetByPortfolio(portfolioId,
                     foundPortfolio.InitialCurrency);
             // get all crypto 
             //decimal sumCrypto =

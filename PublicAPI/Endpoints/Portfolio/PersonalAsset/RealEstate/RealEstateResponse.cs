@@ -12,5 +12,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
         public DateTime LastChanged { get; set; } = DateTime.Now;
         public string Description { get; set; }
         public decimal CurrentPrice { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

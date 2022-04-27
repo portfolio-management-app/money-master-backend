@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate.DTOs;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +12,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
     public class Edit : BasePortfolioRelatedEndpoint<EditBankingAssetRequest, BankingAssetResponse>
     {
-        private IInterestAssetService _interestAssetService;
         private IAuthorizationService _authorizationService;
-        public Edit(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
+        private readonly IBankSavingService _bankSavingService;
+        public Edit( IAuthorizationService authorizationService, IBankSavingService bankSavingService)
         {
-            _interestAssetService = interestAssetService;
             _authorizationService = authorizationService;
+            _bankSavingService = bankSavingService;
         }
 
         [HttpPut("bankSaving/{bankSavingId}")]
@@ -28,7 +28,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.EditBankAssetCommand.Adapt<EditBankSavingAssetDto>();
-            var result = _interestAssetService.EditBankSavingAsset(request.PortfolioId, request.BankSavingId, dto);
+            var result = _bankSavingService.EditBankSavingAsset(request.PortfolioId, request.BankSavingId, dto);
 
             if (result is null)
                 return NotFound("Could not find the asset");

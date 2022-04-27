@@ -49,6 +49,16 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             return listCrypto.ToList();
         }
 
+        public Crypto SetAssetToDelete(int assetId)
+        {
+            var found = _cryptoRepository.GetFirst(c => c.Id == assetId);
+            if (found is null)
+                return null;
+            _cryptoRepository.SetToDeleted(found); 
+            return found; 
+
+        }
+
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
             var cryptoAssets = ListByPortfolio(portfolioId);

@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
+namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 {
-    public class InterestAssetService : IInterestAssetService
+    public class CustomAssetService : ICustomAssetService
     {
         private readonly IBaseRepository<User> _userRepository;
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
@@ -22,7 +22,7 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly IStockPriceRepository _stockPriceRepository;
 
-        public InterestAssetService(IBaseRepository<User> userRepository,
+        public CustomAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
             IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
             IBaseRepository<BankSavingAsset> bankSavingRepository, ICurrencyRateRepository currencyRateRepository,
@@ -38,16 +38,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             _stockPriceRepository = stockPriceRepository;
         }
 
-
-        public BankSavingAsset GetBankSavingAssetById(int assetId)
-        {
-            return _bankSavingRepository.GetFirst(b => b.Id == assetId);
-        }
-
-        public CustomInterestAsset GetCustomAssetById(int assetId)
-        {
-            return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
-        }
 
         public CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName)
         {
@@ -84,20 +74,6 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return newCustomInterestAsset;
         }
 
-        public List<CustomInterestAsset> GetAllUserCustomInterestAssetInCategory(int userId, int customInterestInfoId)
-        {
-            var foundCategory =
-                _customInterestAssetInfoRepo.GetFirst(ci => ci.Id == customInterestInfoId);
-            if (foundCategory is null)
-                throw new ApplicationException("Unauthorized access for this category");
-
-            if (foundCategory.UserId != userId)
-                throw new ApplicationException("Unauthorized access for this category");
-            var list = _customInterestAssetRepo
-                .List(c => c.CustomInterestAssetInfoId == foundCategory.Id);
-            return list.ToList();
-        }
-
         public List<CustomInterestAsset> GetAllCustomInterestAssetsByPortfolio(int portfolioId)
         {
             var foundCustomInterestAsset = _customInterestAssetRepo
@@ -114,63 +90,12 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             return foundCategories.ToList();
         }
 
-        public BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto)
-        {
-            var newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
-            newBankSavingAsset.LastChanged = DateTime.Now;
-            newBankSavingAsset.PortfolioId = portfolioId;
-            _bankSavingRepository.Insert(newBankSavingAsset);
-            return newBankSavingAsset;
-        }
 
-        public List<BankSavingAsset> GetAllPortfolioBankSavingAssets(int portfolioId)
-        {
-            var listBankSavingAsset = _bankSavingRepository
-                .List(b => b.PortfolioId == portfolioId)
-                .ToList();
-            return listBankSavingAsset;
-        }
 
-        public BankSavingAsset EditBankSavingAsset(int portfolioId, int bankingAssetId, EditBankSavingAssetDto dto)
-        {
-            var foundBankingAsset =
-                _bankSavingRepository
-                    .GetFirst(b => b.Id == bankingAssetId
-                                   && b.PortfolioId == portfolioId);
-            if (foundBankingAsset is null)
-                return null;
-            foundBankingAsset
-                .Update(dto.Name,
-                    dto.InputDay,
-                    dto.Description,
-                    dto.InputMoneyAmount,
-                    dto.InputCurrency,
-                    dto.InterestRate,
-                    dto.TermRange,
-                    dto.BankCode,
-                    dto.IsGoingToReinState);
-
-            // TODO: deal with change interest rate (continue with the current amount or reset from start)
-
-            _bankSavingRepository.Update(foundBankingAsset);
-            return foundBankingAsset;
-        }
-
-        public async Task<decimal> CalculateSumBankSavingByPortfolio(int portfolioId, string currencyCode)
-        {
-            var bankSavingAsset = GetAllPortfolioBankSavingAssets(portfolioId);
-            var unifyCurrencyValue =
-                bankSavingAsset.Select(bankSaving =>
-                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository));
-            var resultCalc = await Task.WhenAll(unifyCurrencyValue);
-            var sumCash = resultCalc.Sum();
-            return sumCash;
-        }
 
         public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
         {
-            var customAsset = GetAllCustomInterestAssetsByPortfolio(portfolioId);
+            var customAsset = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
                     ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
@@ -178,6 +103,29 @@ namespace ApplicationCore.AssetAggregate.InterestAssetAggregate
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;
+        }
+
+        public CustomInterestAsset GetById(int assetId)
+        {
+            
+            return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
+        }
+
+        public List<CustomInterestAsset> ListByPortfolio(int portfolioId)
+        {
+            var foundCustomInterestAsset = _customInterestAssetRepo
+                .List(ca => ca.PortfolioId == portfolioId, null
+                    , c => c.Include(ca => ca.CustomInterestAssetInfo));
+            return foundCustomInterestAsset.ToList();
+        }
+
+        public CustomInterestAsset SetAssetToDelete(int assetId)
+        {
+            var found = _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
+            if (found is null)
+                return null;
+            _customInterestAssetRepo.SetToDeleted(found);
+            return found;
         }
     }
 }

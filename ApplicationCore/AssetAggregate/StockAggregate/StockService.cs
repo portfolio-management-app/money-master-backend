@@ -57,5 +57,16 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
             return stocks;
         }
+
+        public Stock SetAssetToDelete(int assetId)
+        {
+            
+            var found = _stockRepository.GetFirst(c => c.Id == assetId);
+            if (found is null)
+                return null;
+            _stockRepository.SetToDeleted(found); 
+            return found; 
+
+        }
     }
 }

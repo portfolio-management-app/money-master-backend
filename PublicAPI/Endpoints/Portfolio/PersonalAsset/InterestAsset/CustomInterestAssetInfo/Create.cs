@@ -1,5 +1,5 @@
 using System;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +13,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomIntere
     public class Create : EndpointBaseSync.WithRequest<CreateCustomInterestAssetInfoRequest>.WithActionResult<
         CreateCustomInterestAssetInfoResponse>
     {
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
 
-        public Create(IInterestAssetService interestAssetService)
+        public Create(ICustomAssetService customAssetService)
         {
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
         }
 
         [HttpPost("custom")]
@@ -28,7 +28,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomIntere
             try
             {
                 var result =
-                    _interestAssetService.AddCustomInterestAssetInfo(userId, request.Name);
+                    _customAssetService.AddCustomInterestAssetInfo(userId, request.Name);
                 return result.Adapt<CreateCustomInterestAssetInfoResponse>();
             }
             catch (ApplicationException ex)

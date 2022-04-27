@@ -12,6 +12,8 @@ namespace ApplicationCore.Interfaces
         TEntity GetFirst(Expression<Func<TEntity, bool>> predicate,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null);
 
+        TEntity SetToDeleted(TEntity entity);
+
         int Count(Expression<Func<TEntity, bool>> filter = null);
         void Delete(TEntity entity);
 

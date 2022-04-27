@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs;
 using ApplicationCore.TransactionAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
@@ -14,12 +14,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
 {
     public class Create : BasePortfolioRelatedEndpoint<CreateCustomInterestAssetRequest,CreateCustomInterestAssetResponse>
     {
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _assetTransactionService;
-        public Create(IInterestAssetService interestAssetService, IAuthorizationService authorizationService, IAssetTransactionService assetTransactionService)
+        public Create(ICustomAssetService customAssetService, IAuthorizationService authorizationService, IAssetTransactionService assetTransactionService)
         {
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
             _authorizationService = authorizationService;
             _assetTransactionService = assetTransactionService;
         }
@@ -37,7 +37,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
                 var userId = (int)HttpContext.Items["userId"]!;
                 var dto = request.CustomInterestAssetCommand.Adapt<CreateNewCustomInterestAssetDto>();
                 var newAsset =
-                    _interestAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
+                    _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
                 _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
                     newAsset.InputCurrency);

@@ -1,10 +1,11 @@
 using System;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
-using ApplicationCore.Entity.Transactions;
+using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.PortfolioAggregate;
@@ -43,7 +44,7 @@ namespace PublicAPI
             services.AddControllers(options => { options.Filters.Add<SetUserIdFilter>(); });
             services.AddDbContext<AppDbContext>(builder =>
                 builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
-                    .LogTo(Console.WriteLine, LogLevel.Critical));
+                    .LogTo(Console.WriteLine, LogLevel.Information));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublicAPI", Version = "v1" });
@@ -65,7 +66,8 @@ namespace PublicAPI
             services.AddSingleton(Configuration);
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
-            services.AddScoped<IInterestAssetService, InterestAssetService>();
+            services.AddScoped<ICustomAssetService, CustomAssetService>();
+            services.AddScoped<IBankSavingService, BankSavingService>(); 
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();

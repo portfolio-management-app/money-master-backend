@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +13,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
     public class
         GetAllCustomAsset : BasePortfolioRelatedEndpoint<int,List<GetAllCustomAssetResponse>>
     {
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
         private readonly IAuthorizationService _authorizationService;
 
-        public GetAllCustomAsset(IInterestAssetService interestAssetService, IAuthorizationService authorizationService)
+        public GetAllCustomAsset(ICustomAssetService customAssetService, IAuthorizationService authorizationService)
         {
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
             _authorizationService = authorizationService;
         }
 
@@ -29,7 +29,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
-            var listAssets = _interestAssetService.GetAllCustomInterestAssetsByPortfolio(portfolioId);
+            var listAssets = _customAssetService.GetAllCustomInterestAssetsByPortfolio(portfolioId);
 
             var groups = listAssets
                 .GroupBy(asset

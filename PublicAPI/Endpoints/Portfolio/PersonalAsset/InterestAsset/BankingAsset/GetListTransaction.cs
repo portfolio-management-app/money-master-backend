@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.TransactionAggregate;
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
@@ -11,10 +11,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
     public class GetListTransaction : BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
-        private readonly IInterestAssetService _bankService;
+        private readonly IBankSavingService _bankService;
         private readonly IAssetTransactionService _transactionService;
 
-        public GetListTransaction(IInterestAssetService bankService, IAssetTransactionService transactionService)
+        public GetListTransaction(IBankSavingService bankService, IAssetTransactionService transactionService)
         {
             _bankService = bankService;
             _transactionService = transactionService;
@@ -25,7 +25,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             [FromRoute] GetListTransactionRequest request,
             CancellationToken cancellationToken = new())
         {
-            var bankSavingAsset = _bankService.GetBankSavingAssetById(request.AssetId);
+            var bankSavingAsset = _bankService.GetById(request.AssetId);
             if (bankSavingAsset is null)
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(bankSavingAsset);

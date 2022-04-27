@@ -43,6 +43,15 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             return _cashRepository.List(c => c.PortfolioId == portfolioId).ToList();
         }
 
+        public CashAsset SetAssetToDelete(int assetId)
+        {
+            var found = _cashRepository.GetFirst(c => c.Id == assetId);
+            if (found is null)
+                return null;
+            _cashRepository.SetToDeleted(found); 
+            return found; 
+        }
+
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
             var cashAssets = ListByPortfolio(portfolioId);

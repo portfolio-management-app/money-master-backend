@@ -16,5 +16,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         public string CurrencyCode { get; set; }
         public decimal PurchasePrice { get; set; }
         public decimal CurrentAmountInCurrency => CurrentPrice * CurrentAmountHolding;
+        public bool IsDeleted { get; set; }
     }
 }

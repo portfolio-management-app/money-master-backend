@@ -28,6 +28,16 @@ namespace Infrastructure
             return queryable.FirstOrDefault(predicate);
         }
 
+        public TEntity SetToDeleted(TEntity entity)
+        {
+            entity.IsDeleted = true;
+           _dbSet.Set<TEntity>().Attach(entity);
+            _dbSet.Entry(entity).State = EntityState.Modified;
+            _dbSet.SaveChanges();
+                                                
+            return entity;
+        }
+
 
         public void Delete(TEntity entity)
         {
@@ -70,6 +80,7 @@ namespace Infrastructure
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
         {
             IQueryable<TEntity> query = _dbSet.Set<TEntity>();
+            query = query.Where(entity => !entity.IsDeleted); 
             if (filter is not null) query = query.Where(filter);
 
             if (include is not null) query = include(query);

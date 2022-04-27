@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
+using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity;
@@ -16,20 +17,22 @@ namespace ApplicationCore.PortfolioAggregate
         private readonly IBaseRepository<Portfolio> _portfolioRepository;
         private readonly ICashService _cashService;
         private readonly ICryptoService _cryptoService;
-        private readonly IInterestAssetService _interestAssetService;
+        private readonly ICustomAssetService _customAssetService;
         private readonly IStockService _stockService;
         private readonly IRealEstateService _realEstateService;
+        private readonly IBankSavingService _bankSavingService;
 
         public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService,
-            ICryptoService cryptoService, IInterestAssetService interestAssetService, IStockService stockService,
-            IRealEstateService realEstateService)
+            ICryptoService cryptoService, ICustomAssetService customAssetService, IStockService stockService,
+            IRealEstateService realEstateService, IBankSavingService bankSavingService)
         {
             _portfolioRepository = portfolioRepository;
             _cashService = cashService;
             _cryptoService = cryptoService;
-            _interestAssetService = interestAssetService;
+            _customAssetService = customAssetService;
             _stockService = stockService;
             _realEstateService = realEstateService;
+            _bankSavingService = bankSavingService;
         }
 
         public Portfolio CreatePortfolio(int userId, string name, decimal initialCash, string initialCurrency)
@@ -59,8 +62,8 @@ namespace ApplicationCore.PortfolioAggregate
                 "crypto" => _cryptoService.GetById(assetId),
                 "realEstate" => _realEstateService.GetById(assetId),
                 "stock" => _stockService.GetById(assetId),
-                "bankSaving" => _interestAssetService.GetBankSavingAssetById(assetId),
-                "custom" => _interestAssetService.GetCustomAssetById(assetId),
+                "bankSaving" => _bankSavingService.GetById(assetId),
+                "custom" => _customAssetService.GetById(assetId),
                 _ => null
             };
 

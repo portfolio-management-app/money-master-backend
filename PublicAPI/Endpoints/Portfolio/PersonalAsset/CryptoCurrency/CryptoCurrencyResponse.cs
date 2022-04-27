@@ -16,5 +16,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         public string CryptoCoinCode { get; set; }
         public decimal CurrentPrice { get; set; }
         public decimal CurrentAmountInCurrency => CurrentPrice * CurrentAmountHolding;
+        public bool IsDeleted { get; set; }
     }
 }

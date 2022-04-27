@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate;
-using ApplicationCore.AssetAggregate.InterestAssetAggregate.DTOs;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
+using ApplicationCore.AssetAggregate.BankSavingAssetAggregate.DTOs;
 using ApplicationCore.TransactionAggregate;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -13,15 +13,15 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
   
     public class Create : BasePortfolioRelatedEndpoint<CreateNewBankingAssetRequest,BankingAssetResponse>
     {
-        private readonly IInterestAssetService _interestAssetService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _transactionService;
+        private readonly IBankSavingService _bankSavingService;
 
-        public Create(IInterestAssetService interestAssetService, IAuthorizationService authorizationService, IAssetTransactionService transactionService)
+        public Create( IAuthorizationService authorizationService, IAssetTransactionService transactionService, IBankSavingService bankSavingService)
         {
-            _interestAssetService = interestAssetService;
             _authorizationService = authorizationService;
             _transactionService = transactionService;
+            _bankSavingService = bankSavingService;
         }
 
         [HttpPost("bankSaving")]
@@ -30,7 +30,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewBankingAssetCommand.Adapt<CreateNewBankSavingAssetDto>();
-            var newBankSavingAsset = _interestAssetService.AddBankSavingAsset(request.PortfolioId, dto);
+            var newBankSavingAsset = _bankSavingService.AddBankSavingAsset(request.PortfolioId, dto);
             _ = _transactionService.AddCreateNewAssetTransaction(newBankSavingAsset,
                 newBankSavingAsset.InputMoneyAmount, newBankSavingAsset.InputCurrency);
             return newBankSavingAsset.Adapt<BankingAssetResponse>();
