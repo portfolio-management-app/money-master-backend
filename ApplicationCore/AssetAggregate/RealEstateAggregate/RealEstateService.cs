@@ -47,17 +47,6 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             _realEstateRepository.Insert(newRealEstate);
 
             // create a transaction
-
-            var newTransaction = TransactionFactory
-                .CreateNewTransaction
-                (SingleAssetTransactionTypes.NewAsset,
-                    "None",
-                    newRealEstate.Id,
-                    "realEstate",
-                    newRealEstate.Id,
-                    100
-                );
-            _transactionRepository.Insert(newTransaction);
             return newRealEstate;
         }
 

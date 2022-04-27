@@ -21,7 +21,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomIntere
         }
 
         [HttpPost("custom")]
-        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle([FromMultipleSource]
+        public override ActionResult<CreateCustomInterestAssetInfoResponse> Handle(
             CreateCustomInterestAssetInfoRequest request)
         {
             var userId = (int)HttpContext.Items["userId"]!;
