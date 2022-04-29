@@ -30,7 +30,7 @@ namespace ApplicationCore.InvestFundAggregate
             _cryptoRateRepository = cryptoRateRepository;
         }
 
-        private InvestFund AddNewInvestFundToPortfolio(int portfolioId)
+        public InvestFund AddNewInvestFundToPortfolio(int portfolioId)
         {
             var newFund = new InvestFund()
             {

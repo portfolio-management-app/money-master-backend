@@ -5,5 +5,6 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
         public decimal CurrentAmount { get; set; }
         public bool IsDeleted { get; set; }
         public int PortfolioId { get; set; }
+        public string InitialCurrency { get; set; }
     }
 }

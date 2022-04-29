@@ -23,7 +23,9 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             var investFund = _investFundService.GetInvestFundByPortfolio(portfolioId);
             if (investFund is null)
                 return NotFound();
-            return Ok(investFund.Adapt<InvestFundResponse>()); 
+            var response = investFund.Adapt<InvestFundResponse>();
+            response.InitialCurrency = investFund.Portfolio.InitialCurrency;
+            return Ok(response); 
         }
     }
 }

@@ -14,7 +14,9 @@ namespace ApplicationCore.InvestFundAggregate
 
         Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
             string currencyCode);
-        
-        
+
+        InvestFund AddNewInvestFundToPortfolio(int portfolioId);
+
+
     }
 }

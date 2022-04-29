@@ -17,12 +17,14 @@ namespace PublicAPI.Endpoints.Portfolio
     {
         private readonly IPortfolioService _portfolioService;
         private readonly ICashService _cashService;
+        private readonly IInvestFundService _investFundService;
 
         public Create(IPortfolioService portfolioService,
-            ICashService cashService)
+            ICashService cashService, IInvestFundService investFundService)
         {
             _portfolioService = portfolioService;
             _cashService = cashService;
+            _investFundService = investFundService;
         }
 
         [HttpPost]
@@ -43,6 +45,7 @@ namespace PublicAPI.Endpoints.Portfolio
                 PurchasePrice = request.InitialCash
             };
             _ = _cashService.CreateNewCashAsset(newPortfolio.Id, cashDto);
+            _ = _investFundService.AddNewInvestFundToPortfolio(newPortfolio.Id); 
             return Ok(newPortfolio.Adapt<CreatePortfolioResponse>());
         }
     }
