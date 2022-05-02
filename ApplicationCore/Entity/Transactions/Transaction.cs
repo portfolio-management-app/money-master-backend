@@ -9,6 +9,7 @@ namespace ApplicationCore.Entity.Transactions
         public int ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
 
+
         public decimal Amount { get; set; }
         public string CurrencyCode { get; set; }
 

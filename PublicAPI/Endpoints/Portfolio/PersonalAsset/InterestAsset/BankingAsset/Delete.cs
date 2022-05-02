@@ -8,7 +8,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
-    public class Delete : BasePortfolioRelatedEndpoint<PortfolioResourceRequest, BankingAssetResponse>
+    public class Delete : BasePortfolioRelatedEndpoint<PortfolioAssetRequest, BankingAssetResponse>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IBankSavingService _bankSavingService;
@@ -20,7 +20,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         }
         
         [HttpDelete("bankSaving/{assetId}")]
-        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync([FromMultipleSource]PortfolioResourceRequest request,
+        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync([FromMultipleSource]PortfolioAssetRequest request,
             CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))

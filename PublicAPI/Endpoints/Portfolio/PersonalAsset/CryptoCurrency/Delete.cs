@@ -10,7 +10,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class Delete : BasePortfolioRelatedEndpoint<PortfolioResourceRequest, CryptoCurrencyResponse>
+    public class Delete : BasePortfolioRelatedEndpoint<PortfolioAssetRequest, CryptoCurrencyResponse>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ICryptoService _cryptoService;
@@ -23,7 +23,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 
         [HttpDelete("crypto/{assetId}")]
         public override async Task<ActionResult<CryptoCurrencyResponse>> HandleAsync(
-            [FromMultipleSource] PortfolioResourceRequest request,
+            [FromMultipleSource] PortfolioAssetRequest request,
             CancellationToken cancellationToken = new CancellationToken())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))

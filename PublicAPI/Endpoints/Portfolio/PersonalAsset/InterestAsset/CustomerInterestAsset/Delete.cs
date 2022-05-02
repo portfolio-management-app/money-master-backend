@@ -10,7 +10,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    public class Delete : BasePortfolioRelatedEndpoint<PortfolioResourceRequest, SingleCustomInterestAssetResponse>
+    public class Delete : BasePortfolioRelatedEndpoint<PortfolioAssetRequest, SingleCustomInterestAssetResponse>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ICustomAssetService _customAssetService;
@@ -23,7 +23,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         
         [HttpDelete("custom/{assetId}")]
         public override async Task<ActionResult<SingleCustomInterestAssetResponse>> HandleAsync(
-            [FromMultipleSource]PortfolioResourceRequest request, CancellationToken cancellationToken = new())
+            [FromMultipleSource]PortfolioAssetRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);

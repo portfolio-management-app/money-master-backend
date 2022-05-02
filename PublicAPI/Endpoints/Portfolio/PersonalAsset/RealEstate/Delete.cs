@@ -9,7 +9,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterest
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-    public class Delete : BasePortfolioRelatedEndpoint<PortfolioResourceRequest, RealEstateResponse>
+    public class Delete : BasePortfolioRelatedEndpoint<PortfolioAssetRequest, RealEstateResponse>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IRealEstateService _realEstateService;
@@ -22,7 +22,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 
         [HttpDelete("realEstate/{assetId}")]
         public override async Task<ActionResult<RealEstateResponse>> HandleAsync(
-            [FromMultipleSource] PortfolioResourceRequest request, CancellationToken cancellationToken = new())
+            [FromMultipleSource] PortfolioAssetRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage); 

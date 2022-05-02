@@ -8,7 +8,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    public class Delete: BasePortfolioRelatedEndpoint<PortfolioResourceRequest,StockResponse>
+    public class Delete: BasePortfolioRelatedEndpoint<PortfolioAssetRequest,StockResponse>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IStockService _stockService;
@@ -20,7 +20,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         }
         
         [HttpDelete("stock/{assetId}")]
-        public override async Task<ActionResult<StockResponse>> HandleAsync([FromMultipleSource]PortfolioResourceRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<StockResponse>> HandleAsync([FromMultipleSource]PortfolioAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage); 
