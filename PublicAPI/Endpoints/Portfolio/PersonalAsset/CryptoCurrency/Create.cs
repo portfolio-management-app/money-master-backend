@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
@@ -33,12 +34,19 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
-            var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
-            var currentValue =
-                _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto, 
-                    createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
-                    createdCrypto.CurrencyCode);
-            return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>());
+            try
+            {
+                var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
+                var currentValue =
+                    _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
+                        createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
+                        createdCrypto.CurrencyCode);
+                return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

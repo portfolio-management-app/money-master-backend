@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
@@ -30,10 +31,18 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewBankingAssetCommand.Adapt<CreateNewBankSavingAssetDto>();
-            var newBankSavingAsset = _bankSavingService.AddBankSavingAsset(request.PortfolioId, dto);
-            _ = _transactionService.AddCreateNewAssetTransaction(newBankSavingAsset,
+
+            try
+            {
+                var newBankSavingAsset = await _bankSavingService.AddBankSavingAsset(request.PortfolioId, dto);
+                _ = _transactionService.AddCreateNewAssetTransaction(newBankSavingAsset,
                 newBankSavingAsset.InputMoneyAmount, newBankSavingAsset.InputCurrency);
             return newBankSavingAsset.Adapt<BankingAssetResponse>();
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
     }
 }

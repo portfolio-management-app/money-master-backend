@@ -11,5 +11,6 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs
         public decimal BuyPrice { get; set; }
         public decimal CurrentPrice { get; set; }
         public string Description { get; set; }
+        public bool IsUsingInvestFund { get; set; }
     }
 }

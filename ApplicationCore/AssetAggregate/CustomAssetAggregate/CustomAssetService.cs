@@ -6,6 +6,7 @@ using ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,25 +18,25 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
         private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
         private readonly IBaseRepository<Portfolio> _portfolioRepo;
-        private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly IStockPriceRepository _stockPriceRepository;
+        private readonly IInvestFundService _investFundService;
 
         public CustomAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
             IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
-            IBaseRepository<BankSavingAsset> bankSavingRepository, ICurrencyRateRepository currencyRateRepository,
-            ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository)
+             ICurrencyRateRepository currencyRateRepository,
+            ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository, IInvestFundService investFundService)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
             _customInterestAssetRepo = customInterestAssetRepo;
             _portfolioRepo = portfolioRepo;
-            _bankSavingRepository = bankSavingRepository;
             _currencyRateRepository = currencyRateRepository;
             _cryptoRateRepository = cryptoRateRepository;
             _stockPriceRepository = stockPriceRepository;
+            _investFundService = investFundService;
         }
 
 
@@ -57,7 +58,8 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
         }
 
 
-        public CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
+        public async Task<CustomInterestAsset> AddCustomInterestAsset(int userId, int customInterestInfoId,
+            int portfolioId,
             CreateNewCustomInterestAssetDto dto)
         {
             var foundPortfolio = _portfolioRepo.GetFirst(p => p.Id == portfolioId);
@@ -67,11 +69,14 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             if (foundCustomCategory.UserId != userId)
                 throw new ApplicationException("Unauthorized to access this category");
 
-            var newCustomInterestAsset = dto.Adapt<CustomInterestAsset>();
-            newCustomInterestAsset.CustomInterestAssetInfo = foundCustomCategory;
-            newCustomInterestAsset.Portfolio = foundPortfolio;
-            _customInterestAssetRepo.Insert(newCustomInterestAsset);
-            return newCustomInterestAsset;
+            var newAsset = dto.Adapt<CustomInterestAsset>();
+            newAsset.PortfolioId = portfolioId;
+            _customInterestAssetRepo.Insert(newAsset);
+            if (!dto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _customInterestAssetRepo.Delete(newAsset);
+            throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
         public List<CustomInterestAsset> GetAllCustomInterestAssetsByPortfolio(int portfolioId)

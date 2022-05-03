@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate;
@@ -31,11 +32,18 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         {  
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
-            var dto = request.CreateNewStockCommand.Adapt<StockDto>(); 
-            var newStock = _stockService.CreateNewStockAsset(request.PortfolioId, dto);
-            _ = _transactionService.AddCreateNewAssetTransaction(newStock,
-                newStock.PurchasePrice * newStock.CurrentAmountHolding, newStock.CurrencyCode);
-            return Ok(newStock.Adapt<StockResponse>());
+            var dto = request.CreateNewStockCommand.Adapt<StockDto>();
+            try
+            {
+                var newStock = await _stockService.CreateNewStockAsset(request.PortfolioId, dto);
+                _ = _transactionService.AddCreateNewAssetTransaction(newStock,
+                    newStock.PurchasePrice * newStock.CurrentAmountHolding, newStock.CurrencyCode);
+                return Ok(newStock.Adapt<StockResponse>());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

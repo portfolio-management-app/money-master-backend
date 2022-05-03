@@ -11,6 +11,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         [Required] public string Name { get; set; }
         public DateTime InputDay { get; set; } = DateTime.Now;
         public string Description { get; set; }
+        public bool IsUsingInvestFund { get; set; }
     }
 
     public class CreateCashRequest

@@ -31,13 +31,13 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
-            
+
             try
             {
                 var userId = (int)HttpContext.Items["userId"]!;
                 var dto = request.CustomInterestAssetCommand.Adapt<CreateNewCustomInterestAssetDto>();
                 var newAsset =
-                    _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
+                    await _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
                 _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
                     newAsset.InputCurrency);
@@ -46,6 +46,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             catch (ApplicationException ex)
             {
                 return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
@@ -31,10 +32,17 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewRealEstateAssetCommand.Adapt<RealEstateDto>();
-            var newRealEstate = _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
-            _ = _transactionService.AddCreateNewAssetTransaction(newRealEstate, newRealEstate.InputMoneyAmount,
-                newRealEstate.InputCurrency);
-            return Ok(newRealEstate.Adapt<RealEstateResponse>());
+            try
+            {
+                var newRealEstate = await _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
+                _ = _transactionService.AddCreateNewAssetTransaction(newRealEstate, newRealEstate.InputMoneyAmount,
+                    newRealEstate.InputCurrency);
+                return Ok(newRealEstate.Adapt<RealEstateResponse>());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

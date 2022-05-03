@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CashAggregate;
@@ -33,14 +34,20 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
             
-            
             var dto = request.CreateCashCommand.Adapt<CashDto>();
-            var newCashAsset = _cashService.CreateNewCashAsset(request.PortfolioId, dto);
+            try
+            {
+                var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
+                var unused =
+                    _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
+                        newCashAsset.CurrencyCode);
+                return Ok(newCashAsset.Adapt<CashResponse>());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            var transaction =
-                _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
-                    newCashAsset.CurrencyCode);
-            return Ok(newCashAsset.Adapt<CashResponse>());
         }
     }
 }

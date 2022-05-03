@@ -14,6 +14,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         public string Description { get; set; }
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day 
+        public bool IsUsingInvestFund { get; set; }
     }
 
     public class CreateNewBankingAssetRequest

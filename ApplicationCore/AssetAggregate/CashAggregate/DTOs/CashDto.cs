@@ -10,5 +10,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate.DTOs
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
         public string Description { get; set; }
+        
+        public bool IsUsingInvestFund { get; set; }
     }
 }

@@ -30,6 +30,28 @@ namespace ApplicationCore.InvestFundAggregate
             _cryptoRateRepository = cryptoRateRepository;
         }
 
+        public async Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset)
+        {
+            var foundFund = _investFundRepository.GetFirst(i => i.PortfolioId == portfolioId, i => i.Include(fund => fund.Portfolio));
+
+            var fundCurrency = foundFund.Portfolio.InitialCurrency;
+
+            var assetValueInFundCurrency = await buyingAsset.CalculateValueInCurrency(fundCurrency, _currencyRateRepository,
+                _cryptoRateRepository, _stockPriceRepository);
+            if (foundFund.CurrentAmount < assetValueInFundCurrency)
+            {
+                return false;
+            }
+
+            foundFund.CurrentAmount -= assetValueInFundCurrency;
+            var newOutgoingTransaction = new InvestFundTransaction(buyingAsset.GetAssetType(), buyingAsset.Id,
+                assetValueInFundCurrency, fundCurrency, foundFund.Id, false);
+            _investFundTransactionRepository.Insert(newOutgoingTransaction);
+
+            return true;
+
+        }
+
         public InvestFund AddNewInvestFundToPortfolio(int portfolioId)
         {
             var newFund = new InvestFund()

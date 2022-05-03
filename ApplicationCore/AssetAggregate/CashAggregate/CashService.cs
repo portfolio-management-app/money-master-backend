@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CashAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using Mapster;
 
 namespace ApplicationCore.AssetAggregate.CashAggregate
@@ -14,14 +16,16 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
         private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly IStockPriceRepository _stockPriceRepository;
+        private readonly IInvestFundService _investFundService;
 
         public CashService(IBaseRepository<CashAsset> cashRepository, ICryptoRateRepository cryptoRateRepository,
-            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository)
+            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository, IInvestFundService investFundService)
         {
             _cashRepository = cashRepository;
             _cryptoRateRepository = cryptoRateRepository;
             _currencyRateRepository = currencyRateRepository;
             _stockPriceRepository = stockPriceRepository;
+            _investFundService = investFundService;
         }
 
         public CashAsset GetById(int assetId)
@@ -29,13 +33,17 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             return _cashRepository.GetFirst(c => c.Id == assetId);
         }
 
-        public CashAsset CreateNewCashAsset(int portfolioId, CashDto dto)
+        public async Task<CashAsset> CreateNewCashAsset(int portfolioId, CashDto dto)
         {
-            var newCashAsset = dto.Adapt<CashAsset>();
-            newCashAsset.PortfolioId = portfolioId;
+            var newAsset = dto.Adapt<CashAsset>();
+            newAsset.PortfolioId = portfolioId;
 
-            _cashRepository.Insert(newCashAsset);
-            return newCashAsset;
+            _cashRepository.Insert(newAsset);
+            if (!dto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _cashRepository.Delete(newAsset);
+            throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
         public List<CashAsset> ListByPortfolio(int portfolioId)

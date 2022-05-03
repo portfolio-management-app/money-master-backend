@@ -5,37 +5,45 @@ using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using Mapster;
 
 namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
 {
-    public class BankSavingService: IBankSavingService
+    public class BankSavingService : IBankSavingService
     {
         private readonly IStockPriceRepository _stockPriceRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
+        private readonly IInvestFundService _investFundService;
 
-        public BankSavingService(IBaseRepository<BankSavingAsset> bankSavingRepository, IStockPriceRepository stockPriceRepository, ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository)
+        public BankSavingService(IBaseRepository<BankSavingAsset> bankSavingRepository,
+            IStockPriceRepository stockPriceRepository, ICurrencyRateRepository currencyRateRepository,
+            ICryptoRateRepository cryptoRateRepository, IInvestFundService investFundService)
         {
             _bankSavingRepository = bankSavingRepository;
             _stockPriceRepository = stockPriceRepository;
             _currencyRateRepository = currencyRateRepository;
             _cryptoRateRepository = cryptoRateRepository;
+            _investFundService = investFundService;
         }
 
-        
-        
-        public BankSavingAsset AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto)
+
+        public async Task<BankSavingAsset> AddBankSavingAsset(int portfolioId, CreateNewBankSavingAssetDto commandDto)
         {
-            var newBankSavingAsset = commandDto.Adapt<BankSavingAsset>();
-            newBankSavingAsset.LastChanged = DateTime.Now;
-            newBankSavingAsset.PortfolioId = portfolioId;
-            _bankSavingRepository.Insert(newBankSavingAsset);
-            return newBankSavingAsset;
+            var newAsset = commandDto.Adapt<BankSavingAsset>();
+            newAsset.PortfolioId = portfolioId;
+
+            _bankSavingRepository.Insert(newAsset);
+            if (!commandDto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _bankSavingRepository.Delete(newAsset);
+            throw new InvalidOperationException("Insufficient money amount in fund");
         }
-        
-        
+
+
         public BankSavingAsset EditBankSavingAsset(int portfolioId, int bankingAssetId, EditBankSavingAssetDto dto)
         {
             var foundBankingAsset =
@@ -60,8 +68,8 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
             _bankSavingRepository.Update(foundBankingAsset);
             return foundBankingAsset;
         }
-        
-        
+
+
         public async Task<decimal> CalculateSumBankSavingByPortfolio(int portfolioId, string currencyCode)
         {
             var bankSavingAsset = ListByPortfolio(portfolioId);
@@ -76,23 +84,23 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
 
         public BankSavingAsset GetById(int assetId)
         {
-            return _bankSavingRepository.GetFirst(b => b.Id == assetId); 
+            return _bankSavingRepository.GetFirst(b => b.Id == assetId);
         }
 
         public List<BankSavingAsset> ListByPortfolio(int portfolioId)
         {
-             var listBankSavingAsset = _bankSavingRepository
-                 .List(b => b.PortfolioId == portfolioId)
-                 .ToList();
-             return listBankSavingAsset;
+            var listBankSavingAsset = _bankSavingRepository
+                .List(b => b.PortfolioId == portfolioId)
+                .ToList();
+            return listBankSavingAsset;
         }
 
         public BankSavingAsset SetAssetToDelete(int assetId)
         {
-             var found = _bankSavingRepository.GetFirst(b => b.Id == assetId);
-             if (found is null)
-                 return null;
-             return _bankSavingRepository.SetToDeleted(found); 
+            var found = _bankSavingRepository.GetFirst(b => b.Id == assetId);
+            if (found is null)
+                return null;
+            return _bankSavingRepository.SetToDeleted(found);
         }
     }
 }

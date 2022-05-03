@@ -7,7 +7,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 {
     public interface IStockService : IBaseAssetService<Stock>
     {
-        Stock CreateNewStockAsset(int portfolioId, StockDto dto);
+        Task<Stock> CreateNewStockAsset(int portfolioId, StockDto dto);
         Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode);
     }
 }

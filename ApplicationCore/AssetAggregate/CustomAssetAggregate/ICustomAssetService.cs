@@ -9,7 +9,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
     {
         CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName);
 
-        CustomInterestAsset AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
+        Task<CustomInterestAsset> AddCustomInterestAsset(int userId, int customInterestInfoId, int portfolioId,
             CreateNewCustomInterestAssetDto dto);
 
         List<CustomInterestAsset> GetAllCustomInterestAssetsByPortfolio(int portfolioId);

@@ -12,5 +12,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate.DTOs
         public decimal CurrentAmountHolding { get; set; }
         public string Description { get; set; }
         public string CryptoCoinCode { get; set; }
+        public bool IsUsingInvestFund { get; set; }
+        
     }
 }

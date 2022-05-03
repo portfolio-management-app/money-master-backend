@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using Mapster;
 
 namespace ApplicationCore.AssetAggregate.StockAggregate
@@ -14,22 +16,29 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         private readonly IStockPriceRepository _stockPriceRepository;
         private readonly ICurrencyRateRepository _currencyRateRepository;
         private readonly ICryptoRateRepository _cryptoRateRepository;
+        private readonly IInvestFundService _investFundService;
 
         public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository,
-            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository)
+            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository,
+            IInvestFundService investFundService)
         {
             _stockRepository = stockRepository;
             _stockPriceRepository = stockPriceRepository;
             _cryptoRateRepository = cryptoRateRepository;
             _currencyRateRepository = currencyRateRepository;
+            _investFundService = investFundService;
         }
 
-        public Stock CreateNewStockAsset(int portfolioId, StockDto dto)
+        public async Task<Stock> CreateNewStockAsset(int portfolioId, StockDto dto)
         {
-            var newStock = dto.Adapt<Stock>();
-            newStock.PortfolioId = portfolioId;
-            _stockRepository.Insert(newStock);
-            return newStock;
+            var newAsset = dto.Adapt<Stock>();
+            newAsset.PortfolioId = portfolioId;
+            _stockRepository.Insert(newAsset);
+            if (!dto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _stockRepository.Delete(newAsset);
+            throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
@@ -60,13 +69,11 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
         public Stock SetAssetToDelete(int assetId)
         {
-            
             var found = _stockRepository.GetFirst(c => c.Id == assetId);
             if (found is null)
                 return null;
-            _stockRepository.SetToDeleted(found); 
-            return found; 
-
+            _stockRepository.SetToDeleted(found);
+            return found;
         }
     }
 }

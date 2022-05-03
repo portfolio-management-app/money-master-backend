@@ -11,5 +11,6 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs
         public string Description { get; set; }
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day 
+        public bool IsUsingInvestFund { get; set; }
     }
 }
