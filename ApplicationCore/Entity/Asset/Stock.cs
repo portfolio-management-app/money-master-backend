@@ -27,11 +27,17 @@ namespace ApplicationCore.Entity.Asset
             return "stock";
         }
 
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
             ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
             IStockPriceRepository stockPriceRepository)
         {
-            throw new System.NotImplementedException();
+            var currentValue =
+                await CalculateValueInCurrency(currencyCode, currencyRateRepository, cryptoRateRepository,
+                    stockPriceRepository);
+            if (currentValue < withdrawAmount)
+                return false;
+            CurrentAmountHolding -= withdrawAmount * CurrentAmountHolding / currentValue;
+            return true;
         }
 
         public override async Task<bool> WithdrawAll()
