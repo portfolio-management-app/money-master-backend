@@ -13,16 +13,18 @@ namespace ApplicationCore.InvestFundAggregate
     {
         private readonly IBaseRepository<InvestFund> _investFundRepository;
         private readonly IBaseRepository<InvestFundTransaction> _investFundTransactionRepository;
+        private readonly IBaseRepository<SingleAssetTransaction> _assetTransactionRepository;
         private readonly ExternalPriceFacade _priceFacade;
         private string LackAmountErrorMessage => "Insufficient value left in asset";
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
             IBaseRepository<InvestFundTransaction> investFundTransactionRepository,
-             ExternalPriceFacade priceFacade)
+             ExternalPriceFacade priceFacade, IBaseRepository<SingleAssetTransaction> assetTransactionRepository)
         {
             _investFundRepository = investFundRepository;
             _investFundTransactionRepository = investFundTransactionRepository;
             _priceFacade = priceFacade;
+            _assetTransactionRepository = assetTransactionRepository;
         }
 
         public async Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset)
@@ -107,13 +109,19 @@ namespace ApplicationCore.InvestFundAggregate
                     investFund.Id,
                     true);
             _investFundTransactionRepository.Insert(newFundTransaction);
+
+            var newAssetTransaction = new SingleAssetTransaction(
+                assetType, asset.Id, isTransferringAll ? withdrawAmount : amount, currencyCode,
+                SingleAssetTransactionTypes.MoveToFund, null,"fund");
+            _assetTransactionRepository.Insert(newAssetTransaction); 
+            
             return newFundTransaction;
         }
 
         public Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
             string currencyCode)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); 
         }
     }
 }

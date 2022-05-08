@@ -5,6 +5,7 @@ namespace ApplicationCore.Entity.Transactions
         NewAsset,
         AddValue,
         WithdrawValue,
+        MoveToFund,
         SellAsset
     }
 }

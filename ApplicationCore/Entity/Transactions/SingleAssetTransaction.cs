@@ -8,10 +8,12 @@ namespace ApplicationCore.Entity.Transactions
         public string DestinationAssetType { get; set; } = null;
 
         public SingleAssetTransaction(string referentialAssetType, int referentialAssetId, decimal amount,
-            string currencyCode, SingleAssetTransactionTypes singleAssetTransactionTypes) :
+            string currencyCode, SingleAssetTransactionTypes singleAssetTransactionTypes, int? destinationAssetId,string destinationAssetType) :
             base(referentialAssetType, referentialAssetId, amount, currencyCode)
         {
             SingleAssetTransactionTypes = singleAssetTransactionTypes;
+            DestinationAssetId = destinationAssetId;
+            DestinationAssetType = destinationAssetType;
         }
 
         public SingleAssetTransaction()
