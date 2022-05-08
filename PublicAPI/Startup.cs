@@ -73,13 +73,13 @@ namespace PublicAPI
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
             services.AddSingleton(typeof(TransactionFactory));
+            services.AddScoped<ICashService, CashService>();
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IStockService, StockService>();
-            services.AddScoped<ICryptoRateRepository, CryptoRateRepository>();
-            services.AddScoped<ICashService, CashService>();
+            services.AddSingleton<ICryptoRateRepository, CryptoRateRepository>();
             services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
-            services.AddSingleton(typeof(ExternalPriceFacade)); 
+            services.AddSingleton(typeof(ExternalPriceFacade));
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
             services.AddScoped<IAssetTransactionService, AssetTransactionService>(); 
