@@ -13,21 +13,16 @@ namespace ApplicationCore.InvestFundAggregate
     {
         private readonly IBaseRepository<InvestFund> _investFundRepository;
         private readonly IBaseRepository<InvestFundTransaction> _investFundTransactionRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
+        private readonly ExternalPriceFacade _priceFacade;
         private string LackAmountErrorMessage => "Insufficient value left in asset";
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
             IBaseRepository<InvestFundTransaction> investFundTransactionRepository,
-            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository,
-            ICryptoRateRepository cryptoRateRepository)
+             ExternalPriceFacade priceFacade)
         {
             _investFundRepository = investFundRepository;
             _investFundTransactionRepository = investFundTransactionRepository;
-            _currencyRateRepository = currencyRateRepository;
-            _stockPriceRepository = stockPriceRepository;
-            _cryptoRateRepository = cryptoRateRepository;
+            _priceFacade = priceFacade;
         }
 
         public async Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset)
@@ -36,8 +31,7 @@ namespace ApplicationCore.InvestFundAggregate
 
             var fundCurrency = foundFund.Portfolio.InitialCurrency;
 
-            var assetValueInFundCurrency = await buyingAsset.CalculateValueInCurrency(fundCurrency, _currencyRateRepository,
-                _cryptoRateRepository, _stockPriceRepository);
+            var assetValueInFundCurrency = await buyingAsset.CalculateValueInCurrency(fundCurrency, _priceFacade);
             if (foundFund.CurrentAmount < assetValueInFundCurrency)
             {
                 return false;
@@ -80,8 +74,7 @@ namespace ApplicationCore.InvestFundAggregate
             if (isTransferringAll)
             {
                 withdrawAmount = await asset.CalculateValueInCurrency(fundCurrencyCode,
-                    _currencyRateRepository,
-                    _cryptoRateRepository, _stockPriceRepository);
+                    _priceFacade); 
                 investFund.CurrentAmount += withdrawAmount;
                 await asset.WithdrawAll();
             }
@@ -89,8 +82,7 @@ namespace ApplicationCore.InvestFundAggregate
             {
                 if (mandatoryWithdrawAll.Contains(assetType))
                     throw new OperationCanceledException($"Not allowed for partial withdraw: {assetType}");
-                if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository))
+                if (!await asset.Withdraw(amount, currencyCode, _priceFacade))
                     throw new OperationCanceledException(LackAmountErrorMessage);
                 if (investFund.Portfolio.InitialCurrency == currencyCode)
                 {
@@ -98,7 +90,7 @@ namespace ApplicationCore.InvestFundAggregate
                 }
                 else
                 {
-                    var rateObj = await _currencyRateRepository.GetRateObject(currencyCode);
+                    var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
                     var realAmountToAdd = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
                     investFund.CurrentAmount += realAmountToAdd;
                     withdrawAmount = amount;

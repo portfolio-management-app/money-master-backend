@@ -18,25 +18,20 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
         private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
         private readonly IBaseRepository<Portfolio> _portfolioRepo;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
         private readonly IInvestFundService _investFundService;
+        private readonly ExternalPriceFacade _priceFacade;
 
         public CustomAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
             IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
-             ICurrencyRateRepository currencyRateRepository,
-            ICryptoRateRepository cryptoRateRepository, IStockPriceRepository stockPriceRepository, IInvestFundService investFundService)
+             IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
             _customInterestAssetRepo = customInterestAssetRepo;
             _portfolioRepo = portfolioRepo;
-            _currencyRateRepository = currencyRateRepository;
-            _cryptoRateRepository = cryptoRateRepository;
-            _stockPriceRepository = stockPriceRepository;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
 
@@ -103,8 +98,8 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             var customAsset = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
-                    ca.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository));
+                    ca.CalculateValueInCurrency(currencyCode, _priceFacade
+                        ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

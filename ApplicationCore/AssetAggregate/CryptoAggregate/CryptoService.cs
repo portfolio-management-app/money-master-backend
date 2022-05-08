@@ -13,20 +13,15 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
     public class CryptoService : ICryptoService
     {
         private readonly IBaseRepository<Crypto> _cryptoRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
         private readonly IInvestFundService _investFundService;
+        private readonly ExternalPriceFacade _priceFacade;
 
-        public CryptoService(IBaseRepository<Crypto> cryptoRepository, ICryptoRateRepository cryptoRateRepository,
-            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository,
-            IInvestFundService investFundService)
+        public CryptoService(IBaseRepository<Crypto> cryptoRepository, 
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _cryptoRepository = cryptoRepository;
-            _cryptoRateRepository = cryptoRateRepository;
-            _currencyRateRepository = currencyRateRepository;
-            _stockPriceRepository = stockPriceRepository;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
 
@@ -68,8 +63,8 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var cryptoAssets = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cryptoAssets.Select(crypto =>
-                    crypto.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository));
+                    crypto.CalculateValueInCurrency(currencyCode,_priceFacade 
+                        ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

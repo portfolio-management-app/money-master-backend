@@ -14,11 +14,10 @@ namespace ApplicationCore.Entity.Asset
         public string CryptoCoinCode { get; set; }
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             var currentPriceInCurrency =
-                await cryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
+                await priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
             return currentPriceInCurrency * CurrentAmountHolding;
         }
 
@@ -28,12 +27,11 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             var currentValue =
-                await CalculateValueInCurrency(currencyCode, currencyRateRepository, cryptoRateRepository,
-                    stockPriceRepository);
+                await CalculateValueInCurrency(currencyCode,
+                    priceFacade);
             if (currentValue < withdrawAmount)
                 return false;
             CurrentAmountHolding -= withdrawAmount * CurrentAmountHolding / currentValue;

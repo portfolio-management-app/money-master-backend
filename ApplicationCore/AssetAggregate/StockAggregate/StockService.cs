@@ -13,20 +13,15 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
     public class StockService : IStockService
     {
         private readonly IBaseRepository<Stock> _stockRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly IInvestFundService _investFundService;
+        private readonly ExternalPriceFacade _priceFacade;
 
-        public StockService(IBaseRepository<Stock> stockRepository, IStockPriceRepository stockPriceRepository,
-            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository,
-            IInvestFundService investFundService)
+        public StockService(IBaseRepository<Stock> stockRepository, 
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _stockRepository = stockRepository;
-            _stockPriceRepository = stockPriceRepository;
-            _cryptoRateRepository = cryptoRateRepository;
-            _currencyRateRepository = currencyRateRepository;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
         public async Task<Stock> CreateNewStockAsset(int portfolioId, StockDto dto)
@@ -48,8 +43,8 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
                 cashAssets
                     .Select
                     (stock =>
-                        stock.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository, _stockPriceRepository));
+                        stock.CalculateValueInCurrency(currencyCode, _priceFacade
+                            ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

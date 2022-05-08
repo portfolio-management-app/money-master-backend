@@ -11,12 +11,11 @@ namespace ApplicationCore.Entity.Asset
 
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             if (destinationCurrencyCode == InputCurrency)
                 return InputMoneyAmount;
-            var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
+            var rateObj = await priceFacade.CurrencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * CurrentPrice;
         }
 
@@ -26,8 +25,7 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             await WithdrawAll();
             return true;

@@ -13,19 +13,15 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
     public class CashService : ICashService
     {
         private readonly IBaseRepository<CashAsset> _cashRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
         private readonly IInvestFundService _investFundService;
+        private readonly ExternalPriceFacade _priceFacade;
 
-        public CashService(IBaseRepository<CashAsset> cashRepository, ICryptoRateRepository cryptoRateRepository,
-            ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository, IInvestFundService investFundService)
+        public CashService(IBaseRepository<CashAsset> cashRepository, 
+             IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _cashRepository = cashRepository;
-            _cryptoRateRepository = cryptoRateRepository;
-            _currencyRateRepository = currencyRateRepository;
-            _stockPriceRepository = stockPriceRepository;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
         public CashAsset GetById(int assetId)
@@ -67,8 +63,8 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
                 cashAssets
                     .Select
                     (cash =>
-                        cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository, _stockPriceRepository));
+                        cash.CalculateValueInCurrency(currencyCode, _priceFacade
+                        ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

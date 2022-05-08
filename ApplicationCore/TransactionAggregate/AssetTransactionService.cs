@@ -13,19 +13,15 @@ namespace ApplicationCore.TransactionAggregate
     {
 
     
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
         private readonly IBaseRepository<SingleAssetTransaction> _transactionRepository;
         private readonly IBaseRepository<CashAsset> _cashRepository;
+        private readonly ExternalPriceFacade _priceFacade;
 
-        public AssetTransactionService(ICurrencyRateRepository currencyRateRepository, IStockPriceRepository stockPriceRepository, ICryptoRateRepository cryptoRateRepository, IBaseRepository<SingleAssetTransaction> transactionRepository, ICashService cashService, IBaseRepository<CashAsset> cashRepository)
+        public AssetTransactionService( IBaseRepository<SingleAssetTransaction> transactionRepository, ICashService cashService, IBaseRepository<CashAsset> cashRepository, ExternalPriceFacade priceFacade)
         {
-            _currencyRateRepository = currencyRateRepository;
-            _stockPriceRepository = stockPriceRepository;
-            _cryptoRateRepository = cryptoRateRepository;
             _transactionRepository = transactionRepository;
             _cashRepository = cashRepository;
+            _priceFacade = priceFacade;
         }
 
         public SingleAssetTransaction AddCreateNewAssetTransaction(PersonalAsset asset, decimal moneyAmount, string currency)
@@ -63,8 +59,8 @@ namespace ApplicationCore.TransactionAggregate
           
             if (isTransferringAll)
             {
-                var valueInDestinationCurrency = await asset.CalculateValueInCurrency(destinationCurrencyCode, _currencyRateRepository,
-                    _cryptoRateRepository, _stockPriceRepository);
+                var valueInDestinationCurrency = await asset.CalculateValueInCurrency(destinationCurrencyCode, 
+                    _priceFacade);
                 await asset.WithdrawAll();
                 foundCash.Amount += valueInDestinationCurrency;
             }
@@ -76,8 +72,7 @@ namespace ApplicationCore.TransactionAggregate
                     throw new InvalidOperationException($" Not allowed for partial withdraw: {asset.GetAssetType()}");
                 }
 
-                if (!await asset.Withdraw(amount, currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository))
+                if (!await asset.Withdraw(amount, currencyCode, _priceFacade))
                 {
                     throw new OperationCanceledException("Insufficient value");
                 }
@@ -86,7 +81,7 @@ namespace ApplicationCore.TransactionAggregate
                     foundCash.Amount += amount;
                 else
                 {
-                    var rateObj = await _currencyRateRepository.GetRateObject(currencyCode);
+                    var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
                     var realValueToAdd = rateObj.GetValue(destinationCurrencyCode) * amount;
                     foundCash.Amount += realValueToAdd;
                 }

@@ -16,23 +16,18 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
     public class RealEstateService : IRealEstateService
     {
         private readonly IBaseRepository<RealEstateAsset> _realEstateRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly IStockPriceRepository _stockPriceRepository;
         private readonly IInvestFundService _investFundService;
-        private TransactionFactory TransactionFactory { get; set; }
+        private TransactionFactory _transactionFactory; 
+        private readonly ExternalPriceFacade _priceFacade;
 
         public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository,
              TransactionFactory transactionFactory,
-            ICryptoRateRepository cryptoRateRepository, ICurrencyRateRepository currencyRateRepository,
-            IStockPriceRepository stockPriceRepository, IInvestFundService investFundService)
+             IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _realEstateRepository = realEstateRepository;
-            TransactionFactory = transactionFactory;
-            _cryptoRateRepository = cryptoRateRepository;
-            _currencyRateRepository = currencyRateRepository;
-            _stockPriceRepository = stockPriceRepository;
+            _transactionFactory = transactionFactory;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
         public RealEstateAsset GetById(int assetId)
@@ -88,8 +83,8 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
                 cashAssets
                     .Select
                     (cash =>
-                        cash.CalculateValueInCurrency(currencyCode, _currencyRateRepository,
-                            _cryptoRateRepository, _stockPriceRepository));
+                        cash.CalculateValueInCurrency(currencyCode, _priceFacade
+                            ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

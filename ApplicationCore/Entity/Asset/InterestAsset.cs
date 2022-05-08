@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 
@@ -23,11 +24,10 @@ namespace ApplicationCore.Entity.Asset
 
         // TODO: deal with change interest rate (continue with the current amount or reset from start)
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             if (InputCurrency == destinationCurrencyCode) return InputMoneyAmount;
-            var rateObj = await currencyRateRepository.GetRateObject(InputCurrency);
+            var rateObj = await priceFacade.CurrencyRateRepository.GetRateObject(InputCurrency);
             return rateObj.GetValue(destinationCurrencyCode) * InputMoneyAmount;
         }
     }

@@ -32,8 +32,7 @@ namespace ApplicationCore.Entity.Asset
         }
 
         public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository)
+            ExternalPriceFacade priceFacade)
         {
             await WithdrawAll();
             return true;

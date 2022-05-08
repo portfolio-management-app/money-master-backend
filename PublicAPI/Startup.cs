@@ -1,4 +1,5 @@
 using System;
+using ApplicationCore;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
@@ -78,6 +79,7 @@ namespace PublicAPI
             services.AddScoped<ICashService, CashService>();
             services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
+            services.AddSingleton(typeof(ExternalPriceFacade)); 
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
             services.AddScoped<IAssetTransactionService, AssetTransactionService>(); 

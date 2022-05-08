@@ -23,15 +23,11 @@ namespace ApplicationCore.Entity.Asset
             LastChanged = DateTime.Now;
         }
 
-        public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository);
-
+        public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode, ExternalPriceFacade priceFacade);
         public abstract string GetAssetType();
 
         public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
-            ICurrencyRateRepository currencyRateRepository, ICryptoRateRepository cryptoRateRepository,
-            IStockPriceRepository stockPriceRepository);
+            ExternalPriceFacade priceFacade);
 
         public abstract Task<bool> WithdrawAll();
     }

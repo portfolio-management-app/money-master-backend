@@ -12,21 +12,16 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
 {
     public class BankSavingService : IBankSavingService
     {
-        private readonly IStockPriceRepository _stockPriceRepository;
-        private readonly ICurrencyRateRepository _currencyRateRepository;
-        private readonly ICryptoRateRepository _cryptoRateRepository;
+        private readonly ExternalPriceFacade _priceFacade;
         private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
         private readonly IInvestFundService _investFundService;
 
         public BankSavingService(IBaseRepository<BankSavingAsset> bankSavingRepository,
-            IStockPriceRepository stockPriceRepository, ICurrencyRateRepository currencyRateRepository,
-            ICryptoRateRepository cryptoRateRepository, IInvestFundService investFundService)
+           IInvestFundService investFundService, ExternalPriceFacade priceFacade)
         {
             _bankSavingRepository = bankSavingRepository;
-            _stockPriceRepository = stockPriceRepository;
-            _currencyRateRepository = currencyRateRepository;
-            _cryptoRateRepository = cryptoRateRepository;
             _investFundService = investFundService;
+            _priceFacade = priceFacade;
         }
 
 
@@ -75,8 +70,7 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
             var bankSavingAsset = ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 bankSavingAsset.Select(bankSaving =>
-                    bankSaving.CalculateValueInCurrency(currencyCode, _currencyRateRepository, _cryptoRateRepository,
-                        _stockPriceRepository));
+                    bankSaving.CalculateValueInCurrency(currencyCode, _priceFacade)); 
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;
