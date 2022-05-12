@@ -30,7 +30,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
                 return  Unauthorized(NotAllowedPortfolioMessage);
             try
             {
-                var list = _cryptoService.ListByPortfolio(portfolioId);
+                var list = await _cryptoService.ListByPortfolio(portfolioId);
                 return list.Adapt<List<CryptoCurrencyResponse>>();
             }
             catch (Exception ex)

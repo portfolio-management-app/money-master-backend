@@ -20,7 +20,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");
-            var list = _realEstateService.ListByPortfolio(portfolioId);
+            var list = await _realEstateService.ListByPortfolio(portfolioId);
             return Ok(list.Adapt<List<RealEstateResponse>>());
         }
 

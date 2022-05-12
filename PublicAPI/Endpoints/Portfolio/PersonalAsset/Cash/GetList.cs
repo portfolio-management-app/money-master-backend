@@ -26,7 +26,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                             return  Unauthorized(NotAllowedPortfolioMessage);
-            return Ok(_cashService.ListByPortfolio(portfolioId).Adapt<List<CashResponse>>());
+            var result = await _cashService.ListByPortfolio(portfolioId); 
+            return Ok(result.Adapt<List<CashResponse>>());
         }
     }
 }

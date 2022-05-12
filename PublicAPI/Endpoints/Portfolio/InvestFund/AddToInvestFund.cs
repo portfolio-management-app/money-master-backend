@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    public class Add : BasePortfolioRelatedEndpoint<AddToInvestFundRequest,object>
+    public class AddToInvestFund : BasePortfolioRelatedEndpoint<AddToInvestFundRequest,object>
     {
         private readonly IInvestFundService _investFundService;
         private readonly IPortfolioService _portfolioService;
         private readonly IAuthorizationService _authorizationService;
 
-        public Add(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService)
+        public AddToInvestFund(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService)
         {
             _investFundService = investFundService;
             _portfolioService = portfolioService;

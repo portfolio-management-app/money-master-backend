@@ -44,7 +44,8 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
 
         public async Task<List<CashAsset>> ListByPortfolio(int portfolioId)
         {
-            return _cashRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            var result =_cashRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            return result;
         }
 
         public CashAsset SetAssetToDelete(int assetId)

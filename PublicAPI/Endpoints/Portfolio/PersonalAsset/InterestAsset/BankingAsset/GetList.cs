@@ -26,7 +26,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return  Unauthorized(NotAllowedPortfolioMessage);
-            var list = _bankSavingService.ListByPortfolio(portfolioId);
+            var list = await _bankSavingService.ListByPortfolio(portfolioId);
             return Ok(list.Adapt<List<GetListBankSavingAssetResponse>>());
         }
     }
