@@ -20,7 +20,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         }
 
         [HttpGet("cash/{assetId}/transactions")]
-        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync(GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync([FromRoute]GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             var foundCash = _cashService.GetById(request.AssetId);
             if (foundCash is null)
