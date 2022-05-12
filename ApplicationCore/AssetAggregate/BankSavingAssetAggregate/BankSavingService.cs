@@ -67,7 +67,7 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
 
         public async Task<decimal> CalculateSumBankSavingByPortfolio(int portfolioId, string currencyCode)
         {
-            var bankSavingAsset = ListByPortfolio(portfolioId);
+            var bankSavingAsset = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 bankSavingAsset.Select(bankSaving =>
                     bankSaving.CalculateValueInCurrency(currencyCode, _priceFacade)); 
@@ -81,7 +81,7 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
             return _bankSavingRepository.GetFirst(b => b.Id == assetId);
         }
 
-        public List<BankSavingAsset> ListByPortfolio(int portfolioId)
+        public async Task<List<BankSavingAsset>> ListByPortfolio(int portfolioId)
         {
             var listBankSavingAsset = _bankSavingRepository
                 .List(b => b.PortfolioId == portfolioId)

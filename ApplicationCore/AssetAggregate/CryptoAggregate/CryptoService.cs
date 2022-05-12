@@ -42,9 +42,9 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
-        public List<Crypto> ListByPortfolio(int portfolioId)
+        public async Task<List<Crypto>> ListByPortfolio(int portfolioId)
         {
-            var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            var listCrypto =  _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
 
             return listCrypto.ToList();
         }
@@ -60,7 +60,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cryptoAssets = ListByPortfolio(portfolioId);
+            var cryptoAssets = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cryptoAssets.Select(crypto =>
                     crypto.CalculateValueInCurrency(currencyCode,_priceFacade 

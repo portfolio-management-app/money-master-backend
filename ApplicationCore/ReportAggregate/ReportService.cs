@@ -55,8 +55,8 @@ namespace ApplicationCore.ReportAggregate
                 await _customAssetService.CalculateSumCustomInterestAssetByPortfolio(portfolioId,
                     foundPortfolio.InitialCurrency);
             // get all crypto 
-            //decimal sumCrypto =
-            //   await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
+            decimal sumCrypto =
+               await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
             return new List<PieChartElementModel>
             {
                 new()
@@ -87,7 +87,7 @@ namespace ApplicationCore.ReportAggregate
                 new()
                 {
                     AssetType = "Crypto",
-                    SumValue = 0
+                    SumValue = sumCrypto
                 }
             };
         }

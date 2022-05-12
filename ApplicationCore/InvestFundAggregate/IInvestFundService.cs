@@ -12,7 +12,7 @@ namespace ApplicationCore.InvestFundAggregate
         Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
             string currencyCode, bool isTransferringAll);
 
-        Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
+        Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, CashAsset asset, decimal amount,
             string currencyCode);
 
         Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset); 

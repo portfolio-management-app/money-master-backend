@@ -118,10 +118,27 @@ namespace ApplicationCore.InvestFundAggregate
             return newFundTransaction;
         }
 
-        public Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
+        public async Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, CashAsset asset, decimal amount,
             string currencyCode)
         {
-            throw new NotImplementedException(); 
+            var investFund = GetInvestFundByPortfolio(portfolioId);
+            decimal withdrawAmountInFundCurrency = decimal.Zero;
+
+            var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
+            withdrawAmountInFundCurrency = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
+            if (withdrawAmountInFundCurrency > investFund.CurrentAmount)
+                throw new OperationCanceledException("Insufficient amount");
+
+            investFund.CurrentAmount -= withdrawAmountInFundCurrency;
+
+            asset.Amount += rateObj.GetValue(asset.CurrencyCode) * amount;
+
+            var newTransaction = new InvestFundTransaction("cash", asset.Id, withdrawAmountInFundCurrency,
+                investFund.Portfolio.InitialCurrency, investFund.Id, false);
+
+            _investFundTransactionRepository.Insert(newTransaction);
+            return newTransaction;
+
         }
     }
 }

@@ -95,7 +95,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 
         public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
         {
-            var customAsset = ListByPortfolio(portfolioId);
+            var customAsset = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
                     ca.CalculateValueInCurrency(currencyCode, _priceFacade
@@ -111,7 +111,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
         }
 
-        public List<CustomInterestAsset> ListByPortfolio(int portfolioId)
+        public async  Task<List<CustomInterestAsset>> ListByPortfolio(int portfolioId)
         {
             var foundCustomInterestAsset = _customInterestAssetRepo
                 .List(ca => ca.PortfolioId == portfolioId, null

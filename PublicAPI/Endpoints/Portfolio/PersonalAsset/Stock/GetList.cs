@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.StockAggregate;
@@ -26,7 +27,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");
-            var stockList = _stockService.ListByPortfolio(portfolioId);
+            var stockList = await _stockService.ListByPortfolio(portfolioId);
             return Ok(stockList.Adapt<List<StockResponse>>());
         }
     }

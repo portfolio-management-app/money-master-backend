@@ -38,10 +38,8 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cashAssets = ListByPortfolio(portfolioId);
-            var unifyCurrencyValue =
-                cashAssets
-                    .Select
+            var cashAssets = await ListByPortfolio(portfolioId);
+            var unifyCurrencyValue = cashAssets.Select
                     (stock =>
                         stock.CalculateValueInCurrency(currencyCode, _priceFacade
                             ));
@@ -55,10 +53,13 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
             return _stockRepository.GetFirst(s => s.Id == assetId);
         }
 
-        public List<Stock> ListByPortfolio(int portfolioId)
+        public async Task<List<Stock>> ListByPortfolio(int portfolioId)
         {
             var stocks = _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
-
+            foreach (var stock in stocks)
+            {
+                stock.CurrentPrice = await stock.GetCurrentPricePerUnit( _priceFacade);
+            }
             return stocks;
         }
 

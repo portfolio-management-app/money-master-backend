@@ -10,6 +10,18 @@ namespace ApplicationCore.Entity.Asset
         public string MarketCode { get; set; } // NYSE, HOSE
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
+        public decimal? CurrentPrice { get; set; } = null;
+
+
+        public async Task<decimal> GetCurrentPricePerUnit( ExternalPriceFacade priceFacade)
+        {
+            var priceInUsdDto = await priceFacade.StockPriceRepository.GetPrice(StockCode);
+            if (CurrencyCode == "USD") return priceInUsdDto.CurrentPrice;
+            var ratesObj = await priceFacade.CurrencyRateRepository.GetRateObject("USD");
+
+           return ratesObj.GetValue(CurrencyCode) * priceInUsdDto.CurrentPrice;
+
+        }
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ExternalPriceFacade priceFacade)

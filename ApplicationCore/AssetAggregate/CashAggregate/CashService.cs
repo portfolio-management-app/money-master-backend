@@ -42,7 +42,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
-        public List<CashAsset> ListByPortfolio(int portfolioId)
+        public async Task<List<CashAsset>> ListByPortfolio(int portfolioId)
         {
             return _cashRepository.List(c => c.PortfolioId == portfolioId).ToList();
         }
@@ -58,7 +58,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cashAssets = ListByPortfolio(portfolioId);
+            var cashAssets = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cashAssets
                     .Select
