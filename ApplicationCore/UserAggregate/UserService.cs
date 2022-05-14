@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ApplicationCore.Entity;
 using ApplicationCore.Interfaces;
+using Google.Apis.Auth;
 
 namespace ApplicationCore.UserAggregate
 {
@@ -39,6 +42,30 @@ namespace ApplicationCore.UserAggregate
             if (existedUser is null)
                 throw new ApplicationException($"User with email {email} does not exist");
             return existedUser.CheckPassword(password) ? existedUser : null;
+        }
+
+        public async Task<User> TryGoogleAuthentication(string token)
+        {
+            try
+            {
+                var settings = new GoogleJsonWebSignature.ValidationSettings()
+                {
+                    Audience = new List<string> { "511417762868-an9ak0crrtra3c4l0rqebt5bmuuo5aqp.apps.googleusercontent.com" }
+                };
+
+                var payloadResult = await GoogleJsonWebSignature.ValidateAsync(token, settings);
+                var userEmailFromGoogle = payloadResult.Email;
+
+                var existedUser = _userRepository.GetFirst(user => user.Email == userEmailFromGoogle);
+                if (existedUser is not null) return existedUser;
+                var newUser = AddNewUser(userEmailFromGoogle, "defaultPassword");
+                return newUser;
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to login with Google: {ex.Message}");
+            }
         }
     }
 }
