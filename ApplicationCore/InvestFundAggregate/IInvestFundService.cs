@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
@@ -8,6 +9,7 @@ namespace ApplicationCore.InvestFundAggregate
     public interface IInvestFundService
     {
         InvestFund GetInvestFundByPortfolio(int portfolioId);
+        List<InvestFundTransaction> GetInvestFundTransactionByPortfolio(int portfolioId); 
 
         Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
             string currencyCode, bool isTransferringAll);

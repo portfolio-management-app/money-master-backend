@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Entity;
@@ -63,6 +64,14 @@ namespace ApplicationCore.InvestFundAggregate
         {
             return _investFundRepository.GetFirst(fund => fund.PortfolioId == portfolioId,
                 i => i.Include(inf => inf.Portfolio));
+        }
+
+        public List<InvestFundTransaction> GetInvestFundTransactionByPortfolio(int portfolioId)
+        {
+            return _investFundTransactionRepository
+                .List(trans => trans.InvestFund.PortfolioId == portfolioId,
+                   include: t => t.Include(transaction => transaction.InvestFund))
+                .ToList();
         }
 
         public async Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
