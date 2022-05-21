@@ -1,6 +1,6 @@
 namespace PublicAPI.Endpoints.Portfolio
 {
-    public class CreatePortfolioResponse
+    public class PortfolioResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -69,5 +69,17 @@ namespace ApplicationCore.PortfolioAggregate
 
             return foundAsset;
         }
+
+        public Portfolio EditPortfolio(int portfolioId, string newName, string newCurrency)
+        {
+            var foundPortfolio = GetPortfolioById(portfolioId);
+            if (foundPortfolio is null)
+                return null;
+            foundPortfolio.Name = newName;
+            foundPortfolio.InitialCurrency = newCurrency;
+            foundPortfolio.InitialCash = 0; // have to set to zero for report correctness 
+            _portfolioRepository.Update(foundPortfolio);
+            return foundPortfolio;
+        }
     }
 }

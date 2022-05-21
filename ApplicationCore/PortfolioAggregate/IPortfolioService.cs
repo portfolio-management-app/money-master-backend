@@ -11,5 +11,7 @@ namespace ApplicationCore.PortfolioAggregate
         public List<Portfolio> GetPortfolioList(int userId);
 
         public PersonalAsset GetAssetByPortfolioAndAssetId(int portfolioId, string assetType, int assetId);
+
+        public Portfolio EditPortfolio(int portfolioId, string newName, string newCurrency); 
     }
 }

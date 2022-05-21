@@ -13,7 +13,7 @@ namespace PublicAPI.Endpoints.Portfolio
 {
     [Authorize]
     [Route("portfolio")]
-    public class Create : EndpointBaseSync.WithRequest<CreatePortfolioRequest>.WithActionResult<CreatePortfolioResponse>
+    public class Create : EndpointBaseSync.WithRequest<CreatePortfolioRequest>.WithActionResult<PortfolioResponse>
     {
         private readonly IPortfolioService _portfolioService;
         private readonly ICashService _cashService;
@@ -28,7 +28,7 @@ namespace PublicAPI.Endpoints.Portfolio
         }
 
         [HttpPost]
-        public override ActionResult<CreatePortfolioResponse> Handle(CreatePortfolioRequest request)
+        public override ActionResult<PortfolioResponse> Handle(CreatePortfolioRequest request)
         {
             var userId = (int)HttpContext.Items["userId"]!;
 
@@ -46,7 +46,7 @@ namespace PublicAPI.Endpoints.Portfolio
             };
             _ = _cashService.CreateNewCashAsset(newPortfolio.Id, cashDto);
             _ = _investFundService.AddNewInvestFundToPortfolio(newPortfolio.Id); 
-            return Ok(newPortfolio.Adapt<CreatePortfolioResponse>());
+            return Ok(newPortfolio.Adapt<PortfolioResponse>());
         }
     }
 }
