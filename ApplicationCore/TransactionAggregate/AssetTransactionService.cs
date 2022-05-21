@@ -32,6 +32,7 @@ namespace ApplicationCore.TransactionAggregate
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.Self,
                 ReferentialAssetId = asset.Id,
                 ReferentialAssetType = asset.GetAssetType(),
+                ReferentialAssetName = asset.Name, 
                 Amount = moneyAmount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = currency,
@@ -94,8 +95,10 @@ namespace ApplicationCore.TransactionAggregate
                 CurrencyCode = currencyCode,
                 ReferentialAssetId = asset.Id,
                 ReferentialAssetType = asset.GetAssetType(),
+                ReferentialAssetName = asset.Name, 
                 DestinationAssetId = foundCash.Id,
                 DestinationAssetType = "cash",
+                DestinationAssetName = foundCash.Name,
                 SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawValue,
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset
             };

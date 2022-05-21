@@ -122,6 +122,7 @@ namespace ApplicationCore.InvestFundAggregate
             var newAssetTransaction = new SingleAssetTransaction(
                 assetType, asset.Id, isTransferringAll ? withdrawAmount : amount, currencyCode,
                 SingleAssetTransactionTypes.MoveToFund, null,"fund");
+            newAssetTransaction.ReferentialAssetName = asset.Name; 
             _assetTransactionRepository.Insert(newAssetTransaction); 
             
             return newFundTransaction;
