@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
+using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
 
 namespace ApplicationCore.Entity.Asset
 {
@@ -43,6 +45,11 @@ namespace ApplicationCore.Entity.Asset
             InputMoneyAmount = 0;
             LastChanged = DateTime.Now;
             return true;
+        }
+
+        public override Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

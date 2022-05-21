@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
+using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
 
 namespace ApplicationCore.Entity.Asset
 {
@@ -35,6 +37,11 @@ namespace ApplicationCore.Entity.Asset
         {
             InputMoneyAmount = decimal.Zero;
             return true;
+        }
+
+        public override Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

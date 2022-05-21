@@ -11,4 +11,19 @@
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="ReportAggregate\Visitors\**" />
+      <Compile Include="ReportAggregate\Visitors\CalculateDailyProfitLossVisitor.cs" />
+      <Compile Include="ReportAggregate\Visitors\CalculatePeriodProfitLossVisitor.cs" />
+      <Compile Include="ReportAggregate\Visitors\IVisitor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="ReportAggregate\Visitors\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ReportAggregate\Visitors\**" />
+    </ItemGroup>
+
 </Project>

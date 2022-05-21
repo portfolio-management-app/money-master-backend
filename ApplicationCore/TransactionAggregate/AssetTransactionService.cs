@@ -103,6 +103,20 @@ namespace ApplicationCore.TransactionAggregate
             return transaction;
         }
 
+        public decimal CalculateSubTransactionProfitLoss
+            (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
+        {
+            return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionTypes switch
+            {
+                SingleAssetTransactionTypes.MoveToFund => transaction.Amount,
+                SingleAssetTransactionTypes.WithdrawValue => transaction.Amount,
+                SingleAssetTransactionTypes.SellAsset => transaction.Amount,
+                SingleAssetTransactionTypes.AddValue => -transaction.Amount,
+                SingleAssetTransactionTypes.NewAsset => 0,
+                _ => 0
+            });
+        }
+
         public async Task<SingleAssetTransaction> Fake()
         {
             return new SingleAssetTransaction(); 

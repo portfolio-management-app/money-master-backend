@@ -9,7 +9,6 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
     {
         Task<RealEstateAsset> CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto);
         RealEstateAsset UpdateRealEstateAsset(int portfolioId, int realEstateId, RealEstateDto dto);
-
         Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode);
     }
 }

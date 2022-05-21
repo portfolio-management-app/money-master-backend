@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.InvestFundAggregate;
-using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +27,6 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             {
                 return Unauthorized("You are allowed for this portfolio"); 
             }
-
             var listTransactions = _investFundService.GetInvestFundTransactionByPortfolio(portfolioId);
             var listResponse = listTransactions.Adapt<List<InvestFundTransactionResponse>>();
             return Ok(listResponse); 

@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
+using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
 
 namespace ApplicationCore.Entity.Asset
 {
@@ -30,5 +32,7 @@ namespace ApplicationCore.Entity.Asset
             ExternalPriceFacade priceFacade);
 
         public abstract Task<bool> WithdrawAll();
+
+        public abstract Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor); 
     }
 }

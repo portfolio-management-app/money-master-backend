@@ -54,11 +54,9 @@ namespace ApplicationCore.Entity
         public string GenerateToken(string signingKey)
         {
             var hourToRefresh = 48;
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -72,7 +70,6 @@ namespace ApplicationCore.Entity
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
             var tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;

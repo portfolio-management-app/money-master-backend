@@ -6,6 +6,7 @@ namespace ApplicationCore.Entity.Transactions
         public SingleAssetTransactionDestination SingleAssetTransactionDestination { get; set; }
         public int? DestinationAssetId { get; set; } = null;
         public string DestinationAssetType { get; set; } = null;
+        public string DestinationAssetName { get; set; } = null; 
 
         public SingleAssetTransaction(string referentialAssetType, int referentialAssetId, decimal amount,
             string currencyCode, SingleAssetTransactionTypes singleAssetTransactionTypes, int? destinationAssetId,string destinationAssetType) :
@@ -16,8 +17,8 @@ namespace ApplicationCore.Entity.Transactions
             DestinationAssetType = destinationAssetType;
         }
 
-        public SingleAssetTransaction()
-        {
+        public SingleAssetTransaction(){
+
         }
     }
 }

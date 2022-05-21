@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.Interfaces;
+using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Entity.Asset
@@ -42,6 +44,11 @@ namespace ApplicationCore.Entity.Asset
         {
             CurrentAmountHolding = decimal.Zero;
             return true;
+        }
+
+        public override async Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        {
+            return await visitor.VisitCrypto(this); 
         }
     }
 }
