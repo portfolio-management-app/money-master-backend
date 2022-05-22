@@ -42,7 +42,10 @@ namespace ApplicationCore.InvestFundAggregate
 
             foundFund.CurrentAmount -= assetValueInFundCurrency;
             var newOutgoingTransaction = new InvestFundTransaction(buyingAsset.GetAssetType(), buyingAsset.Id,
-                assetValueInFundCurrency, fundCurrency, foundFund.Id, false);
+                assetValueInFundCurrency, fundCurrency, foundFund.Id, false)
+            {
+                ReferentialAssetName = buyingAsset.Name
+            };
             _investFundTransactionRepository.Insert(newOutgoingTransaction);
 
             return true;
@@ -116,7 +119,10 @@ namespace ApplicationCore.InvestFundAggregate
                     isTransferringAll ? withdrawAmount : amount,
                     currencyCode,
                     investFund.Id,
-                    true);
+                    true)
+                {
+                    ReferentialAssetName = asset.Name
+                };
             _investFundTransactionRepository.Insert(newFundTransaction);
 
             var newAssetTransaction = new SingleAssetTransaction(
@@ -144,7 +150,10 @@ namespace ApplicationCore.InvestFundAggregate
             asset.Amount += rateObj.GetValue(asset.CurrencyCode) * amount;
 
             var newTransaction = new InvestFundTransaction("cash", asset.Id, withdrawAmountInFundCurrency,
-                investFund.Portfolio.InitialCurrency, investFund.Id, false);
+                investFund.Portfolio.InitialCurrency, investFund.Id, false)
+            {
+                ReferentialAssetName = asset.Name
+            };
 
             _investFundTransactionRepository.Insert(newTransaction);
             return newTransaction;
