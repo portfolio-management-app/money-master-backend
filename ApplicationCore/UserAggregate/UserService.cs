@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Entity;
+using ApplicationCore.Entity.Utilities;
 using ApplicationCore.Interfaces;
 using Google.Apis.Auth;
 
@@ -10,10 +11,12 @@ namespace ApplicationCore.UserAggregate
     public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _userRepository;
+        private readonly IBaseRepository<UserMobileFcmCode> _userFcmRepository; 
 
-        public UserService(IBaseRepository<User> userRepository)
+        public UserService(IBaseRepository<User> userRepository, IBaseRepository<UserMobileFcmCode> userFcmRepository)
         {
             _userRepository = userRepository;
+            _userFcmRepository = userFcmRepository;
         }
 
         public User GetUserById(int id)
@@ -66,6 +69,21 @@ namespace ApplicationCore.UserAggregate
             {
                 throw new ApplicationException($"Failed to login with Google: {ex.Message}");
             }
+        }
+
+        public UserMobileFcmCode AddFcmCode(int userId, string newFcmCode)
+        {
+            var user = GetUserById(userId);
+            if (user is null)
+                return null;
+            var newFcm = new UserMobileFcmCode()
+            {
+                FcmCode = newFcmCode,
+                UserId = userId
+            };
+
+            _userFcmRepository.Insert(newFcm);
+            return newFcm;
         }
     }
 }
