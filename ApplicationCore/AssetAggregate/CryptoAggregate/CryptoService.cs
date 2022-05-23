@@ -69,5 +69,19 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var sumCash = resultCalc.Sum();
             return sumCash;
         }
+
+        public Crypto EditCrypto(int cryptoId, EditCryptoDto dto)
+        {
+            var cryptoAsset = GetById(cryptoId);
+            if (cryptoAsset is null)
+                return null;
+            cryptoAsset.CurrentAmountHolding = dto.CurrentAmountHolding;
+            cryptoAsset.Description = dto.Description;
+            cryptoAsset.Name = dto.Name;
+
+            _cryptoRepository.Update(cryptoAsset);
+
+            return cryptoAsset;
+        }
     }
 }

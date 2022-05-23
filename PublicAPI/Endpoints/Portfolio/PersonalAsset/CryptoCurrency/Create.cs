@@ -13,7 +13,7 @@ using PublicAPI.Attributes;
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
 
-    public class Create : BasePortfolioRelatedEndpoint<CreateNewCryptoCurrencyAssetRequest,CryptoCurrencyResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateNewCryptoCurrencyAssetRequest,CryptoResponse>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationService _authorizationService;
@@ -27,7 +27,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         }
 
         [HttpPost("crypto")]
-        public override async Task<ActionResult<CryptoCurrencyResponse>> HandleAsync(
+        public override async Task<ActionResult<CryptoResponse>> HandleAsync(
             [FromMultipleSource] CreateNewCryptoCurrencyAssetRequest request,
             CancellationToken cancellationToken = new())
         {
@@ -41,7 +41,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
                     _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
                         createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
                         createdCrypto.CurrencyCode);
-                return Ok(createdCrypto.Adapt<CryptoCurrencyResponse>());
+                return Ok(createdCrypto.Adapt<CryptoResponse>());
             }
             catch (Exception ex)
             {

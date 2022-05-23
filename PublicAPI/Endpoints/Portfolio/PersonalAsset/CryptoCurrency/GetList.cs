@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class GetList : BasePortfolioRelatedEndpoint<int,List<CryptoCurrencyResponse>>
+    public class GetList : BasePortfolioRelatedEndpoint<int,List<CryptoResponse>>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationService _authorizationService;
@@ -23,7 +23,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         }
 
         [HttpGet("crypto")]
-        public override async Task<ActionResult<List<CryptoCurrencyResponse>>> HandleAsync(int portfolioId,
+        public override async Task<ActionResult<List<CryptoResponse>>> HandleAsync(int portfolioId,
             CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
@@ -31,7 +31,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             try
             {
                 var list = await _cryptoService.ListByPortfolio(portfolioId);
-                return list.Adapt<List<CryptoCurrencyResponse>>();
+                return list.Adapt<List<CryptoResponse>>();
             }
             catch (Exception ex)
             {

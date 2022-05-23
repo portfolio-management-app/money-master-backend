@@ -2,7 +2,7 @@ using System;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class CryptoCurrencyResponse
+    public class CryptoResponse
     {
         public int Id { get; set; }
         public string Name { get; set; }

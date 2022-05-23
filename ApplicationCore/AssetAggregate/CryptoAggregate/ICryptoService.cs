@@ -10,5 +10,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
     {
         Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto);
         Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode);
+
+        Crypto EditCrypto(int cryptoId, EditCryptoDto dto);
     }
 }
