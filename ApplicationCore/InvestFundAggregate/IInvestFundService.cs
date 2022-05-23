@@ -21,6 +21,8 @@ namespace ApplicationCore.InvestFundAggregate
 
         InvestFund AddNewInvestFundToPortfolio(int portfolioId);
 
+        Task<InvestFund> EditCurrency(int portfolioId, string newCurrencyCode); 
+
 
     }
 }

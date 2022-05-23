@@ -19,7 +19,7 @@ namespace PublicAPI.Endpoints.Portfolio
         [HttpPut]
         public override async Task<ActionResult<PortfolioResponse>> HandleAsync([FromMultipleSource]EditPortfolioRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
-            var resultPortfolio = _portfolioService.EditPortfolio(request.PortfolioId,
+            var resultPortfolio = await _portfolioService.EditPortfolio(request.PortfolioId,
                 request.EditPortfolioCommand.NewName, request.EditPortfolioCommand.NewCurrency);
             if (resultPortfolio is null)
                 return NotFound();

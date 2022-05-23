@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
@@ -9,6 +10,7 @@ using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 
 namespace ApplicationCore.PortfolioAggregate
 {
@@ -21,10 +23,11 @@ namespace ApplicationCore.PortfolioAggregate
         private readonly IStockService _stockService;
         private readonly IRealEstateService _realEstateService;
         private readonly IBankSavingService _bankSavingService;
+        private readonly IInvestFundService _investFundService;
 
         public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService,
             ICryptoService cryptoService, ICustomAssetService customAssetService, IStockService stockService,
-            IRealEstateService realEstateService, IBankSavingService bankSavingService)
+            IRealEstateService realEstateService, IBankSavingService bankSavingService, IInvestFundService investFundService)
         {
             _portfolioRepository = portfolioRepository;
             _cashService = cashService;
@@ -33,6 +36,7 @@ namespace ApplicationCore.PortfolioAggregate
             _stockService = stockService;
             _realEstateService = realEstateService;
             _bankSavingService = bankSavingService;
+            _investFundService = investFundService;
         }
 
         public Portfolio CreatePortfolio(int userId, string name, decimal initialCash, string initialCurrency)
@@ -72,7 +76,7 @@ namespace ApplicationCore.PortfolioAggregate
             return foundAsset;
         }
 
-        public Portfolio EditPortfolio(int portfolioId, string newName, string newCurrency)
+        public async Task<Portfolio> EditPortfolio(int portfolioId, string newName, string newCurrency)
         {
             var foundPortfolio = GetPortfolioById(portfolioId);
             if (foundPortfolio is null)
@@ -81,6 +85,7 @@ namespace ApplicationCore.PortfolioAggregate
             foundPortfolio.InitialCurrency = newCurrency;
             foundPortfolio.InitialCash = 0; // have to set to zero for report correctness 
             _portfolioRepository.Update(foundPortfolio);
+            await _investFundService.EditCurrency(portfolioId,newCurrency); 
             return foundPortfolio;
         }
 

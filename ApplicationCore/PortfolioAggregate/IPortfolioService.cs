@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 
@@ -12,7 +13,7 @@ namespace ApplicationCore.PortfolioAggregate
 
         public PersonalAsset GetAssetByPortfolioAndAssetId(int portfolioId, string assetType, int assetId);
 
-        public Portfolio EditPortfolio(int portfolioId, string newName, string newCurrency); 
+        public Task<Portfolio> EditPortfolio(int portfolioId, string newName, string newCurrency); 
         public Portfolio DeletePortfolio(int portfolioId); 
     }
 }

@@ -63,6 +63,19 @@ namespace ApplicationCore.InvestFundAggregate
             return newFund;
         }
 
+        public async Task<InvestFund> EditCurrency(int portfolioId, string newCurrencyCode)
+        {
+            var fund = GetInvestFundByPortfolio(portfolioId); 
+            // exchange
+            var newCurrencyValue = await _priceFacade.CurrencyRateRepository.GetRateObject(fund.Portfolio.InitialCurrency);
+            var rate = newCurrencyValue.GetValue(newCurrencyCode);
+
+            fund.CurrentAmount = rate * fund.CurrentAmount;
+            _investFundRepository.Update(fund);
+
+            return fund; 
+        }
+
         public InvestFund GetInvestFundByPortfolio(int portfolioId)
         {
             return _investFundRepository.GetFirst(fund => fund.PortfolioId == portfolioId,
