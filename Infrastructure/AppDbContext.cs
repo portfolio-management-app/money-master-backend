@@ -1,6 +1,7 @@
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
+using ApplicationCore.Entity.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure
@@ -24,6 +25,7 @@ namespace Infrastructure
         public DbSet<InvestFund> InvestFunds { get; set; }
         public DbSet<SingleAssetTransaction> SingleAssetTransactions { get; set; }
         public DbSet<InvestFundTransaction> InvestFundTransactions { get; set; }
+        public DbSet<UserMobileFcmCode> UserMobileFcmCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
