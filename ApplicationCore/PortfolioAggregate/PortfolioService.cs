@@ -44,13 +44,15 @@ namespace ApplicationCore.PortfolioAggregate
 
         public Portfolio GetPortfolioById(int portfolioId)
         {
-            var foundPortfolio = _portfolioRepository.GetFirst(p => p.Id == portfolioId);
+            var foundPortfolio = _portfolioRepository.GetFirst(p => p.Id == portfolioId && !p.IsDeleted) ;
             return foundPortfolio;
         }
 
         public List<Portfolio> GetPortfolioList(int userId)
         {
-            var listPortfolio = _portfolioRepository.List(p => p.UserId == userId).ToList();
+            var listPortfolio = _portfolioRepository
+                .List(p => p.UserId == userId && !p.IsDeleted)
+                .ToList();
             return listPortfolio;
         }
 
@@ -80,6 +82,16 @@ namespace ApplicationCore.PortfolioAggregate
             foundPortfolio.InitialCash = 0; // have to set to zero for report correctness 
             _portfolioRepository.Update(foundPortfolio);
             return foundPortfolio;
+        }
+
+        public Portfolio DeletePortfolio(int portfolioId)
+        {
+            var foundPortfolio = GetPortfolioById(portfolioId);
+            if (foundPortfolio.IsDeleted)
+                return null;
+            foundPortfolio.IsDeleted = true;
+            _portfolioRepository.Update(foundPortfolio); 
+            return foundPortfolio; 
         }
     }
 }

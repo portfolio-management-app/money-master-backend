@@ -6,5 +6,6 @@ namespace PublicAPI.Endpoints.Portfolio
         public string Name { get; set; }
         public double InitialCash { get; set; }
         public string InitialCurrency { get; set; }
+        public bool IsDeleted { get; set;  }
     }
 }

@@ -8,7 +8,6 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
         public int ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
         public string ReferentialAssetName { get; set; }
-        
         public decimal Amount { get; set; }
         public string CurrencyCode { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
