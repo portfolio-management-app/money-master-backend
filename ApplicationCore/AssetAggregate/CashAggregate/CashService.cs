@@ -26,7 +26,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
 
         public CashAsset GetById(int assetId)
         {
-            return _cashRepository.GetFirst(c => c.Id == assetId);
+            return _cashRepository.GetFirst(c => c.Id == assetId && !c.IsDeleted);
         }
 
         public async Task<CashAsset> CreateNewCashAsset(int portfolioId, CashDto dto)
@@ -42,9 +42,24 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
             throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
+        public CashAsset EditCash(int cashId, EditCashDto dto)
+        {
+            var foundCash = GetById(cashId);
+            if (foundCash is null)
+                return null;
+            foundCash.Amount = dto.Amount;
+            foundCash.CurrencyCode = dto.Currency;
+            foundCash.Name = dto.Name;
+            foundCash.Description = dto.Description;
+
+            _cashRepository.Update(foundCash);
+
+            return foundCash;
+        }
+
         public async Task<List<CashAsset>> ListByPortfolio(int portfolioId)
         {
-            var result =_cashRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            var result =_cashRepository.List(c => c.PortfolioId == portfolioId && !c.IsDeleted).ToList();
             return result;
         }
 
