@@ -38,6 +38,14 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
+        public override async Task<bool> AddValue(decimal amountInAssetUnit)
+        {
+            if (this.Amount + amountInAssetUnit < 0)
+                return false;
+            Amount += amountInAssetUnit;
+            return true;
+        }
+
         public override async Task<bool> WithdrawAll()
         {
             Amount = 0;

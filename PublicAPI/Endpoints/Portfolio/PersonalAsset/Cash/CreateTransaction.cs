@@ -32,7 +32,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
                 var transaction = command.TransactionType switch
                 {
                     "withdrawValue" => await _transactionService
-                        .WithdrawToCash(foundCash, command.DestinationAssetId.Value, command.Amount,
+                        .CreateWithdrawToCashTransaction(foundCash, command.DestinationAssetId.Value, command.Amount,
                             command.CurrencyCode, command.IsTransferringAll),
                     _ => await _transactionService.Fake()
 

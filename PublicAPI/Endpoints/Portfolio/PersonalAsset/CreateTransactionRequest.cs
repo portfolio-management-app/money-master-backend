@@ -6,6 +6,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
     {
         
         [FromBody]public decimal Amount { get; set; } 
+        /// <summary>
+        /// for example: 3 bitcoin -> send 3. null by default
+        /// </summary>
+        [FromBody ]public decimal? AmountInDestinationAssetUnit { get; set; }
         [FromBody]public string CurrencyCode { get; set; } 
         [FromBody]public string TransactionType { get; set; }
         [FromBody]public int? DestinationAssetId { get; set; } = null;

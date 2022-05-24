@@ -10,9 +10,11 @@ namespace ApplicationCore.TransactionAggregate
     {
         SingleAssetTransaction AddCreateNewAssetTransaction(PersonalAsset asset, decimal moneyAmount, string currency);
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);  
-        Task<SingleAssetTransaction> WithdrawToCash
+        Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (PersonalAsset asset, int destinationCashId ,decimal amount, string currencyCode, bool isTransferringAll);
 
+        Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit,
+            decimal? valueInCurrency, string currency);
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode ); 
 
         Task<SingleAssetTransaction> Fake();

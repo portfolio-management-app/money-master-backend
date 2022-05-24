@@ -53,7 +53,7 @@ namespace ApplicationCore.TransactionAggregate
             return listTransaction.ToList(); 
         }
 
-        public async Task<SingleAssetTransaction> WithdrawToCash(PersonalAsset asset, int destinationCashId, decimal amount, string currencyCode, bool isTransferringAll)
+        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(PersonalAsset asset, int destinationCashId, decimal amount, string currencyCode, bool isTransferringAll)
         {
             var foundCash = _cashRepository.GetFirst( c => c.Id == destinationCashId );
             string destinationCurrencyCode = foundCash.CurrencyCode;
@@ -106,6 +106,30 @@ namespace ApplicationCore.TransactionAggregate
             return transaction;
         }
 
+        public async Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit, decimal? valueInCurrency,
+            string currency)
+        {
+            var resultAdd = await asset.AddValue(amountInAssetUnit);
+            if (!resultAdd)
+            {
+                throw new ApplicationException("The value after add is negative");
+            }
+
+            var singleAssetTransaction = new SingleAssetTransaction()
+            {
+                Amount = valueInCurrency ?? decimal.Zero,
+                CurrencyCode = currency,
+                AmountInDestinationAssetUnit = amountInAssetUnit,
+                CreatedAt = DateTime.Now,
+                DestinationAssetId = asset.Id,
+                DestinationAssetType = asset.GetAssetType(),
+                DestinationAssetName = asset.Name,
+                LastChanged = DateTime.Now,
+            };
+            _transactionRepository.Insert(singleAssetTransaction); 
+            return singleAssetTransaction;
+        }
+
         public decimal CalculateSubTransactionProfitLoss
             (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
         {
@@ -124,5 +148,6 @@ namespace ApplicationCore.TransactionAggregate
         {
             return new SingleAssetTransaction(); 
         }
+        
     }
 }

@@ -31,8 +31,8 @@ namespace ApplicationCore.Entity.Asset
         public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
             ExternalPriceFacade priceFacade);
 
+        public abstract Task<bool> AddValue(decimal amountInAssetUnit); 
         public abstract Task<bool> WithdrawAll();
-
         public abstract Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor); 
     }
 }

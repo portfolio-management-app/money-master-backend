@@ -33,6 +33,14 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
+        public override async Task<bool> AddValue(decimal amountInAssetUnit)
+        {
+            if (amountInAssetUnit + CurrentPrice < 0)
+                return false;
+            CurrentPrice += amountInAssetUnit;
+            return true; 
+        }
+
         public override async Task<bool> WithdrawAll()
         {
             InputMoneyAmount = decimal.Zero;

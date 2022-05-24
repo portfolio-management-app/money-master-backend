@@ -22,6 +22,15 @@ namespace ApplicationCore.Entity.Asset
             throw new NotImplementedException();
         }
 
+        public override async Task<bool> AddValue(decimal amountInAssetUnit)
+        {
+            if (InputMoneyAmount + amountInAssetUnit < 0)
+                return false;
+            InputMoneyAmount += amountInAssetUnit;
+            return true;
+        }
+
+
         public override async Task<bool> WithdrawAll()
         {
             InputMoneyAmount = decimal.Zero;
