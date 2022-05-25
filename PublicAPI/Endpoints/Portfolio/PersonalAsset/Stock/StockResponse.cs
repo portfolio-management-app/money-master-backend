@@ -5,6 +5,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
     public class StockResponse
     {
         public int Id { get; set; }
+        public int PortfolioId { get; set; }
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
         public DateTime LastChanged { get; set; }

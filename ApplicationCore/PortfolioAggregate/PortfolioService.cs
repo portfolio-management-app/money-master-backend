@@ -55,7 +55,7 @@ namespace ApplicationCore.PortfolioAggregate
         public List<Portfolio> GetPortfolioList(int userId)
         {
             var listPortfolio = _portfolioRepository
-                .List(p => p.UserId == userId && !p.IsDeleted)
+                .List(p => p.UserId == userId && !p.IsDeleted).OrderBy(p => p.Id)
                 .ToList();
             return listPortfolio;
         }

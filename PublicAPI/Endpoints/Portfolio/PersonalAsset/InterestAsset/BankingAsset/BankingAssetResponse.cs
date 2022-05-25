@@ -5,6 +5,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
     public class BankingAssetResponse
     {
         public int Id { get; set; }
+        public int PortfolioId { get; set; }
         public string Name { get; set; }
         public string BankCode { get; set; }
         public DateTime InputDay { get; set; }
