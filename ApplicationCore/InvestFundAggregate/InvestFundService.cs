@@ -72,7 +72,6 @@ namespace ApplicationCore.InvestFundAggregate
 
             fund.CurrentAmount = rate * fund.CurrentAmount;
             _investFundRepository.Update(fund);
-
             return fund; 
         }
 

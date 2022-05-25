@@ -81,11 +81,15 @@ namespace ApplicationCore.PortfolioAggregate
             var foundPortfolio = GetPortfolioById(portfolioId);
             if (foundPortfolio is null)
                 return null;
+            if (newCurrency != foundPortfolio.InitialCurrency)
+            {
+                await _investFundService.EditCurrency(portfolioId, newCurrency);
+            }
+
             foundPortfolio.Name = newName;
             foundPortfolio.InitialCurrency = newCurrency;
             foundPortfolio.InitialCash = 0; // have to set to zero for report correctness 
             _portfolioRepository.Update(foundPortfolio);
-            await _investFundService.EditCurrency(portfolioId,newCurrency); 
             return foundPortfolio;
         }
 
