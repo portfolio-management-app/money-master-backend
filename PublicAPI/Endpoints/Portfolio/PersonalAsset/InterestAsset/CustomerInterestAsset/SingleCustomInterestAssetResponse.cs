@@ -5,6 +5,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
     public class SingleCustomInterestAssetResponse
     {
         public int Id { get; set; }
+        public int PortfolioId { get; set; }
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
         public double InputMoneyAmount { get; set; }

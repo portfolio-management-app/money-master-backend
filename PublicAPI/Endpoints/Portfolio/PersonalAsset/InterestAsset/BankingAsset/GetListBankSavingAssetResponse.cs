@@ -6,6 +6,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int PortfolioId { get; set; }
         public DateTime InputDay { get; set; }
         public double InputMoneyAmount { get; set; }
         public string InputCurrency { get; set; }
