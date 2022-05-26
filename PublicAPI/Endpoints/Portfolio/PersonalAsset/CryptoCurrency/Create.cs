@@ -40,7 +40,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
                 var currentValue =
                     _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
                         createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
-                        createdCrypto.CurrencyCode);
+                        createdCrypto.CurrencyCode,dto.IsUsingInvestFund);
                 return Ok(createdCrypto.Adapt<CryptoResponse>());
             }
             catch (Exception ex)

@@ -28,6 +28,7 @@ namespace PublicAPI.Endpoints.Portfolio
                 SingleAssetTransactionTypes.WithdrawValue => "withdrawValue",
                 SingleAssetTransactionTypes.SellAsset => "sellAsset",
                 SingleAssetTransactionTypes.MoveToFund => "moveToFund", 
+                SingleAssetTransactionTypes.BuyFromFund=>"buyFromFund",
                 _ => throw new ArgumentOutOfRangeException()
             };
             Id = assetTransaction.Id;

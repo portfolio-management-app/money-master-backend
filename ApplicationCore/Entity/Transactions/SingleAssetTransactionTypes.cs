@@ -6,6 +6,7 @@ namespace ApplicationCore.Entity.Transactions
         AddValue,
         WithdrawValue,
         MoveToFund,
-        SellAsset
+        SellAsset,
+        BuyFromFund,
     }
 }

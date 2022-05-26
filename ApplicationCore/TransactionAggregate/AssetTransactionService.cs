@@ -24,11 +24,11 @@ namespace ApplicationCore.TransactionAggregate
             _priceFacade = priceFacade;
         }
 
-        public SingleAssetTransaction AddCreateNewAssetTransaction(PersonalAsset asset, decimal moneyAmount, string currency)
+        public SingleAssetTransaction AddCreateNewAssetTransaction(PersonalAsset asset, decimal moneyAmount, string currency,bool isUsingInvestFund)
         {
             var newAssetTransaction = new SingleAssetTransaction()
             {
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.NewAsset,
+                SingleAssetTransactionTypes = isUsingInvestFund?SingleAssetTransactionTypes.BuyFromFund:SingleAssetTransactionTypes.NewAsset,
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.Self,
                 ReferentialAssetId = asset.Id,
                 ReferentialAssetType = asset.GetAssetType(),
