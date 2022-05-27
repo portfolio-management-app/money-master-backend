@@ -56,6 +56,7 @@ namespace ApplicationCore.TransactionAggregate
         public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(PersonalAsset asset, int destinationCashId, decimal amount, string currencyCode, bool isTransferringAll)
         {
             var foundCash = _cashRepository.GetFirst( c => c.Id == destinationCashId );
+            decimal valueToAddToCash = 0 ; 
             string destinationCurrencyCode = foundCash.CurrencyCode;
           
             if (isTransferringAll)
@@ -83,8 +84,8 @@ namespace ApplicationCore.TransactionAggregate
                 else
                 {
                     var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
-                    var realValueToAdd = rateObj.GetValue(destinationCurrencyCode) * amount;
-                    foundCash.Amount += realValueToAdd;
+                    valueToAddToCash = rateObj.GetValue(destinationCurrencyCode) * amount;
+                    foundCash.Amount += valueToAddToCash;
                 }
             }
 
@@ -102,7 +103,21 @@ namespace ApplicationCore.TransactionAggregate
                 SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawValue,
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset
             };
-            _transactionRepository.Insert(transaction);
+
+            var cashAssetTransaction = new SingleAssetTransaction()
+            {
+                Amount = valueToAddToCash,
+                CurrencyCode = currencyCode,
+                ReferentialAssetId = asset.Id,
+                ReferentialAssetType = asset.GetAssetType(),
+                ReferentialAssetName = asset.Name,
+                DestinationAssetId = foundCash.Id,
+                DestinationAssetType = foundCash.GetAssetType(),
+                DestinationAssetName = foundCash.Name,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.AddValue,
+                SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset
+            }; 
+            _transactionRepository.InsertRange(new List<SingleAssetTransaction>() {transaction,cashAssetTransaction});
             return transaction;
         }
 
