@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    public class CreateNewStockCommand
+    public class CreateNewStockCommand: BaseCreateRequest
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
@@ -13,7 +13,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         public string MarketCode { get; set; } // NYSE, HOSE
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
-        public bool IsUsingInvestFund { get; set; }
     }
 
     public class CreateNewStockRequest

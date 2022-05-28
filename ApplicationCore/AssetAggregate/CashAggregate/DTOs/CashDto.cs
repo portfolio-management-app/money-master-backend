@@ -12,5 +12,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate.DTOs
         public string Description { get; set; }
         
         public bool IsUsingInvestFund { get; set; }
+        public bool IsUsingCash { get; set; }
+        public int? UsingCashId { get; set; }
     }
 }

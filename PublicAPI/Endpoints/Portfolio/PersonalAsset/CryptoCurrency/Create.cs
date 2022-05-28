@@ -37,11 +37,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             try
             {
                 var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
-                var currentValue =
-                    _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
+                _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
                         createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
-                        createdCrypto.CurrencyCode,dto.IsUsingInvestFund);
-                return Ok(createdCrypto.Adapt<CryptoResponse>());
+                        createdCrypto.CurrencyCode,dto.IsUsingInvestFund); 
+                var result = createdCrypto.Adapt<CryptoResponse>();
+                return Ok(result);
             }
             catch (Exception ex)
             {

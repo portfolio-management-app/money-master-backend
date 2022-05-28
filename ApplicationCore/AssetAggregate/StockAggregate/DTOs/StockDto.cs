@@ -15,5 +15,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate.DTOs
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
         public bool IsUsingInvestFund { get; set; }
+        public bool IsUsingCash { get; set; }
+        public int? UsingCashId { get; set; }
     }
 }

@@ -13,6 +13,8 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate.DTOs
         public string Description { get; set; }
         public string CryptoCoinCode { get; set; }
         public bool IsUsingInvestFund { get; set; }
+        public bool IsUsingCash { get; set; }
+        public int? UsingCashId { get; set; }
         
     }
 }

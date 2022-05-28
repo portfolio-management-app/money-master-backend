@@ -15,6 +15,7 @@ namespace ApplicationCore.TransactionAggregate
 
         Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit,
             decimal? valueInCurrency, string currency);
+
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode ); 
 
         Task<SingleAssetTransaction> Fake();

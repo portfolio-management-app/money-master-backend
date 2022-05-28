@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class CreateNewCryptoCurrencyCommand
+    public class CreateNewCryptoCurrencyCommand: BaseCreateRequest
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
@@ -12,7 +12,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
         public string CryptoCoinCode { get; set; }
-        public bool IsUsingInvestFund { get; set; }
     }
 
     public class CreateNewCryptoCurrencyAssetRequest
