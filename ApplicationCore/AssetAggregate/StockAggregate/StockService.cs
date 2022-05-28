@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
@@ -15,13 +16,15 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         private readonly IBaseRepository<Stock> _stockRepository;
         private readonly IInvestFundService _investFundService;
         private readonly ExternalPriceFacade _priceFacade;
+        private readonly ICashService _cashService;
 
         public StockService(IBaseRepository<Stock> stockRepository, 
-            IInvestFundService investFundService, ExternalPriceFacade priceFacade)
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _stockRepository = stockRepository;
             _investFundService = investFundService;
             _priceFacade = priceFacade;
+            _cashService = cashService;
         }
 
         public async Task<Stock> CreateNewStockAsset(int portfolioId, StockDto dto)
@@ -30,7 +33,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
              {
                  var cashId = dto.UsingCashId;
                                     
-                 var foundCash = GetById(cashId.Value);
+                 var foundCash = _cashService.GetById(cashId.Value);
                  if (foundCash is null)
                      throw new InvalidOperationException("Cash not found");
                  var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.InputCurrency, _priceFacade);

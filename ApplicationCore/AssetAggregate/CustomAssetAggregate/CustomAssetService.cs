@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
@@ -17,21 +18,21 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
         private readonly IBaseRepository<User> _userRepository;
         private readonly IBaseRepository<CustomInterestAssetInfo> _customInterestAssetInfoRepo;
         private readonly IBaseRepository<CustomInterestAsset> _customInterestAssetRepo;
-        private readonly IBaseRepository<Portfolio> _portfolioRepo;
+        private readonly ICashService _cashService;
         private readonly IInvestFundService _investFundService;
         private readonly ExternalPriceFacade _priceFacade;
 
         public CustomAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
-            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, IBaseRepository<Portfolio> portfolioRepo,
-             IInvestFundService investFundService, ExternalPriceFacade priceFacade)
+            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, 
+             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
             _customInterestAssetRepo = customInterestAssetRepo;
-            _portfolioRepo = portfolioRepo;
             _investFundService = investFundService;
             _priceFacade = priceFacade;
+            _cashService = cashService;
         }
 
 
@@ -66,7 +67,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             {
                 var cashId = dto.UsingCashId;
                         
-                var foundCash = GetById(cashId.Value);
+                var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.InputMoneyAmount, dto.InputCurrency, _priceFacade);

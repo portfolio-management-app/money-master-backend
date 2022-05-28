@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
@@ -17,17 +18,16 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
     {
         private readonly IBaseRepository<RealEstateAsset> _realEstateRepository;
         private readonly IInvestFundService _investFundService;
-        private TransactionFactory _transactionFactory; 
         private readonly ExternalPriceFacade _priceFacade;
+        private readonly ICashService _cashService; 
 
         public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository,
-             TransactionFactory transactionFactory,
-             IInvestFundService investFundService, ExternalPriceFacade priceFacade)
+             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _realEstateRepository = realEstateRepository;
-            _transactionFactory = transactionFactory;
             _investFundService = investFundService;
             _priceFacade = priceFacade;
+            _cashService = cashService;
         }
 
         public RealEstateAsset GetById(int assetId)
@@ -42,7 +42,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             {
                 var cashId = dto.UsingCashId;
                         
-                var foundCash = GetById(cashId.Value);
+                var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.BuyPrice, dto.InputCurrency, _priceFacade);

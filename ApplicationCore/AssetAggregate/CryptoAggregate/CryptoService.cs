@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
@@ -14,14 +15,16 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
     {
         private readonly IBaseRepository<Crypto> _cryptoRepository;
         private readonly IInvestFundService _investFundService;
+        private readonly ICashService _cashService;
         private readonly ExternalPriceFacade _priceFacade;
 
         public CryptoService(IBaseRepository<Crypto> cryptoRepository, 
-            IInvestFundService investFundService, ExternalPriceFacade priceFacade)
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _cryptoRepository = cryptoRepository;
             _investFundService = investFundService;
             _priceFacade = priceFacade;
+            _cashService = cashService;
         }
 
 
@@ -36,7 +39,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             {
                 var cashId = dto.UsingCashId;
             
-                var foundCash = GetById(cashId.Value);
+                var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.CurrencyCode, _priceFacade);
