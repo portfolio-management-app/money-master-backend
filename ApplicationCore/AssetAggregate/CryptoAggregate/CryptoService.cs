@@ -32,6 +32,18 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
 
         public async Task<Crypto> CreateNewCryptoAsset(int portfolioId, CryptoDto dto)
         {
+            if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
+            {
+                var cashId = dto.UsingCashId;
+            
+                var foundCash = GetById(cashId.Value);
+                if (foundCash is null)
+                    throw new InvalidOperationException("Cash not found");
+                var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.CurrencyCode, _priceFacade);
+            
+                if (!withdrawResult)
+                    throw new InvalidOperationException("The specified cash does not have sufficient amount");
+            }
             var newAsset = dto.Adapt<Crypto>();
             newAsset.PortfolioId = portfolioId;
             _cryptoRepository.Insert(newAsset);

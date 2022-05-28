@@ -38,6 +38,18 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
         public async Task<RealEstateAsset> CreateNewRealEstateAsset(int portfolioId, RealEstateDto dto)
         {
+            if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
+            {
+                var cashId = dto.UsingCashId;
+                        
+                var foundCash = GetById(cashId.Value);
+                if (foundCash is null)
+                    throw new InvalidOperationException("Cash not found");
+                var withdrawResult = await foundCash.Withdraw(dto.BuyPrice, dto.InputCurrency, _priceFacade);
+                        
+                if (!withdrawResult)
+                    throw new InvalidOperationException("The specified cash does not have sufficient amount");
+            }
             var newAsset = dto.Adapt<RealEstateAsset>();
             newAsset.PortfolioId = portfolioId; 
             _realEstateRepository.Insert(newAsset); 

@@ -6,7 +6,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate.DTOs
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }
-        public double InputMoneyAmount { get; set; }
+        public decimal InputMoneyAmount { get; set; }
         public string InputCurrency { get; set; }
         public string Description { get; set; }
         public double InterestRate { get; set; }

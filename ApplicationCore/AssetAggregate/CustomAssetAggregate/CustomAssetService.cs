@@ -57,12 +57,23 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             int portfolioId,
             CreateNewCustomInterestAssetDto dto)
         {
-            var foundPortfolio = _portfolioRepo.GetFirst(p => p.Id == portfolioId);
-            if (foundPortfolio.UserId != userId)
-                throw new ApplicationException("Unauthorized to access this portfolio");
+          
             var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
             if (foundCustomCategory.UserId != userId)
                 throw new ApplicationException("Unauthorized to access this category");
+            
+            if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
+            {
+                var cashId = dto.UsingCashId;
+                        
+                var foundCash = GetById(cashId.Value);
+                if (foundCash is null)
+                    throw new InvalidOperationException("Cash not found");
+                var withdrawResult = await foundCash.Withdraw(dto.InputMoneyAmount, dto.InputCurrency, _priceFacade);
+                        
+                if (!withdrawResult)
+                    throw new InvalidOperationException("The specified cash does not have sufficient amount");
+            }
 
             var newAsset = dto.Adapt<CustomInterestAsset>();
             newAsset.PortfolioId = portfolioId;
