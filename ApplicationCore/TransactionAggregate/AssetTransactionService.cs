@@ -25,15 +25,29 @@ namespace ApplicationCore.TransactionAggregate
         }
 
         public SingleAssetTransaction AddCreateNewAssetTransaction
-            (PersonalAsset asset, decimal moneyAmount, string currency,bool isUsingInvestFund, decimal? fee,decimal? tax)
+            (PersonalAsset asset,
+                decimal moneyAmount, 
+                string currency,
+                bool isUsingInvestFund,
+                bool isUsingCash,
+                decimal? fee,
+                decimal? tax)
         {
+            var singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromOutside;
+            if (isUsingInvestFund)
+                singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromFund;
+            if (isUsingCash)
+                singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromCash; 
             var newAssetTransaction = new SingleAssetTransaction()
             {
-                SingleAssetTransactionTypes = isUsingInvestFund?SingleAssetTransactionTypes.BuyFromFund:SingleAssetTransactionTypes.NewAsset,
+                SingleAssetTransactionTypes = singleAssetTransactionType,
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.Self,
                 ReferentialAssetId = asset.Id,
                 ReferentialAssetType = asset.GetAssetType(),
                 ReferentialAssetName = asset.Name, 
+                DestinationAssetId = asset.Id,
+                DestinationAssetName = asset.Name,
+                DestinationAssetType = asset.GetAssetType(),
                 Amount = moneyAmount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = currency,
@@ -104,7 +118,7 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetId = foundCash.Id,
                 DestinationAssetType = "cash",
                 DestinationAssetName = foundCash.Name,
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawValue,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
                 SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset,
                 Fee = fee,
                 Tax = tax
@@ -161,9 +175,9 @@ namespace ApplicationCore.TransactionAggregate
             return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionTypes switch
             {
                 SingleAssetTransactionTypes.MoveToFund => transaction.Amount,
-                SingleAssetTransactionTypes.WithdrawValue => transaction.Amount,
+                SingleAssetTransactionTypes.WithdrawToCash => transaction.Amount,
                 SingleAssetTransactionTypes.AddValue => -transaction.Amount,
-                SingleAssetTransactionTypes.NewAsset => 0,
+                SingleAssetTransactionTypes.BuyFromFund => 0,
                 _ => 0
             });
         }

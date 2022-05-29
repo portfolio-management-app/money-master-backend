@@ -30,7 +30,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             {
                 var transaction = command.TransactionType switch
                 {
-                    "withdrawValue" => await _transactionService
+                    "withdrawToCash" => await _transactionService
                         .CreateWithdrawToCashTransaction(found, command.DestinationAssetId.Value, command.Amount,
                             command.CurrencyCode, command.IsTransferringAll,command.Fee,command.Tax),
                     _ => await _transactionService.Fake()

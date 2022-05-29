@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate.DTOs;
 using ApplicationCore.TransactionAggregate;
-using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +39,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
                 var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
                 var unused =
                     _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
-                        newCashAsset.CurrencyCode,dto.IsUsingInvestFund, dto.Fee, dto.Tax);
+                        newCashAsset.CurrencyCode,dto.IsUsingInvestFund,dto.IsUsingCash, dto.Fee, dto.Tax);
                 return Ok(newCashAsset.Adapt<CashResponse>());
             }
             catch (Exception ex)

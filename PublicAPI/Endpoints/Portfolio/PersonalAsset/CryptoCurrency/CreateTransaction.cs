@@ -31,7 +31,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             {
                 var transaction = command.TransactionType switch
                 {
-                    "withdrawValue" => await _transactionService
+                    "withdrawToCash" => await _transactionService
                         .CreateWithdrawToCashTransaction(foundCrypto, command.DestinationAssetId.Value, command.Amount,
                             command.CurrencyCode, command.IsTransferringAll,command.Fee, command.Tax),
                     "buyUsingCash" => await _transactionService.Fake() ,
