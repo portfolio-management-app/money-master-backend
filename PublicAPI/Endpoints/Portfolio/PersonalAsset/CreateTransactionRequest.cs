@@ -15,6 +15,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
         [FromBody]public int? DestinationAssetId { get; set; } = null;
         [FromBody]public string DestinationAssetType { get; set; } = null;
         [FromBody]public bool IsTransferringAll { get; set; }
+        [FromBody]public decimal? Fee { get; set; }
+        [FromBody]public decimal? Tax {get; set; }
     }
     public class CreateTransactionRequest
     {

@@ -40,7 +40,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
                     await _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
                 _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
-                    newAsset.InputCurrency,dto.IsUsingInvestFund);
+                    newAsset.InputCurrency,dto.IsUsingInvestFund, dto.Fee,dto.Tax);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)

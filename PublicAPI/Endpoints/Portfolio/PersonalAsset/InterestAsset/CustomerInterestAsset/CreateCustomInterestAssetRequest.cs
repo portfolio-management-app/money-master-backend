@@ -12,6 +12,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         public string Description { get; set; }
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day    
+        public decimal? Fee { get; set; }
+        public decimal? Tax { get; set; }
     }
 
     public class CreateCustomInterestAssetRequest

@@ -24,7 +24,8 @@ namespace ApplicationCore.TransactionAggregate
             _priceFacade = priceFacade;
         }
 
-        public SingleAssetTransaction AddCreateNewAssetTransaction(PersonalAsset asset, decimal moneyAmount, string currency,bool isUsingInvestFund)
+        public SingleAssetTransaction AddCreateNewAssetTransaction
+            (PersonalAsset asset, decimal moneyAmount, string currency,bool isUsingInvestFund, decimal? fee,decimal? tax)
         {
             var newAssetTransaction = new SingleAssetTransaction()
             {
@@ -36,8 +37,9 @@ namespace ApplicationCore.TransactionAggregate
                 Amount = moneyAmount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = currency,
-                LastChanged = DateTime.Now
-
+                LastChanged = DateTime.Now,
+                Fee = fee,
+                Tax = tax
             };
 
             _transactionRepository.Insert(newAssetTransaction);
@@ -53,7 +55,9 @@ namespace ApplicationCore.TransactionAggregate
             return listTransaction.ToList(); 
         }
 
-        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(PersonalAsset asset, int destinationCashId, decimal amount, string currencyCode, bool isTransferringAll)
+        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
+            (PersonalAsset asset, int destinationCashId, decimal amount, string currencyCode, bool isTransferringAll,
+                decimal? fee,decimal? tax)
         {
             var foundCash = _cashRepository.GetFirst( c => c.Id == destinationCashId );
             decimal valueToAddToCash = 0 ; 
@@ -101,7 +105,9 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = "cash",
                 DestinationAssetName = foundCash.Name,
                 SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawValue,
-                SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset
+                SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset,
+                Fee = fee,
+                Tax = tax
             };
 
             var cashAssetTransaction = new SingleAssetTransaction()
@@ -115,14 +121,16 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = foundCash.GetAssetType(),
                 DestinationAssetName = foundCash.Name,
                 SingleAssetTransactionTypes = SingleAssetTransactionTypes.AddValue,
-                SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset
+                SingleAssetTransactionDestination = SingleAssetTransactionDestination.OtherAsset,
+                Fee = fee,
+                Tax = tax
             }; 
             _transactionRepository.InsertRange(new List<SingleAssetTransaction>() {transaction,cashAssetTransaction});
             return transaction;
         }
 
         public async Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit, decimal? valueInCurrency,
-            string currency)
+            string currency, decimal? fee,decimal? tax)
         {
             var resultAdd = await asset.AddValue(amountInAssetUnit);
             if (!resultAdd)
@@ -140,6 +148,8 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = asset.GetAssetType(),
                 DestinationAssetName = asset.Name,
                 LastChanged = DateTime.Now,
+                Fee = fee,
+                Tax = tax
             };
             _transactionRepository.Insert(singleAssetTransaction); 
             return singleAssetTransaction;
@@ -152,7 +162,6 @@ namespace ApplicationCore.TransactionAggregate
             {
                 SingleAssetTransactionTypes.MoveToFund => transaction.Amount,
                 SingleAssetTransactionTypes.WithdrawValue => transaction.Amount,
-                SingleAssetTransactionTypes.SellAsset => transaction.Amount,
                 SingleAssetTransactionTypes.AddValue => -transaction.Amount,
                 SingleAssetTransactionTypes.NewAsset => 0,
                 _ => 0

@@ -15,6 +15,9 @@ namespace ApplicationCore.Entity.Transactions
         public decimal Amount { get; set; }
         public decimal? AmountInDestinationAssetUnit { get; set; }
         public string CurrencyCode { get; set; }
+        
+        public decimal? Fee { get; set; }
+        public decimal? Tax { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

@@ -13,6 +13,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         public string MarketCode { get; set; } // NYSE, HOSE
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
+        public decimal? Fee { get; set; }
+        public decimal? Tax { get; set; }
     }
 
     public class CreateNewStockRequest

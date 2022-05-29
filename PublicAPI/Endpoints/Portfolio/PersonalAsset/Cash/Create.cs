@@ -40,7 +40,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
                 var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
                 var unused =
                     _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
-                        newCashAsset.CurrencyCode,dto.IsUsingInvestFund);
+                        newCashAsset.CurrencyCode,dto.IsUsingInvestFund, dto.Fee, dto.Tax);
                 return Ok(newCashAsset.Adapt<CashResponse>());
             }
             catch (Exception ex)

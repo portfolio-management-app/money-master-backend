@@ -18,6 +18,8 @@ namespace PublicAPI.Endpoints.Portfolio
         public string CurrencyCode { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastChanged { get; set; }
+        public decimal? Fee { get; set; }
+        public decimal? Tax { get; set; }
 
         public TransactionResponse(SingleAssetTransaction assetTransaction)
         {
@@ -26,7 +28,6 @@ namespace PublicAPI.Endpoints.Portfolio
                 SingleAssetTransactionTypes.NewAsset => "newAsset",
                 SingleAssetTransactionTypes.AddValue => "addValue",
                 SingleAssetTransactionTypes.WithdrawValue => "withdrawValue",
-                SingleAssetTransactionTypes.SellAsset => "sellAsset",
                 SingleAssetTransactionTypes.MoveToFund => "moveToFund", 
                 SingleAssetTransactionTypes.BuyFromFund=>"buyFromFund",
                 _ => throw new ArgumentOutOfRangeException()
@@ -41,7 +42,9 @@ namespace PublicAPI.Endpoints.Portfolio
             LastChanged = assetTransaction.LastChanged;
             DestinationAssetId = assetTransaction.DestinationAssetId;
             DestinationAssetType = assetTransaction.DestinationAssetType;
-            DestinationAssetName = assetTransaction.DestinationAssetName; 
+            DestinationAssetName = assetTransaction.DestinationAssetName;
+            Fee = assetTransaction.Fee ?? 0;
+            Tax = assetTransaction.Tax ?? 0;
         }
     }
 }

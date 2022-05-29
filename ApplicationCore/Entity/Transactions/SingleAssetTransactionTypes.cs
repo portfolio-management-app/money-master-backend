@@ -3,10 +3,10 @@ namespace ApplicationCore.Entity.Transactions
     public enum SingleAssetTransactionTypes
     {
         NewAsset,
-        AddValue,
-        WithdrawValue,
+        AddValue, // buy more
+        WithdrawValue, // withdraw from asset to cash 
         MoveToFund,
-        SellAsset,
         BuyFromFund,
+        BuyFromCash, 
     }
 }
