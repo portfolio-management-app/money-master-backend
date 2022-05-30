@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using PublicAPI.Attributes;
 
-namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
+namespace PublicAPI.Endpoints.Portfolio.Transactions
 {
     public class CreateTransactionCommand
     {
@@ -11,9 +12,16 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
         /// </summary>
         [FromBody ]public decimal? AmountInDestinationAssetUnit { get; set; }
         [FromBody]public string CurrencyCode { get; set; } 
+        
+        
+        [CustomAllowedInputValidation(AllowableValues = 
+            new []{ "withdrawToCash", "withdrawToOutside", "moveToFund", "addValue"})]
         [FromBody]public string TransactionType { get; set; }
         [FromBody]public int? DestinationAssetId { get; set; } = null;
         [FromBody]public string DestinationAssetType { get; set; } = null;
+
+        [FromBody] public int? ReferentialAssetId { get; set; } = null;
+        [FromBody] public string ReferentialAssetType { get; set; } = null; 
         [FromBody]public bool IsTransferringAll { get; set; }
         [FromBody]public decimal? Fee { get; set; }
         [FromBody]public decimal? Tax {get; set; }
@@ -23,6 +31,5 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
         [FromBody] public CreateTransactionCommand CreateTransactionCommand { get; set; }
         
         [FromRoute] public int PortfolioId { get; set; }
-        [FromRoute] public int AssetId { get; set; }
     }
 }

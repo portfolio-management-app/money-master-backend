@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
+using ApplicationCore.TransactionAggregate.DTOs;
 
 namespace ApplicationCore.TransactionAggregate
 {
@@ -12,8 +13,7 @@ namespace ApplicationCore.TransactionAggregate
             (PersonalAsset asset, decimal moneyAmount, string currency,bool isUsingInvestFund,bool isUsingCash,decimal? fee,decimal? tax);
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);  
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
-            (PersonalAsset asset, int destinationCashId ,decimal amount, string currencyCode, bool isTransferringAll,
-                decimal? fee, decimal? tax);
+            (CreateTransactionDto createTransactionDto);
 
         Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit,
             decimal? valueInCurrency, string currency, decimal? fee,decimal? tax);

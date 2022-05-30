@@ -1,7 +1,7 @@
 using System;
 using ApplicationCore.Entity.Transactions;
 
-namespace PublicAPI.Endpoints.Portfolio
+namespace PublicAPI.Endpoints.Portfolio.Transactions
 {
     public class TransactionResponse
     {
@@ -14,6 +14,8 @@ namespace PublicAPI.Endpoints.Portfolio
         public int? DestinationAssetId { get; set; } = null;
         public string DestinationAssetType { get; set; } = null;
         public string DestinationAssetName { get; set; } = null; 
+        public decimal DestinationAmount { get; set; }
+        public string DestinationCurrency { get; set; }
         public decimal Amount { get; set; }
         public string CurrencyCode { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -44,6 +46,8 @@ namespace PublicAPI.Endpoints.Portfolio
             DestinationAssetId = assetTransaction.DestinationAssetId;
             DestinationAssetType = assetTransaction.DestinationAssetType;
             DestinationAssetName = assetTransaction.DestinationAssetName;
+            DestinationAmount = assetTransaction.DestinationAmount;
+            DestinationCurrency = assetTransaction.DestinationCurrency; 
             Fee = assetTransaction.Fee ?? 0;
             Tax = assetTransaction.Tax ?? 0;
         }

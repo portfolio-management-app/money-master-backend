@@ -6,6 +6,7 @@ using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.TransactionAggregate;
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
+using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
