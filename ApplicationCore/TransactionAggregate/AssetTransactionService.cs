@@ -50,23 +50,41 @@ namespace ApplicationCore.TransactionAggregate
             string currency,
             bool isUsingInvestFund,
             bool isUsingCash,
+            int? usingCashId,
             decimal? fee,
             decimal? tax)
         {
             var singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromOutside;
+            var resultReferentialAssetId = -1;
+            string resultReferentialAssetType = null;
+            string resultReferentialAssetName = null; 
             if (isUsingInvestFund)
+            {
                 singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromFund;
-            if (isUsingCash)
+                resultReferentialAssetId = -1;
+                resultReferentialAssetType = "fund";
+                resultReferentialAssetName = "fund"; 
+            }
+
+            if (isUsingCash && usingCashId is not null)
+            {
+                var foundCash = _cashService.GetById(usingCashId.Value);
                 singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromCash;
+                resultReferentialAssetId = usingCashId.Value;
+                resultReferentialAssetType = foundCash.GetAssetType();
+                resultReferentialAssetName = foundCash.Name; 
+            }
             var newAssetTransaction = new SingleAssetTransaction()
             {
                 SingleAssetTransactionTypes = singleAssetTransactionType,
-                ReferentialAssetId = asset.Id,
-                ReferentialAssetType = asset.GetAssetType(),
-                ReferentialAssetName = asset.Name,
+                ReferentialAssetId = resultReferentialAssetId,
+                ReferentialAssetType = resultReferentialAssetType,
+                ReferentialAssetName = resultReferentialAssetName,
                 DestinationAssetId = asset.Id,
                 DestinationAssetName = asset.Name,
                 DestinationAssetType = asset.GetAssetType(),
+                DestinationAmount = moneyAmount,
+                DestinationCurrency = currency,
                 Amount = moneyAmount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = currency,

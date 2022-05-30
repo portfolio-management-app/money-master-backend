@@ -36,7 +36,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             {
                 var newBankSavingAsset = await _bankSavingService.AddBankSavingAsset(request.PortfolioId, dto);
                 _ = _transactionService.AddCreateNewAssetTransaction(newBankSavingAsset,
-                newBankSavingAsset.InputMoneyAmount, newBankSavingAsset.InputCurrency,dto.IsUsingInvestFund,dto.IsUsingCash,
+                newBankSavingAsset.InputMoneyAmount, newBankSavingAsset.InputCurrency,dto.IsUsingInvestFund,dto.IsUsingCash, dto.UsingCashId,
                 dto.Fee,dto.Tax);
             return newBankSavingAsset.Adapt<BankingAssetResponse>();
             }
