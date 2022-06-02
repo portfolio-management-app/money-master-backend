@@ -14,5 +14,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day    
         public bool IsDeleted { get; set; }
+        public decimal Fee { get; set; }
+        public decimal Tax { get; set; }
     }
 }

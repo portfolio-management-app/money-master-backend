@@ -49,7 +49,6 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             };
 
             _customInterestAssetInfoRepo.Insert(newCustomCategory);
-
             return newCustomCategory;
         }
 
@@ -78,6 +77,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 
             var newAsset = dto.Adapt<CustomInterestAsset>();
             newAsset.PortfolioId = portfolioId;
+            newAsset.CustomInterestAssetInfoId = customInterestInfoId; 
             _customInterestAssetRepo.Insert(newAsset);
             if (!dto.IsUsingInvestFund) return newAsset;
             var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
