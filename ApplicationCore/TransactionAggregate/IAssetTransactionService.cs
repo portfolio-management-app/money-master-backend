@@ -20,8 +20,9 @@ namespace ApplicationCore.TransactionAggregate
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (CreateTransactionDto createTransactionDto);
 
-        Task<SingleAssetTransaction> CreateAddValueTransaction(PersonalAsset asset, decimal amountInAssetUnit,
-            decimal? valueInCurrency, string currency, decimal? fee,decimal? tax);
+        Task<SingleAssetTransaction> CreateAddValueTransaction(CreateTransactionDto createTransactionDto);
+
+        Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
 
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode ); 
 

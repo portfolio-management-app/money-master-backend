@@ -39,7 +39,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
                     "withdrawToCash" => await _transactionService.CreateWithdrawToCashTransaction(dto),
                     "withdrawToOutside" => await _transactionService.Fake(),
                     "moveToFund" => await _transactionService.Fake(),
-                    "addValue" => await _transactionService.Fake(),
+                    "addValue" => await _transactionService.CreateAddValueTransaction(dto),
                     _ => throw new InvalidOperationException()
                 };
 

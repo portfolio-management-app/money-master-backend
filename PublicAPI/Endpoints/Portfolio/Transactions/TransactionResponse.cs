@@ -7,7 +7,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
     {
         public string SingleAssetTransactionType { get; set; }
         public int Id { get; set; }
-        public int ReferentialAssetId { get; set; }
+        public int? ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
         
         public string ReferentialAssetName { get; set; }
