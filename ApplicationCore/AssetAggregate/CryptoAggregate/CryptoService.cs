@@ -7,6 +7,7 @@ using ApplicationCore.AssetAggregate.CryptoAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using ApplicationCore.InvestFundAggregate;
+using ApplicationCore.ParallelAsync;
 using Mapster;
 
 namespace ApplicationCore.AssetAggregate.CryptoAggregate
@@ -60,10 +61,20 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
         public async Task<List<Crypto>> ListByPortfolio(int portfolioId)
         {
             var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
-            foreach (var crypto in listCrypto)
+
+            await AsyncMethod.ParallelForEachAsync(listCrypto, async (crypto) =>
             {
-                crypto.CurrentPrice = await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
-            }
+                try
+                {
+                    crypto.CurrentPrice = await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
+                }
+                catch (Exception ex)
+                {
+                    throw new OperationCanceledException($"Error when get current crypto price {ex.Message}");
+                }
+            });
+
+
             return listCrypto.ToList();
         }
 
