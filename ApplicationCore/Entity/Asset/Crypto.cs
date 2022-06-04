@@ -14,6 +14,7 @@ namespace ApplicationCore.Entity.Asset
         public string CurrencyCode { get; set; }
         public decimal CurrentAmountHolding { get; set; }
         public string CryptoCoinCode { get; set; }
+        public decimal CurrentPrice { get; set; }
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ExternalPriceFacade priceFacade)
@@ -42,10 +43,10 @@ namespace ApplicationCore.Entity.Asset
 
         public override async Task<bool> AddValue(decimal amountInAssetUnit)
         {
-            if(CurrentAmountHolding + amountInAssetUnit < 0)
+            if (CurrentAmountHolding + amountInAssetUnit < 0)
                 return false;
             CurrentAmountHolding += amountInAssetUnit;
-            return true; 
+            return true;
         }
 
         public override async Task<bool> WithdrawAll()
@@ -56,7 +57,7 @@ namespace ApplicationCore.Entity.Asset
 
         public override async Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
         {
-            return await visitor.VisitCrypto(this); 
+            return await visitor.VisitCrypto(this);
         }
     }
 }

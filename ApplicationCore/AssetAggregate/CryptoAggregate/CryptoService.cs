@@ -18,7 +18,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
         private readonly ICashService _cashService;
         private readonly ExternalPriceFacade _priceFacade;
 
-        public CryptoService(IBaseRepository<Crypto> cryptoRepository, 
+        public CryptoService(IBaseRepository<Crypto> cryptoRepository,
             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _cryptoRepository = cryptoRepository;
@@ -38,12 +38,12 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
             {
                 var cashId = dto.UsingCashId;
-            
+
                 var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.CurrencyCode, _priceFacade);
-            
+
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
             }
@@ -59,8 +59,11 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
 
         public async Task<List<Crypto>> ListByPortfolio(int portfolioId)
         {
-            var listCrypto =  _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
-
+            var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            foreach (var crypto in listCrypto)
+            {
+                crypto.CurrentPrice = await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
+            }
             return listCrypto.ToList();
         }
 
@@ -78,7 +81,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var cryptoAssets = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 cryptoAssets.Select(crypto =>
-                    crypto.CalculateValueInCurrency(currencyCode,_priceFacade 
+                    crypto.CalculateValueInCurrency(currencyCode, _priceFacade
                         ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
