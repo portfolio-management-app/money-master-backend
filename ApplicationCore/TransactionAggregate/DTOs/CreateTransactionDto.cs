@@ -14,6 +14,7 @@ namespace ApplicationCore.TransactionAggregate.DTOs
         public int? ReferentialAssetId { get; set; } = null;
         public string ReferentialAssetType { get; set; } = null;
         public bool IsTransferringAll { get; set; }
+        public bool IsUsingFundAsSource { get; set; }
         public decimal? Fee { get; set; }
         public decimal? Tax { get; set; }
     }

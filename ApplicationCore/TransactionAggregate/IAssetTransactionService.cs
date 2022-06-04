@@ -24,7 +24,9 @@ namespace ApplicationCore.TransactionAggregate
 
         Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
 
-        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode ); 
+        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode );
+
+        List<SingleAssetTransaction> GetTransactionsByType(params SingleAssetTransactionTypes[] assetTransactionTypesArray); 
 
         Task<SingleAssetTransaction> Fake();
     }

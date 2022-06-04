@@ -22,7 +22,8 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
 
         [FromBody] public int? ReferentialAssetId { get; set; } = null;
         [FromBody] public string ReferentialAssetType { get; set; } = null; 
-        [FromBody]public bool IsTransferringAll { get; set; }
+        [FromBody] public bool IsTransferringAll { get; set; }
+        [FromBody] public bool IsUsingFundAsSource { get; set; }
         [FromBody]public decimal? Fee { get; set; }
         [FromBody]public decimal? Tax {get; set; }
     }

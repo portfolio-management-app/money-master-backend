@@ -55,7 +55,7 @@ namespace ApplicationCore.TransactionAggregate
             decimal? tax)
         {
             var singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromOutside;
-            var resultReferentialAssetId = -1;
+            int? resultReferentialAssetId = null;
             string resultReferentialAssetType = null;
             string resultReferentialAssetName = null;
             if (isUsingInvestFund)
@@ -194,7 +194,16 @@ namespace ApplicationCore.TransactionAggregate
                 });
             }
 
-            public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(
+        public List<SingleAssetTransaction> GetTransactionsByType(params SingleAssetTransactionTypes[] assetTransactionTypesArray)
+        {
+            var resultTransactions = _transactionRepository.List(transaction =>
+                !transaction.IsDeleted &&
+                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionTypes));
+
+            return resultTransactions.ToList(); 
+        }
+
+        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(
                 CreateTransactionDto createTransactionDto)
             {
                 var foundCash = _cashRepository.GetFirst(c => c.Id == createTransactionDto.DestinationAssetId);
