@@ -16,10 +16,17 @@ namespace ApplicationCore.Entity.Asset
             return "custom";
         }
 
-        public override Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
             ExternalPriceFacade priceFacade)
         {
-            throw new NotImplementedException();
+            var rateObject = await priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
+            var rateToWithdraw = rateObject.GetValue(InputCurrency);
+            var valueToWithdraw = rateToWithdraw * withdrawAmount;
+            if (valueToWithdraw > InputMoneyAmount) return false;
+
+            InputMoneyAmount -= valueToWithdraw;
+            return true;
         }
 
         public override async Task<bool> AddValue(decimal amountInAssetUnit)

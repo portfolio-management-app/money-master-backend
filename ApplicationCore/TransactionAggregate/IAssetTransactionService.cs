@@ -15,16 +15,19 @@ namespace ApplicationCore.TransactionAggregate
                 string currency,
                 bool isUsingInvestFund,
                 bool isUsingCash, int? usingCashId,
-                decimal? fee,decimal? tax);
-        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);  
+                decimal? fee, decimal? tax);
+        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (CreateTransactionDto createTransactionDto);
 
         Task<SingleAssetTransaction> CreateAddValueTransaction(CreateTransactionDto createTransactionDto);
 
         Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
+        Task<SingleAssetTransaction> CreateMoveToFundTransaction(
+        int portfolioId, PersonalAsset asset, decimal amount,
+          string currencyCode, bool isTransferringAll);
 
-        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode ); 
+        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode);
 
         Task<SingleAssetTransaction> Fake();
     }

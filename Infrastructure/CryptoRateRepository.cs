@@ -1,4 +1,5 @@
 using System;
+using System.Dynamic;
 using System.Collections.Generic;
 using System.Linq;
 using ApplicationCore.Interfaces;
@@ -6,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
+
 
 namespace Infrastructure
 {
@@ -63,13 +65,33 @@ namespace Infrastructure
                 throw new ApplicationException("Error while calling the pass crypto API");
             var priceInUsd = passPriceDto.GetPriceValueInUsd();
             var rateObj = await _currencyRateRepository.GetRateObject("USD");
-            return priceInUsd * rateObj.GetValue(currencyCode); 
+            return priceInUsd * rateObj.GetValue(currencyCode);
 
         }
+
+        public async Task<Dictionary<string, Dictionary<string, double>>> GetListCoinPrice(string coinIds, string currencies)
+        {
+            var client = _factory.CreateClient();
+
+            var query = new Dictionary<string, string>()
+            {
+                ["ids"] = coinIds,
+                ["vs_currencies"] = currencies,
+            };
+            var uri = QueryHelpers.AddQueryString(_baseUrl, query);
+            var apiResult = await client.GetAsync(uri);
+            if (!apiResult.IsSuccessStatusCode)
+                throw new ApplicationException("Cannot call the coingecko api for crypto price");
+            var apiResultString = await apiResult.Content.ReadAsStringAsync();
+            Console.WriteLine(apiResultString);
+            var priceObject = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, double>>>(apiResultString);
+
+            return priceObject;
+        }
     }
-    
-    
-    
+
+
+
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class CodeAdditionsDeletions4Weeks
     {

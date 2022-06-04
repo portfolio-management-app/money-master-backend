@@ -8,20 +8,24 @@ using PublicAPI.Attributes;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.PortfolioAggregate;
 using Microsoft.AspNetCore.Authorization;
+using ApplicationCore.TransactionAggregate;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    public class AddToInvestFund : BasePortfolioRelatedEndpoint<AddToInvestFundRequest,object>
+    public class AddToInvestFund : BasePortfolioRelatedEndpoint<AddToInvestFundRequest, object>
     {
         private readonly IInvestFundService _investFundService;
         private readonly IPortfolioService _portfolioService;
+
+        private readonly IAssetTransactionService _assetTransactionService;
         private readonly IAuthorizationService _authorizationService;
 
-        public AddToInvestFund(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService)
+        public AddToInvestFund(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService, IAssetTransactionService assetTransactionService)
         {
             _investFundService = investFundService;
             _portfolioService = portfolioService;
             _authorizationService = authorizationService;
+            _assetTransactionService = assetTransactionService;
         }
 
         [HttpPost("fund")]
@@ -29,8 +33,8 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             ([FromMultipleSource] AddToInvestFundRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return Unauthorized("You are allowed for this portfolio"); 
-            
+                return Unauthorized("You are allowed for this portfolio");
+
             var personalAsset = _portfolioService.GetAssetByPortfolioAndAssetId(request.PortfolioId,
                 request.AddToInvestFundCommand.ReferentialAssetType,
                 request.AddToInvestFundCommand.ReferentialAssetId);
@@ -39,7 +43,8 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
                 var result = await _investFundService
                     .AddToInvestFund(request.PortfolioId, personalAsset, request.AddToInvestFundCommand.Amount,
                         request.AddToInvestFundCommand.CurrencyCode, request.AddToInvestFundCommand.IsTransferringAll);
-
+                await _assetTransactionService.CreateMoveToFundTransaction(request.PortfolioId, personalAsset, request.AddToInvestFundCommand.Amount,
+                        request.AddToInvestFundCommand.CurrencyCode, request.AddToInvestFundCommand.IsTransferringAll);
                 return Ok(result);
             }
             catch (OperationCanceledException ex)
