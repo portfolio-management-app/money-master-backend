@@ -27,6 +27,10 @@ namespace Infrastructure
         public DbSet<InvestFundTransaction> InvestFundTransactions { get; set; }
         public DbSet<UserMobileFcmCode> UserMobileFcmCodes { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
+        public DbSet<UserNotification> UserNotifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

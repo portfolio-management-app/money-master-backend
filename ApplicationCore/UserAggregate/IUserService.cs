@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using ApplicationCore.Entity;
 using ApplicationCore.Entity.Utilities;
+using System.Collections.Generic;
 
 namespace ApplicationCore.UserAggregate
 {
@@ -12,6 +13,8 @@ namespace ApplicationCore.UserAggregate
 
         Task<User> TryGoogleAuthentication(string token);
 
-        UserMobileFcmCode AddFcmCode(int userId, string newFcmCode); 
+        UserMobileFcmCode AddFcmCode(int userId, string newFcmCode);
+
+        public List<string> GetUserFcmCodeByUserId(int userId);
     }
 }

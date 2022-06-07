@@ -8,6 +8,6 @@ namespace ApplicationCore.Interfaces
     {
         public Task<decimal> GetCurrentPriceInCurrency(string cryptoId, string currencyCode);
         public Task<decimal> GetPastPriceInCurrency(string cryptoId, string currencyCode, DateTime dateTime);
-        public Task<Dictionary<string, Dictionary<string, double>>> GetListCoinPrice(string coinIds, string currencies);
+        public Task<Dictionary<string, Dictionary<string, decimal>>> GetListCoinPrice(string coinIds, string currencies);
     }
 }

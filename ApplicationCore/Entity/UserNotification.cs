@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ApplicationCore.Entity
 {
-    public class Notification : BaseEntity
+    public class UserNotification : BaseEntity
     {
-
         public int Id { get; set; }
+
         public int UserId { get; set; }
+
+        public DateTime CreateDate { get; set; } = DateTime.Now;
 
         public int AssetId { get; set; }
 
@@ -25,16 +21,13 @@ namespace ApplicationCore.Entity
 
         public string Currency { get; set; }
 
-        public string CoinCode { get; set; }
-
-        public string StockCode { get; set; }
-
         public decimal HighThreadHoldAmount { get; set; }
 
         public decimal LowThreadHoldAmount { get; set; }
 
-        public bool IsHighOn { get; set; } = true;
+        public string NotificationType { get; set; }
 
-        public bool IsLowOn { get; set; } = true;
+        public bool IsRead { get; set; } = false;
+
     }
 }

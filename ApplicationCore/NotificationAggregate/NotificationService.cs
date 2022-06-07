@@ -6,108 +6,86 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
-
+using ApplicationCore.Entity;
+using ApplicationCore.NotificationAggregate.DTOs;
+using System.Linq;
+using Mapster;
 
 namespace ApplicationCore.NotificationAggregate
 {
-    public class NotificationService : IHostedService
+    public class NotificationService : INotificationService
     {
-        private readonly ILogger<NotificationService> _logger;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IBaseRepository<Notification> _notificationRepository;
 
-        private List<string> _subscribeCoinIds = new List<string>();
 
-        private List<string> _subscribeCoinCurrencies = new List<string>();
 
-        private string _subscribeStocks = null;
-
-        private Timer _timer;
-
-        public NotificationService(ILogger<NotificationService> logger, IServiceScopeFactory scopeFactory)
+        public NotificationService(IBaseRepository<Notification> notificationRepository)
         {
-            _logger = logger;
-            _scopeFactory = scopeFactory;
-            GetListSubscribe();
+            _notificationRepository = notificationRepository;
+        }
+        public Notification RegisterPriceNotification(int userId, int portfolioId, NotificationDto dto, bool isHigh)
+
+        {
+            var notification = dto.Adapt<Notification>();
+            notification.UserId = userId;
+            notification.PortfolioId = portfolioId;
+            if (isHigh)
+                notification.IsHighOn = true;
+            else
+                notification.IsLowOn = true;
+            _notificationRepository.Insert(notification);
+            return notification;
         }
 
-        public void Dispose()
+        public Notification EditNotification(int id, EditNotificationDto dto)
         {
-            _timer?.Dispose();
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Notification service is running !!");
-            _timer = new Timer(o =>
+            var found = _notificationRepository.GetFirst((item) => item.Id == id);
+            if (found == null)
             {
-                RunService();
-            },
-            null,
-            TimeSpan.Zero,
-            TimeSpan.FromMinutes(1));
+                return null;
+            }
+            found.HighThreadHoldAmount = dto.HighThreadHoldAmount;
+            found.LowThreadHoldAmount = dto.LowThreadHoldAmount;
+            found.IsHighOn = dto.IsHighOn;
+            found.IsLowOn = dto.IsLowOn;
+            _notificationRepository.Update(found);
+            return found;
 
-            return Task.CompletedTask;
+        }
+        public List<Notification> GetActiveHighNotifications(string assetType)
+        {
+            return _notificationRepository.List((item) => item.AssetType == assetType && item.IsHighOn == true).ToList();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public List<Notification> GetActiveLowNotifications(string assetType)
         {
-            _logger.LogInformation("Notification service has been stopped!!");
-            return Task.CompletedTask;
+            return _notificationRepository.List((item) => item.AssetType == assetType && item.IsLowOn == true).ToList();
         }
 
-        public void RunService()
+
+        public Notification GetNotificationByAssetIdAndAssetType(int assetId, int userId, int portfolioId, string assetType)
         {
-            _logger.LogInformation("Notification service run");
-            RunCoinService();
-        }
-        //Read subscribe coin and stock from DB
-        public void GetListSubscribe()
-        {
-            this._subscribeCoinIds.Add("bitcoin");
-            this._subscribeCoinIds.Add("tenet");
-            this._subscribeCoinCurrencies.Add("usd");
-            this._subscribeCoinCurrencies.Add("vnd");
-            this._subscribeCoinCurrencies.Add("eur");
+            return _notificationRepository.GetFirst((item) => item.AssetId == assetId && item.AssetType == assetType && item.UserId == userId && item.PortfolioId == portfolioId);
         }
 
-        //Get subscribe coin List price
-        public void RunCoinService()
+        public void TurnOffHighNotificationById(int id)
         {
-
-            var query = GetQueryString();
-            using (var scope = _scopeFactory.CreateScope())
+            var found = _notificationRepository.GetFirst((item) => item.Id == id);
+            if (found != null)
             {
-                var coinRepository = scope.ServiceProvider.GetRequiredService<ICryptoRateRepository>();
-                var result = coinRepository.GetListCoinPrice(query[0], query[1]);
+                found.IsHighOn = false;
+                _notificationRepository.Update(found);
             }
         }
 
-        public string[] GetQueryString()
+        public void TurnOffLowNotificationById(int id)
         {
-
-            string coinQuery = "";
-            string currencyQuery = "";
-            for (var i = 0; i < _subscribeCoinIds.Count; i++)
+            var found = _notificationRepository.GetFirst((item) => item.Id == id);
+            if (found != null)
             {
-                coinQuery += $"{_subscribeCoinIds[i]},";
+                found.IsLowOn = false;
+                _notificationRepository.Update(found);
             }
-            for (var i = 0; i < _subscribeCoinCurrencies.Count; i++)
-            {
-                currencyQuery += $"{_subscribeCoinCurrencies[i]},";
-            }
-            string[] result = { coinQuery, currencyQuery };
-            return result;
-        }
-
-        //Get subscribe stock List price
-        public void RunStockService()
-        {
-
-        }
-        //Get Bank Asset Current Price
-        public void GetBankAssetCurrentPrice()
-        {
-
         }
     }
 }

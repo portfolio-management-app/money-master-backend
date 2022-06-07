@@ -69,7 +69,7 @@ namespace Infrastructure
 
         }
 
-        public async Task<Dictionary<string, Dictionary<string, double>>> GetListCoinPrice(string coinIds, string currencies)
+        public async Task<Dictionary<string, Dictionary<string, decimal>>> GetListCoinPrice(string coinIds, string currencies)
         {
             var client = _factory.CreateClient();
 
@@ -84,7 +84,7 @@ namespace Infrastructure
                 throw new ApplicationException("Cannot call the coingecko api for crypto price");
             var apiResultString = await apiResult.Content.ReadAsStringAsync();
             Console.WriteLine(apiResultString);
-            var priceObject = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, double>>>(apiResultString);
+            var priceObject = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(apiResultString);
 
             return priceObject;
         }

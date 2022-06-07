@@ -5,13 +5,14 @@ using ApplicationCore.Entity;
 using ApplicationCore.Entity.Utilities;
 using ApplicationCore.Interfaces;
 using Google.Apis.Auth;
+using System.Linq;
 
 namespace ApplicationCore.UserAggregate
 {
     public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _userRepository;
-        private readonly IBaseRepository<UserMobileFcmCode> _userFcmRepository; 
+        private readonly IBaseRepository<UserMobileFcmCode> _userFcmRepository;
 
         public UserService(IBaseRepository<User> userRepository, IBaseRepository<UserMobileFcmCode> userFcmRepository)
         {
@@ -76,14 +77,26 @@ namespace ApplicationCore.UserAggregate
             var user = GetUserById(userId);
             if (user is null)
                 return null;
-            var newFcm = new UserMobileFcmCode()
-            {
-                FcmCode = newFcmCode,
-                UserId = userId
-            };
 
-            _userFcmRepository.Insert(newFcm);
-            return newFcm;
+            var existCode = _userFcmRepository.GetFirst(item => item.UserId == userId && item.FcmCode == newFcmCode);
+            if (existCode is null)
+            {
+                var newFcm = new UserMobileFcmCode()
+                {
+                    FcmCode = newFcmCode,
+                    UserId = userId
+                };
+
+                _userFcmRepository.Insert(newFcm);
+                return newFcm;
+            }
+            return null;
+
+        }
+        public List<string> GetUserFcmCodeByUserId(int userId)
+        {
+            var result = _userFcmRepository.List((item) => item.UserId == userId).Select(u => u.FcmCode).ToList();
+            return result;
         }
     }
 }

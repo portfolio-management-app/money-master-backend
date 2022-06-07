@@ -3,15 +3,17 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220605144214_addNotificationTable")]
+    partial class addNotificationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,26 +364,20 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Currency")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("HighThreadHoldAmount")
-                        .HasColumnType("numeric");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsHighOn")
+                    b.Property<bool>("IsOn")
                         .HasColumnType("boolean");
-
-                    b.Property<bool>("IsLowOn")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("LowThreadHoldAmount")
-                        .HasColumnType("numeric");
 
                     b.Property<int>("PortfolioId")
                         .HasColumnType("integer");
 
                     b.Property<string>("StockCode")
                         .HasColumnType("text");
+
+                    b.Property<double>("ThreadHoldAmount")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -558,54 +554,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Entity.UserNotification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("AssetId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AssetName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AssetType")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Currency")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("HighThreadHoldAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("LowThreadHoldAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("NotificationType")
-                        .HasColumnType("text");
-
-                    b.Property<int>("PortfolioId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entity.Utilities.UserMobileFcmCode", b =>

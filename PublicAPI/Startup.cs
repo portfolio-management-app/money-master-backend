@@ -9,10 +9,12 @@ using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using ApplicationCore.InvestFundAggregate;
+using ApplicationCore.NotificationAggregate;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate;
 using ApplicationCore.TransactionAggregate;
 using ApplicationCore.UserAggregate;
+using ApplicationCore.UserNotificationAggregate;
 using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -83,6 +85,8 @@ namespace PublicAPI
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
             services.AddScoped<IAssetTransactionService, AssetTransactionService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IUserNotificationService, UserNotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

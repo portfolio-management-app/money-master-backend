@@ -11,7 +11,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    
+
     public class Create : BasePortfolioRelatedEndpoint<CreateCashRequest, CashResponse>
     {
         private readonly ICashService _cashService;
@@ -29,17 +29,17 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] CreateCashRequest request,
             CancellationToken cancellationToken = new())
         {
-            
+
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
-            
+                return Unauthorized(NotAllowedPortfolioMessage);
+
             var dto = request.CreateCashCommand.Adapt<CashDto>();
             try
             {
                 var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
                 var unused =
                     _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
-                        newCashAsset.CurrencyCode,dto.IsUsingInvestFund,dto.IsUsingCash,dto.UsingCashId, dto.Fee, dto.Tax);
+                        newCashAsset.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee, dto.Tax);
                 return Ok(newCashAsset.Adapt<CashResponse>());
             }
             catch (Exception ex)
