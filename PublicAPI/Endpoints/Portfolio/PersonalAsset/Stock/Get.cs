@@ -19,10 +19,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         private readonly ExternalPriceFacade _priceFacade;
 
 
-        public Get(IStockService stockService)
+        public Get(IStockService stockService, ExternalPriceFacade priceFacade)
         {
             _stockService = stockService;
-
+            _priceFacade = priceFacade;
         }
 
         [HttpGet("stock/{assetId}")]
