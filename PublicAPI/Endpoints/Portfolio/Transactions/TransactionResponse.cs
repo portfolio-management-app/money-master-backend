@@ -29,6 +29,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
             {
                 SingleAssetTransactionTypes.AddValue => "addValue",
                 SingleAssetTransactionTypes.WithdrawToCash => "withdrawToCash",
+                SingleAssetTransactionTypes.WithdrawToOutside => "withdrawToOutside",
                 SingleAssetTransactionTypes.MoveToFund => "moveToFund",
                 SingleAssetTransactionTypes.BuyFromFund => "buyFromFund",
                 SingleAssetTransactionTypes.BuyFromCash => "buyFromCash",
