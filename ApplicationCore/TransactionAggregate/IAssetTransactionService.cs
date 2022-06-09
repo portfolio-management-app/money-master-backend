@@ -20,7 +20,7 @@ namespace ApplicationCore.TransactionAggregate
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (CreateTransactionDto createTransactionDto);
 
-        Task<SingleAssetTransaction> CreateAddValueTransaction(CreateTransactionDto createTransactionDto);
+        Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,CreateTransactionDto createTransactionDto);
 
         Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
         Task<SingleAssetTransaction> CreateMoveToFundTransaction(

@@ -164,6 +164,8 @@ namespace ApplicationCore.TransactionAggregate
             return newTransaction;
         }
 
+
+
         public async Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(
             CreateTransactionDto createTransactionDto)
         {
@@ -300,6 +302,32 @@ namespace ApplicationCore.TransactionAggregate
             return newTransaction;
 
         }
+        
+        public async Task<SingleAssetTransaction> CreateMoveToFundTransaction(
+            int portfolioId, PersonalAsset asset, decimal amount,
+            string currencyCode, bool isTransferringAll)
+        {
+            var newTransaction = new SingleAssetTransaction
+            {
+                ReferentialAssetId = asset.Id,
+                ReferentialAssetType = asset.GetAssetType(),
+                ReferentialAssetName = asset.Name,
+                Amount = amount,
+                CurrencyCode = currencyCode,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.MoveToFund,
+                Fee = 0,
+                Tax = 0,
+                CreatedAt = DateTime.Now,
+                LastChanged = DateTime.Now,
+                DestinationAssetId = null,
+                DestinationAssetName = null,
+                DestinationAssetType = null,
+                DestinationAmount = 0,
+                DestinationCurrency = currencyCode,
+            };
+            _transactionRepository.Insert(newTransaction);
+            return newTransaction;
+        } 
 
         public async Task<SingleAssetTransaction> Fake()
         {
