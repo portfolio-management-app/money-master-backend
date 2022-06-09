@@ -164,10 +164,39 @@ namespace ApplicationCore.TransactionAggregate
             return newTransaction;
         }
 
-        public Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(
+        public async Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(
             CreateTransactionDto createTransactionDto)
         {
-            throw new NotImplementedException();
+            if (createTransactionDto.ReferentialAssetId is null) throw new InvalidOperationException("Asset not found");
+            var sourceAssetId = createTransactionDto.ReferentialAssetId.Value;
+            var foundAsset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType,
+                sourceAssetId);
+            if (foundAsset is null)
+                throw new InvalidOperationException("Asset not found");
+            var withdrawResult = await foundAsset.Withdraw(createTransactionDto.Amount, createTransactionDto.CurrencyCode, _priceFacade);
+            if (!withdrawResult) throw new InvalidOperationException("Insufficient value to withdraw");
+            var newTransaction = new SingleAssetTransaction()
+            {
+                ReferentialAssetId = sourceAssetId,
+                ReferentialAssetType = createTransactionDto.ReferentialAssetType,
+                ReferentialAssetName = foundAsset.Name,
+                Amount = createTransactionDto.Amount,
+                CurrencyCode = createTransactionDto.CurrencyCode,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToOutside,
+                Fee = createTransactionDto.Fee,
+                Tax = createTransactionDto.Tax,
+                CreatedAt = DateTime.Now,
+                LastChanged = DateTime.Now,
+                DestinationAssetId = null,
+                DestinationAssetName = null,
+                DestinationAssetType = null,
+                DestinationAmount = createTransactionDto.Amount,
+                DestinationCurrency = createTransactionDto.CurrencyCode,
+                AmountInDestinationAssetUnit = createTransactionDto.Amount
+            };
+
+            _transactionRepository.Insert(newTransaction);
+            return newTransaction;
         }
 
         public decimal CalculateSubTransactionProfitLoss
@@ -246,32 +275,30 @@ namespace ApplicationCore.TransactionAggregate
                 throw new InvalidOperationException("Source asset is not specified");
             }
 
-            if (createTransactionDto.ReferentialAssetId != null)
+            if (createTransactionDto.ReferentialAssetId == null) throw new InvalidOperationException();
+            var newTransaction = new SingleAssetTransaction
             {
-                var newTransaction = new SingleAssetTransaction
-                {
-                    ReferentialAssetId = sourceAssetId.Value,
-                    ReferentialAssetType = createTransactionDto.ReferentialAssetType,
-                    ReferentialAssetName = sourceAsset.Name,
-                    Amount = createTransactionDto.Amount,
-                    CurrencyCode = createTransactionDto.CurrencyCode,
-                    SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
-                    Fee = createTransactionDto.Fee,
-                    Tax = createTransactionDto.Tax,
-                    CreatedAt = DateTime.Now,
-                    LastChanged = DateTime.Now,
-                    DestinationAssetId = foundCash.Id,
-                    DestinationAssetName = foundCash.Name,
-                    DestinationAssetType = foundCash.GetAssetType(),
-                    DestinationAmount = valueToAddToCash,
-                    DestinationCurrency = foundCash.CurrencyCode
-                };
-                _transactionRepository.Insert(newTransaction);
+                ReferentialAssetId = sourceAssetId.Value,
+                ReferentialAssetType = createTransactionDto.ReferentialAssetType,
+                ReferentialAssetName = sourceAsset.Name,
+                Amount = createTransactionDto.Amount,
+                CurrencyCode = createTransactionDto.CurrencyCode,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
+                Fee = createTransactionDto.Fee,
+                Tax = createTransactionDto.Tax,
+                CreatedAt = DateTime.Now,
+                LastChanged = DateTime.Now,
+                DestinationAssetId = foundCash.Id,
+                DestinationAssetName = foundCash.Name,
+                DestinationAssetType = foundCash.GetAssetType(),
+                DestinationAmount = valueToAddToCash,
+                DestinationCurrency = foundCash.CurrencyCode,
+                AmountInDestinationAssetUnit = valueToAddToCash
+            };
+            _transactionRepository.Insert(newTransaction);
 
-                return newTransaction;
-            }
+            return newTransaction;
 
-            throw new InvalidOperationException();
         }
 
         public async Task<SingleAssetTransaction> Fake()

@@ -17,7 +17,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
 
 
         [CustomAllowedInputValidation(AllowableValues =
-            new[] { "withdrawToCash", "withdrawToOutside", "moveToFund", "addValue" })]
+            new[] { "withdrawToCash", "withdrawToOutside",  "addValue" })]
         [FromBody]
         public string TransactionType { get; set; }
 

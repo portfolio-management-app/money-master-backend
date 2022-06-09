@@ -34,7 +34,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
                 var transaction = request.CreateTransactionCommand.TransactionType switch
                 {
                     "withdrawToCash" => await _transactionService.CreateWithdrawToCashTransaction(dto),
-                    "withdrawToOutside" => await _transactionService.Fake(),
+                    "withdrawToOutside" => await _transactionService.CreateWithdrawToOutsideTransaction(dto),
                     "moveToFund" => await _transactionService.Fake(),
                     "addValue" => await _transactionService.CreateAddValueTransaction(request.PortfolioId, dto),
                     _ => throw new InvalidOperationException()
