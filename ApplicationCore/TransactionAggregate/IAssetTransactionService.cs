@@ -29,6 +29,10 @@ namespace ApplicationCore.TransactionAggregate
 
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode);
 
+        public List<SingleAssetTransaction> GetTransactionsByType(
+            params SingleAssetTransactionTypes[] assetTransactionTypesArray);
+
+
         Task<SingleAssetTransaction> Fake();
     }
 }
