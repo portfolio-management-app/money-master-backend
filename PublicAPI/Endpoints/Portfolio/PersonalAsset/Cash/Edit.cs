@@ -9,7 +9,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    public class Edit: BasePortfolioRelatedEndpoint<EditCashRequest,CashResponse>
+    public class Edit : BasePortfolioRelatedEndpoint<EditCashRequest, CashResponse>
     {
         private IAuthorizationService _authorizationService;
         private readonly ICashService _cashService;
@@ -21,18 +21,16 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         }
 
         [HttpPut("cash/{cashId}")]
-        public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource]EditCashRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] EditCashRequest request,
+            CancellationToken cancellationToken = new())
         {
-            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-            {
-                return Unauthorized(); 
-            }
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService)) return Unauthorized();
             var dto = request.EditCashCommand.Adapt<EditCashDto>();
             var result = _cashService.EditCash(request.CashId, dto);
 
             if (result is null)
                 return NotFound();
-            return result.Adapt<CashResponse>(); 
+            return result.Adapt<CashResponse>();
         }
     }
 }

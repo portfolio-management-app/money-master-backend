@@ -17,6 +17,5 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate.DTOs
         public int? UsingCashId { get; set; }
         public decimal? Fee { get; set; }
         public decimal? Tax { get; set; }
-        
     }
 }

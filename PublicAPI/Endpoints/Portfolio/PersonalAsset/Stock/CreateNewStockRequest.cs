@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    public class CreateNewStockCommand: BaseCreateRequest
+    public class CreateNewStockCommand : BaseCreateRequest
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }

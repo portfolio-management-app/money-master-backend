@@ -12,8 +12,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IRealEstateService _realEstateService;
-        
-        
+
+
         [HttpGet("realEstate")]
         public override async Task<ActionResult<List<RealEstateResponse>>> HandleAsync
             (int portfolioId, CancellationToken cancellationToken = new())

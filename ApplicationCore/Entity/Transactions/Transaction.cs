@@ -8,14 +8,14 @@ namespace ApplicationCore.Entity.Transactions
 
         public int? ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
-        
+
         public string ReferentialAssetName { get; set; }
 
 
         public decimal Amount { get; set; }
         public decimal? AmountInDestinationAssetUnit { get; set; }
         public string CurrencyCode { get; set; }
-        
+
         public decimal? Fee { get; set; }
         public decimal? Tax { get; set; }
 

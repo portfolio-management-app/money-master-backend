@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    public class AddToInvestFund : BasePortfolioRelatedEndpoint<AddToInvestFundRequest,object>
+    public class AddToInvestFund : BasePortfolioRelatedEndpoint<AddToInvestFundRequest, object>
     {
         private readonly IInvestFundService _investFundService;
         private readonly IPortfolioService _portfolioService;
         private readonly IAuthorizationService _authorizationService;
 
-        public AddToInvestFund(IInvestFundService investFundService, IPortfolioService portfolioService, IAuthorizationService authorizationService)
+        public AddToInvestFund(IInvestFundService investFundService, IPortfolioService portfolioService,
+            IAuthorizationService authorizationService)
         {
             _investFundService = investFundService;
             _portfolioService = portfolioService;
@@ -29,8 +30,8 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             ([FromMultipleSource] AddToInvestFundRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return Unauthorized("You are allowed for this portfolio"); 
-            
+                return Unauthorized("You are allowed for this portfolio");
+
             var personalAsset = _portfolioService.GetAssetByPortfolioAndAssetId(request.PortfolioId,
                 request.AddToInvestFundCommand.ReferentialAssetType,
                 request.AddToInvestFundCommand.ReferentialAssetId);

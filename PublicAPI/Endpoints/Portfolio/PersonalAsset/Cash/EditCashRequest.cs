@@ -9,6 +9,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         public string Description { get; set; }
         public string Name { get; set; }
     }
+
     public class EditCashRequest
     {
         [FromRoute] public int PortfolioId { get; set; }

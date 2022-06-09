@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.Report
 {
-    public class GetSankeyChart: BasePortfolioRelatedEndpoint<int,List<SankeyChartResponse>>
+    public class GetSankeyChart : BasePortfolioRelatedEndpoint<int, List<SankeyChartResponse>>
     {
         private readonly IReportService _reportService;
         private readonly IAuthorizationService _authorizationService;
@@ -22,7 +22,7 @@ namespace PublicAPI.Endpoints.Portfolio.Report
 
         [HttpGet("sankey")]
         public override async Task<ActionResult<List<SankeyChartResponse>>> HandleAsync
-            ([FromRoute]int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+            ([FromRoute] int portfolioId, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return Unauthorized($"You are not allowed to this portfolio: {portfolioId}");

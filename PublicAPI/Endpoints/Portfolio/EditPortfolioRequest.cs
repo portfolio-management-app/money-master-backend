@@ -7,6 +7,7 @@ namespace PublicAPI.Endpoints.Portfolio
         public string NewName { get; set; }
         public string NewCurrency { get; set; }
     }
+
     public class EditPortfolioRequest
     {
         [FromBody] public EditPortfolioCommand EditPortfolioCommand { get; set; }

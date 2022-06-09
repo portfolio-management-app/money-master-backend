@@ -24,7 +24,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         [HttpDelete("crypto/{assetId}")]
         public override async Task<ActionResult<CryptoResponse>> HandleAsync(
             [FromMultipleSource] PortfolioAssetRequest request,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
@@ -32,6 +32,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             return Ok(crypto.Adapt<CryptoResponse>());
         }
     }
-
- 
 }

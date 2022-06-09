@@ -9,7 +9,7 @@ using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest,List<TransactionResponse>>
+    public class GetListTransaction : BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly ICashService _cashService;
         private readonly IAssetTransactionService _transactionService;
@@ -21,7 +21,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         }
 
         [HttpGet("cash/{assetId}/transactions")]
-        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync([FromRoute]GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<TransactionResponse>>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundCash = _cashService.GetById(request.AssetId);
             if (foundCash is null)

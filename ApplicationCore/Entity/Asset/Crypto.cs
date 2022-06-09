@@ -19,7 +19,8 @@ namespace ApplicationCore.Entity.Asset
             ExternalPriceFacade priceFacade)
         {
             var currentPriceInCurrency =
-                await priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
+                await priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode,
+                    destinationCurrencyCode);
             return currentPriceInCurrency * CurrentAmountHolding;
         }
 
@@ -42,10 +43,10 @@ namespace ApplicationCore.Entity.Asset
 
         public override async Task<bool> AddValue(decimal amountInAssetUnit)
         {
-            if(CurrentAmountHolding + amountInAssetUnit < 0)
+            if (CurrentAmountHolding + amountInAssetUnit < 0)
                 return false;
             CurrentAmountHolding += amountInAssetUnit;
-            return true; 
+            return true;
         }
 
         public override async Task<bool> WithdrawAll()
@@ -56,7 +57,7 @@ namespace ApplicationCore.Entity.Asset
 
         public override async Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
         {
-            return await visitor.VisitCrypto(this); 
+            return await visitor.VisitCrypto(this);
         }
     }
 }

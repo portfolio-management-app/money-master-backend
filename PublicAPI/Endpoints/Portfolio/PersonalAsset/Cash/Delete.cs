@@ -8,10 +8,11 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    public class Delete: BasePortfolioRelatedEndpoint<PortfolioAssetRequest, CashResponse>
+    public class Delete : BasePortfolioRelatedEndpoint<PortfolioAssetRequest, CashResponse>
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ICashService _cashService; 
+        private readonly ICashService _cashService;
+
         public Delete(IAuthorizationService authorizationService, ICashService cashService)
         {
             _authorizationService = authorizationService;
@@ -19,7 +20,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         }
 
         [HttpDelete("cash/{assetId}")]
-        public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource]PortfolioAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CashResponse>> HandleAsync(
+            [FromMultipleSource] PortfolioAssetRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);

@@ -27,7 +27,8 @@ namespace ApplicationCore.PortfolioAggregate
 
         public PortfolioService(IBaseRepository<Portfolio> portfolioRepository, ICashService cashService,
             ICryptoService cryptoService, ICustomAssetService customAssetService, IStockService stockService,
-            IRealEstateService realEstateService, IBankSavingService bankSavingService, IInvestFundService investFundService)
+            IRealEstateService realEstateService, IBankSavingService bankSavingService,
+            IInvestFundService investFundService)
         {
             _portfolioRepository = portfolioRepository;
             _cashService = cashService;
@@ -48,7 +49,7 @@ namespace ApplicationCore.PortfolioAggregate
 
         public Portfolio GetPortfolioById(int portfolioId)
         {
-            var foundPortfolio = _portfolioRepository.GetFirst(p => p.Id == portfolioId && !p.IsDeleted) ;
+            var foundPortfolio = _portfolioRepository.GetFirst(p => p.Id == portfolioId && !p.IsDeleted);
             return foundPortfolio;
         }
 
@@ -82,9 +83,7 @@ namespace ApplicationCore.PortfolioAggregate
             if (foundPortfolio is null)
                 return null;
             if (newCurrency != foundPortfolio.InitialCurrency)
-            {
                 await _investFundService.EditCurrency(portfolioId, newCurrency);
-            }
 
             foundPortfolio.Name = newName;
             foundPortfolio.InitialCurrency = newCurrency;
@@ -99,8 +98,8 @@ namespace ApplicationCore.PortfolioAggregate
             if (foundPortfolio.IsDeleted)
                 return null;
             foundPortfolio.IsDeleted = true;
-            _portfolioRepository.Update(foundPortfolio); 
-            return foundPortfolio; 
+            _portfolioRepository.Update(foundPortfolio);
+            return foundPortfolio;
         }
     }
 }

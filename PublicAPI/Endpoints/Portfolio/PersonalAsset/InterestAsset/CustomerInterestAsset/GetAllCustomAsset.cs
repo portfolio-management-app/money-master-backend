@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
     public class
-        GetAllCustomAsset : BasePortfolioRelatedEndpoint<int,List<GetAllCustomAssetResponse>>
+        GetAllCustomAsset : BasePortfolioRelatedEndpoint<int, List<GetAllCustomAssetResponse>>
     {
         private readonly ICustomAssetService _customAssetService;
         private readonly IAuthorizationService _authorizationService;
@@ -26,9 +26,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         public override async Task<ActionResult<List<GetAllCustomAssetResponse>>> HandleAsync(int portfolioId,
             CancellationToken cancellationToken = new())
         {
-            
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
             var listAssets = _customAssetService.GetAllCustomInterestAssetsByPortfolio(portfolioId);
 
             var groups = listAssets

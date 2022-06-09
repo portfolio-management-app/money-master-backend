@@ -18,7 +18,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         private readonly ExternalPriceFacade _priceFacade;
         private readonly ICashService _cashService;
 
-        public StockService(IBaseRepository<Stock> stockRepository, 
+        public StockService(IBaseRepository<Stock> stockRepository,
             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _stockRepository = stockRepository;
@@ -29,35 +29,37 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
         public async Task<Stock> CreateNewStockAsset(int portfolioId, StockDto dto)
         {
-             if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
-             {
-                 var cashId = dto.UsingCashId;
-                                    
-                 var foundCash = _cashService.GetById(cashId.Value);
-                 if (foundCash is null)
-                     throw new InvalidOperationException("Cash not found");
-                 var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.InputCurrency, _priceFacade);
-                                    
-                 if (!withdrawResult)
-                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
-             }
-             var newAsset = dto.Adapt<Stock>();
-             newAsset.PortfolioId = portfolioId;
-             _stockRepository.Insert(newAsset);
-             if (!dto.IsUsingInvestFund) return newAsset;
-             var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
-             if (useFundResult) return newAsset;
-             _stockRepository.Delete(newAsset);
-             throw new InvalidOperationException("Insufficient money amount in fund");
+            if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
+            {
+                var cashId = dto.UsingCashId;
+
+                var foundCash = _cashService.GetById(cashId.Value);
+                if (foundCash is null)
+                    throw new InvalidOperationException("Cash not found");
+                var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding,
+                    dto.InputCurrency, _priceFacade);
+
+                if (!withdrawResult)
+                    throw new InvalidOperationException("The specified cash does not have sufficient amount");
+            }
+
+            var newAsset = dto.Adapt<Stock>();
+            newAsset.PortfolioId = portfolioId;
+            _stockRepository.Insert(newAsset);
+            if (!dto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _stockRepository.Delete(newAsset);
+            throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
             var cashAssets = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue = cashAssets.Select
-                    (stock =>
-                        stock.CalculateValueInCurrency(currencyCode, _priceFacade
-                            ));
+            (stock =>
+                stock.CalculateValueInCurrency(currencyCode, _priceFacade
+                ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;
@@ -71,10 +73,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
         public async Task<List<Stock>> ListByPortfolio(int portfolioId)
         {
             var stocks = _stockRepository.List(s => s.PortfolioId == portfolioId).ToList();
-            foreach (var stock in stocks)
-            {
-                stock.CurrentPrice = await stock.GetCurrentPricePerUnit( _priceFacade);
-            }
+            foreach (var stock in stocks) stock.CurrentPrice = await stock.GetCurrentPricePerUnit(_priceFacade);
             return stocks;
         }
 

@@ -46,7 +46,7 @@ namespace Infrastructure
         public async Task<decimal> GetPastPriceInCurrency(string cryptoId, string currencyCode, DateTime dateTime)
         {
             var client = _factory.CreateClient();
-            string strDateTime = dateTime.ToString("dd-MM-yyyy");
+            var strDateTime = dateTime.ToString("dd-MM-yyyy");
             var baseUrl
                 = $"https://api.coingecko.com/api/v3/coins/{cryptoId}/history?date={strDateTime}&localization=false";
             client.BaseAddress = new Uri(baseUrl);
@@ -63,13 +63,11 @@ namespace Infrastructure
                 throw new ApplicationException("Error while calling the pass crypto API");
             var priceInUsd = passPriceDto.GetPriceValueInUsd();
             var rateObj = await _currencyRateRepository.GetRateObject("USD");
-            return priceInUsd * rateObj.GetValue(currencyCode); 
-
+            return priceInUsd * rateObj.GetValue(currencyCode);
         }
     }
-    
-    
-    
+
+
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class CodeAdditionsDeletions4Weeks
     {
@@ -247,9 +245,10 @@ namespace Infrastructure
         public CommunityData community_data { get; set; }
         public DeveloperData developer_data { get; set; }
         public PublicInterestStats public_interest_stats { get; set; }
+
         public decimal GetPriceValueInUsd()
         {
-            var usdPrice = (decimal)this.market_data.current_price.GetType()
+            var usdPrice = (decimal)market_data.current_price.GetType()
                 .GetProperties()
                 .First(pr
                     => string.Equals(pr.Name, "usd", StringComparison.CurrentCultureIgnoreCase))
@@ -317,6 +316,4 @@ namespace Infrastructure
         public double link { get; set; }
         public double sats { get; set; }
     }
-
-
 }

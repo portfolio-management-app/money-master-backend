@@ -9,11 +9,11 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
         public int Id { get; set; }
         public int? ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
-        
+
         public string ReferentialAssetName { get; set; }
         public int? DestinationAssetId { get; set; } = null;
         public string DestinationAssetType { get; set; } = null;
-        public string DestinationAssetName { get; set; } = null; 
+        public string DestinationAssetName { get; set; } = null;
         public decimal DestinationAmount { get; set; }
         public string DestinationCurrency { get; set; }
         public decimal Amount { get; set; }
@@ -29,8 +29,8 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
             {
                 SingleAssetTransactionTypes.AddValue => "addValue",
                 SingleAssetTransactionTypes.WithdrawToCash => "withdrawToCash",
-                SingleAssetTransactionTypes.MoveToFund => "moveToFund", 
-                SingleAssetTransactionTypes.BuyFromFund=>"buyFromFund",
+                SingleAssetTransactionTypes.MoveToFund => "moveToFund",
+                SingleAssetTransactionTypes.BuyFromFund => "buyFromFund",
                 SingleAssetTransactionTypes.BuyFromCash => "buyFromCash",
                 SingleAssetTransactionTypes.BuyFromOutside => "buyFromOutside",
                 _ => throw new ArgumentOutOfRangeException()
@@ -38,7 +38,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
             Id = assetTransaction.Id;
             ReferentialAssetId = assetTransaction.ReferentialAssetId;
             ReferentialAssetType = assetTransaction.ReferentialAssetType;
-            ReferentialAssetName = assetTransaction.ReferentialAssetName; 
+            ReferentialAssetName = assetTransaction.ReferentialAssetName;
             Amount = assetTransaction.Amount;
             CurrencyCode = assetTransaction.CurrencyCode;
             CreatedAt = assetTransaction.CreatedAt;
@@ -47,7 +47,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
             DestinationAssetType = assetTransaction.DestinationAssetType;
             DestinationAssetName = assetTransaction.DestinationAssetName;
             DestinationAmount = assetTransaction.DestinationAmount;
-            DestinationCurrency = assetTransaction.DestinationCurrency; 
+            DestinationCurrency = assetTransaction.DestinationCurrency;
             Fee = assetTransaction.Fee ?? 0;
             Tax = assetTransaction.Tax ?? 0;
         }

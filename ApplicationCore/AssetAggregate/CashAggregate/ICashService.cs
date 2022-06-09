@@ -8,7 +8,7 @@ namespace ApplicationCore.AssetAggregate.CashAggregate
     public interface ICashService : IBaseAssetService<CashAsset>
     {
         Task<CashAsset> CreateNewCashAsset(int portfolioId, CashDto dto);
-        CashAsset EditCash(int cashId, EditCashDto dto); 
+        CashAsset EditCash(int cashId, EditCashDto dto);
 
         Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode);
     }

@@ -60,7 +60,7 @@ namespace ApplicationCore.ReportAggregate
                 await _customAssetService.CalculateSumCustomInterestAssetByPortfolio(portfolioId,
                     foundPortfolio.InitialCurrency);
             // get all crypto 
-            decimal sumCrypto =
+            var sumCrypto =
                 await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency);
             return new List<PieChartElementModel>
             {
@@ -118,7 +118,7 @@ namespace ApplicationCore.ReportAggregate
                 {
                     SourceType = "outsideIn",
                     SourceName = "outsideIn",
-                    SourceId = null, 
+                    SourceId = null,
                     TargetName = group.Key.DestinationAssetName,
                     TargetType = group.Key.DestinationAssetType,
                     TargetId = group.Key.DestinationAssetId,
@@ -127,7 +127,6 @@ namespace ApplicationCore.ReportAggregate
                 });
 
             return sankeyFlowBasis.ToList();
-
         }
     }
 }

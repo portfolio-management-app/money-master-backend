@@ -14,7 +14,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
     {
         private IAuthorizationService _authorizationService;
         private readonly IBankSavingService _bankSavingService;
-        public Edit( IAuthorizationService authorizationService, IBankSavingService bankSavingService)
+
+        public Edit(IAuthorizationService authorizationService, IBankSavingService bankSavingService)
         {
             _authorizationService = authorizationService;
             _bankSavingService = bankSavingService;
@@ -22,11 +23,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 
         [HttpPut("bankSaving/{bankSavingId}")]
         public override async Task<ActionResult<BankingAssetResponse>> HandleAsync(
-            [FromMultipleSource] EditBankingAssetRequest request, CancellationToken cancellationToken = new CancellationToken())
+            [FromMultipleSource] EditBankingAssetRequest request, CancellationToken cancellationToken = new())
         {
-            
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.EditBankAssetCommand.Adapt<EditBankSavingAssetDto>();
             var result = _bankSavingService.EditBankSavingAsset(request.PortfolioId, request.BankSavingId, dto);
 

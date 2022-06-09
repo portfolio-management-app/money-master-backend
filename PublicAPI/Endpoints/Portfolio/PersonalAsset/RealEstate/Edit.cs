@@ -11,7 +11,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
     public class Edit : BasePortfolioRelatedEndpoint<EditRealEstateAssetRequest, RealEstateResponse>
     {
-
         private readonly IAuthorizationService _authorizationService;
         private readonly IRealEstateService _realEstateService;
 
@@ -33,7 +32,5 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
                 return NotFound("Could not find your asset");
             return Ok(result.Adapt<RealEstateResponse>());
         }
-
-
     }
 }

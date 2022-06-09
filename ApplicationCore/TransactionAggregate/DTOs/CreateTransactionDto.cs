@@ -3,10 +3,12 @@ namespace ApplicationCore.TransactionAggregate.DTOs
     public class CreateTransactionDto
     {
         public decimal Amount { get; set; }
+
         /// <summary>
         /// for example: 3 bitcoin -> send 3. null by default
         /// </summary>
         public decimal? AmountInDestinationAssetUnit { get; set; }
+
         public string CurrencyCode { get; set; }
         public string TransactionType { get; set; }
         public int? DestinationAssetId { get; set; } = null;

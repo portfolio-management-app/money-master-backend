@@ -7,13 +7,14 @@ using ApplicationCore.TransactionAggregate;
 
 namespace ApplicationCore.ReportAggregate.Visitors
 {
-    public class CalculateDailyProfitLossVisitor: CalculatePeriodProfitLossVisitor
+    public class CalculateDailyProfitLossVisitor : CalculatePeriodProfitLossVisitor
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAssetTransactionService _assetTransactionService;
-        private readonly ExternalPriceFacade _priceFacade; 
+        private readonly ExternalPriceFacade _priceFacade;
 
-        public CalculateDailyProfitLossVisitor(ICryptoService cryptoService, IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade)
+        public CalculateDailyProfitLossVisitor(ICryptoService cryptoService,
+            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade)
         {
             _cryptoService = cryptoService;
             _assetTransactionService = assetTransactionService;
@@ -23,7 +24,8 @@ namespace ApplicationCore.ReportAggregate.Visitors
         public override async Task<ProfitLossBasis> VisitCrypto(Crypto asset)
         {
             var listTransaction = _assetTransactionService.GetTransactionListByAsset(asset);
-            decimal buyAndSellDifference = _assetTransactionService.CalculateSubTransactionProfitLoss(listTransaction, asset.CurrencyCode); 
+            var buyAndSellDifference =
+                _assetTransactionService.CalculateSubTransactionProfitLoss(listTransaction, asset.CurrencyCode);
             var currentAssetValue = await asset.CalculateValueInCurrency(asset.CurrencyCode, _priceFacade);
             var priceYesterday =
                 await _priceFacade
@@ -33,9 +35,8 @@ namespace ApplicationCore.ReportAggregate.Visitors
 
             var yesterdayAssetValue = priceYesterday * 345345345; // dummy value
 
-            var result = currentAssetValue - yesterdayAssetValue + buyAndSellDifference; 
-            return new ProfitLossBasis(); 
-
+            var result = currentAssetValue - yesterdayAssetValue + buyAndSellDifference;
+            return new ProfitLossBasis();
         }
     }
 }

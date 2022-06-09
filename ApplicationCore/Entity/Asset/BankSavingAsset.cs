@@ -45,7 +45,7 @@ namespace ApplicationCore.Entity.Asset
             if (InputMoneyAmount + amountInAssetUnit < 0)
                 return false;
             InputMoneyAmount += amountInAssetUnit;
-            return true; 
+            return true;
         }
 
         public override async Task<bool> WithdrawAll()

@@ -5,7 +5,7 @@ using ApplicationCore.Entity.Asset;
 
 namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 {
-    public interface ICustomAssetService: IBaseAssetService<CustomInterestAsset>
+    public interface ICustomAssetService : IBaseAssetService<CustomInterestAsset>
     {
         CustomInterestAssetInfo AddCustomInterestAssetInfo(int userId, string customName);
 

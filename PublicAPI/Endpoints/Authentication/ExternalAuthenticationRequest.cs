@@ -7,9 +7,9 @@ namespace PublicAPI.Endpoints.Authentication
     {
         [Required]
         [CustomAllowedInputValidation(AllowableValues =
-            new[] {"google"})]
+            new[] { "google" })]
         public string Provider { get; set; }
-        [Required]
-        public string ExternalToken { get; set; }
+
+        [Required] public string ExternalToken { get; set; }
     }
 }

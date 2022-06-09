@@ -18,9 +18,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             _authorizationService = authorizationService;
             _bankSavingService = bankSavingService;
         }
-        
+
         [HttpDelete("bankSaving/{assetId}")]
-        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync([FromMultipleSource]PortfolioAssetRequest request,
+        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync(
+            [FromMultipleSource] PortfolioAssetRequest request,
             CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))

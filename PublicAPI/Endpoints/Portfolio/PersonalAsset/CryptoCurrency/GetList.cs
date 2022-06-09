@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class GetList : BasePortfolioRelatedEndpoint<int,List<CryptoResponse>>
+    public class GetList : BasePortfolioRelatedEndpoint<int, List<CryptoResponse>>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationService _authorizationService;
@@ -27,7 +27,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
             try
             {
                 var list = await _cryptoService.ListByPortfolio(portfolioId);

@@ -12,14 +12,14 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-
-    public class Create : BasePortfolioRelatedEndpoint<CreateNewCryptoCurrencyAssetRequest,CryptoResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateNewCryptoCurrencyAssetRequest, CryptoResponse>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _transactionService;
 
-        public Create(ICryptoService cryptoService, IAuthorizationService authorizationService, IAssetTransactionService transactionService)
+        public Create(ICryptoService cryptoService, IAuthorizationService authorizationService,
+            IAssetTransactionService transactionService)
         {
             _cryptoService = cryptoService;
             _authorizationService = authorizationService;
@@ -32,14 +32,15 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewCryptoCurrencyCommand.Adapt<CryptoDto>();
             try
             {
                 var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
                 _ = _transactionService.AddCreateNewAssetTransaction(createdCrypto,
-                        createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
-                        createdCrypto.CurrencyCode,dto.IsUsingInvestFund,dto.IsUsingCash,dto.UsingCashId,dto.Fee, dto.Tax); 
+                    createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
+                    createdCrypto.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee,
+                    dto.Tax);
                 var result = createdCrypto.Adapt<CryptoResponse>();
                 return Ok(result);
             }

@@ -13,7 +13,7 @@ namespace ApplicationCore.PortfolioAggregate
 
         public PersonalAsset GetAssetByPortfolioAndAssetId(int portfolioId, string assetType, int assetId);
 
-        public Task<Portfolio> EditPortfolio(int portfolioId, string newName, string newCurrency); 
-        public Portfolio DeletePortfolio(int portfolioId); 
+        public Task<Portfolio> EditPortfolio(int portfolioId, string newName, string newCurrency);
+        public Portfolio DeletePortfolio(int portfolioId);
     }
 }

@@ -19,10 +19,10 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
         private readonly IBaseRepository<RealEstateAsset> _realEstateRepository;
         private readonly IInvestFundService _investFundService;
         private readonly ExternalPriceFacade _priceFacade;
-        private readonly ICashService _cashService; 
+        private readonly ICashService _cashService;
 
         public RealEstateService(IBaseRepository<RealEstateAsset> realEstateRepository,
-             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _realEstateRepository = realEstateRepository;
             _investFundService = investFundService;
@@ -41,22 +41,23 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
             if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
             {
                 var cashId = dto.UsingCashId;
-                        
+
                 var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.BuyPrice, dto.InputCurrency, _priceFacade);
-                        
+
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
             }
+
             var newAsset = dto.Adapt<RealEstateAsset>();
-            newAsset.PortfolioId = portfolioId; 
-            _realEstateRepository.Insert(newAsset); 
-            if (!dto.IsUsingInvestFund) return newAsset; 
-            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset); 
-            if (useFundResult) return newAsset; 
-            _realEstateRepository.Delete(newAsset); 
+            newAsset.PortfolioId = portfolioId;
+            _realEstateRepository.Insert(newAsset);
+            if (!dto.IsUsingInvestFund) return newAsset;
+            var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
+            if (useFundResult) return newAsset;
+            _realEstateRepository.Delete(newAsset);
             throw new InvalidOperationException("Insufficient money amount in fund");
         }
 
@@ -67,12 +68,11 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
 
         public RealEstateAsset SetAssetToDelete(int assetId)
         {
-            
             var found = _realEstateRepository.GetFirst(c => c.Id == assetId);
             if (found is null)
                 return null;
-            _realEstateRepository.SetToDeleted(found); 
-            return found; 
+            _realEstateRepository.SetToDeleted(found);
+            return found;
         }
 
         public RealEstateAsset UpdateRealEstateAsset(int portfolioId, int realEstateId, RealEstateDto dto)
@@ -96,7 +96,7 @@ namespace ApplicationCore.AssetAggregate.RealEstateAggregate
                     .Select
                     (cash =>
                         cash.CalculateValueInCurrency(currencyCode, _priceFacade
-                            ));
+                        ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

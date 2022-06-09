@@ -10,7 +10,7 @@ using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
+    public class GetListTransaction : BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly ICustomAssetService _customAssetService;
         private readonly IAssetTransactionService _transactionService;
@@ -26,11 +26,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             [FromRoute] GetListTransactionRequest request,
             CancellationToken cancellationToken = new())
         {
-            var customAsset = _customAssetService.GetById( request.AssetId);
+            var customAsset = _customAssetService.GetById(request.AssetId);
             if (customAsset is null)
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(customAsset);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
-        } 
+        }
     }
 }

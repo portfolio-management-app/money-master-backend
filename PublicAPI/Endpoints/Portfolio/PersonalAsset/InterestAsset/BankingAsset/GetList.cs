@@ -14,18 +14,18 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         private readonly IBankSavingService _bankSavingService;
         private readonly IAuthorizationService _authorizationService;
 
-        public GetList( IAuthorizationService authorizationService, IBankSavingService bankSavingService)
+        public GetList(IAuthorizationService authorizationService, IBankSavingService bankSavingService)
         {
             _authorizationService = authorizationService;
             _bankSavingService = bankSavingService;
         }
 
         [HttpGet("bankSaving")]
-        public override async Task<ActionResult<GetListBankSavingAssetResponse>> HandleAsync(int portfolioId, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<GetListBankSavingAssetResponse>> HandleAsync(int portfolioId,
+            CancellationToken cancellationToken = new())
         {
-            
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
             var list = await _bankSavingService.ListByPortfolio(portfolioId);
             return Ok(list.Adapt<List<GetListBankSavingAssetResponse>>());
         }

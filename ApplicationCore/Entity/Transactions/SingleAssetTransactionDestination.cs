@@ -4,6 +4,6 @@ namespace ApplicationCore.Entity.Transactions
     {
         Fund,
         OtherAsset,
-        Self 
+        Self
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
-    public class CreateNewBankingAssetCommand: BaseCreateRequest
+    public class CreateNewBankingAssetCommand : BaseCreateRequest
     {
         public string Name { get; set; }
         public string BankCode { get; set; }

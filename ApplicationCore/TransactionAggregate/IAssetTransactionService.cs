@@ -10,23 +10,28 @@ namespace ApplicationCore.TransactionAggregate
     public interface IAssetTransactionService
     {
         SingleAssetTransaction AddCreateNewAssetTransaction
-            (PersonalAsset asset,
-                decimal moneyAmount,
-                string currency,
-                bool isUsingInvestFund,
-                bool isUsingCash, int? usingCashId,
-                decimal? fee,decimal? tax);
-        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);  
+        (PersonalAsset asset,
+            decimal moneyAmount,
+            string currency,
+            bool isUsingInvestFund,
+            bool isUsingCash, int? usingCashId,
+            decimal? fee, decimal? tax);
+
+        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
+
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (CreateTransactionDto createTransactionDto);
 
-        Task<SingleAssetTransaction> CreateAddValueTransaction(CreateTransactionDto createTransactionDto);
+        Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,
+            CreateTransactionDto createTransactionDto);
 
         Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
 
-        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode );
+        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions,
+            string currencyCode);
 
-        List<SingleAssetTransaction> GetTransactionsByType(params SingleAssetTransactionTypes[] assetTransactionTypesArray); 
+        List<SingleAssetTransaction> GetTransactionsByType(
+            params SingleAssetTransactionTypes[] assetTransactionTypesArray);
 
         Task<SingleAssetTransaction> Fake();
     }

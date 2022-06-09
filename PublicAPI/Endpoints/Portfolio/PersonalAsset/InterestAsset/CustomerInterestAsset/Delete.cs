@@ -20,10 +20,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             _authorizationService = authorizationService;
             _customAssetService = customAssetService;
         }
-        
+
         [HttpDelete("custom/{assetId}")]
         public override async Task<ActionResult<SingleCustomInterestAssetResponse>> HandleAsync(
-            [FromMultipleSource]PortfolioAssetRequest request, CancellationToken cancellationToken = new())
+            [FromMultipleSource] PortfolioAssetRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);

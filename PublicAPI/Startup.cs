@@ -68,7 +68,7 @@ namespace PublicAPI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(EfRepository<>));
             services.AddScoped<ICustomAssetService, CustomAssetService>();
-            services.AddScoped<IBankSavingService, BankSavingService>(); 
+            services.AddScoped<IBankSavingService, BankSavingService>();
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
@@ -82,7 +82,7 @@ namespace PublicAPI
             services.AddSingleton(typeof(ExternalPriceFacade));
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
-            services.AddScoped<IAssetTransactionService, AssetTransactionService>(); 
+            services.AddScoped<IAssetTransactionService, AssetTransactionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

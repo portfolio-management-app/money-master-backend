@@ -16,10 +16,10 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
         private readonly ExternalPriceFacade _priceFacade;
         private readonly IBaseRepository<BankSavingAsset> _bankSavingRepository;
         private readonly IInvestFundService _investFundService;
-        private readonly ICashService _cashService; 
+        private readonly ICashService _cashService;
 
         public BankSavingService(IBaseRepository<BankSavingAsset> bankSavingRepository,
-           IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _bankSavingRepository = bankSavingRepository;
             _investFundService = investFundService;
@@ -33,15 +33,16 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
             if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
             {
                 var cashId = dto.UsingCashId;
-            
+
                 var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.InputMoneyAmount, dto.InputCurrency, _priceFacade);
-            
+
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
             }
+
             var newAsset = dto.Adapt<BankSavingAsset>();
             newAsset.PortfolioId = portfolioId;
 
@@ -85,7 +86,7 @@ namespace ApplicationCore.AssetAggregate.BankSavingAssetAggregate
             var bankSavingAsset = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 bankSavingAsset.Select(bankSaving =>
-                    bankSaving.CalculateValueInCurrency(currencyCode, _priceFacade)); 
+                    bankSaving.CalculateValueInCurrency(currencyCode, _priceFacade));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

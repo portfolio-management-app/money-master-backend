@@ -11,7 +11,7 @@ namespace ApplicationCore.UserAggregate
     public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _userRepository;
-        private readonly IBaseRepository<UserMobileFcmCode> _userFcmRepository; 
+        private readonly IBaseRepository<UserMobileFcmCode> _userFcmRepository;
 
         public UserService(IBaseRepository<User> userRepository, IBaseRepository<UserMobileFcmCode> userFcmRepository)
         {
@@ -53,7 +53,8 @@ namespace ApplicationCore.UserAggregate
             {
                 var settings = new GoogleJsonWebSignature.ValidationSettings()
                 {
-                    Audience = new List<string> { "511417762868-an9ak0crrtra3c4l0rqebt5bmuuo5aqp.apps.googleusercontent.com" }
+                    Audience = new List<string>
+                        { "511417762868-an9ak0crrtra3c4l0rqebt5bmuuo5aqp.apps.googleusercontent.com" }
                 };
 
                 var payloadResult = await GoogleJsonWebSignature.ValidateAsync(token, settings);
@@ -63,7 +64,6 @@ namespace ApplicationCore.UserAggregate
                 if (existedUser is not null) return existedUser;
                 var newUser = AddNewUser(userEmailFromGoogle, "defaultPassword");
                 return newUser;
-
             }
             catch (Exception ex)
             {

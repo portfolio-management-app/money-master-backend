@@ -12,6 +12,6 @@ namespace ApplicationCore.UserAggregate
 
         Task<User> TryGoogleAuthentication(string token);
 
-        UserMobileFcmCode AddFcmCode(int userId, string newFcmCode); 
+        UserMobileFcmCode AddFcmCode(int userId, string newFcmCode);
     }
 }

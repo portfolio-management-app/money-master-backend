@@ -10,7 +10,7 @@ using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
+    public class GetListTransaction : BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly IRealEstateService _realEstateService;
         private readonly IAssetTransactionService _transactionService;
@@ -31,6 +31,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(realEstateAsset);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
-        } 
+        }
     }
 }
