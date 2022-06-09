@@ -8,6 +8,6 @@ namespace ApplicationCore.AssetAggregate
     {
         public TAsset GetById(int assetId);
         public Task<List<TAsset>> ListByPortfolio(int portfolioId);
-        public TAsset SetAssetToDelete(int assetId); 
+        public TAsset SetAssetToDelete(int assetId);
     }
 }

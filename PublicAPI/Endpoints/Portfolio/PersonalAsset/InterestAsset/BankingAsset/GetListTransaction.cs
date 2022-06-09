@@ -33,6 +33,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }
-
-    
 }

@@ -25,7 +25,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             [FromMultipleSource] PortfolioAssetRequest request, CancellationToken cancellationToken = new())
         {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return Unauthorized(NotAllowedPortfolioMessage); 
+                return Unauthorized(NotAllowedPortfolioMessage);
             var realEstateAsset = _realEstateService.SetAssetToDelete(request.AssetId);
             return Ok(realEstateAsset.Adapt<RealEstateResponse>());
         }

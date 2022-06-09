@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
@@ -6,9 +7,10 @@ using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
-using ApplicationCore.Interfaces;
+using ApplicationCore.Entity.Transactions;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.TransactionAggregate;
 
 namespace ApplicationCore.ReportAggregate
 {
@@ -21,10 +23,12 @@ namespace ApplicationCore.ReportAggregate
         private readonly ICustomAssetService _customAssetService;
         private readonly IStockService _stockService;
         private readonly IBankSavingService _bankSavingService;
+        private readonly IAssetTransactionService _assetTransactionService;
 
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
-            IStockService stockService, IBankSavingService bankSavingService)
+            IStockService stockService, IBankSavingService bankSavingService,
+            IAssetTransactionService assetTransactionService)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -33,6 +37,7 @@ namespace ApplicationCore.ReportAggregate
             _customAssetService = customAssetService;
             _stockService = stockService;
             _bankSavingService = bankSavingService;
+            _assetTransactionService = assetTransactionService;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -55,8 +60,8 @@ namespace ApplicationCore.ReportAggregate
                 await _customAssetService.CalculateSumCustomInterestAssetByPortfolio(portfolioId,
                     foundPortfolio.InitialCurrency);
             // get all crypto 
-            decimal sumCrypto =
-               await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency); 
+            var sumCrypto =
+                await _cryptoService.CalculateSumByPortfolio(portfolioId, foundPortfolio.InitialCurrency);
             return new List<PieChartElementModel>
             {
                 new()
@@ -90,6 +95,38 @@ namespace ApplicationCore.ReportAggregate
                     SumValue = sumCrypto
                 }
             };
+        }
+
+        public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId)
+        {
+            // Get Type 1:
+            // Get related transaction: 
+            var relatedToFromOutsideTransactions =
+                _assetTransactionService.GetTransactionsByType(SingleAssetTransactionTypes.AddValue,
+                    SingleAssetTransactionTypes.BuyFromOutside);
+            var removedBuyNotFromOutsideTransactions = relatedToFromOutsideTransactions
+                .Where(transaction =>
+                    !(transaction.SingleAssetTransactionTypes == SingleAssetTransactionTypes.AddValue
+                      && transaction.ReferentialAssetType is null));
+            var sankeyFlowBasis = relatedToFromOutsideTransactions
+                .GroupBy(transaction => new
+                {
+                    transaction.DestinationAssetId, transaction.DestinationAssetName,
+                    transaction.DestinationAssetType
+                })
+                .Select(group => new SankeyFlowBasis()
+                {
+                    SourceType = "outsideIn",
+                    SourceName = "outsideIn",
+                    SourceId = null,
+                    TargetName = group.Key.DestinationAssetName,
+                    TargetType = group.Key.DestinationAssetType,
+                    TargetId = group.Key.DestinationAssetId,
+                    Amount = group.Sum(g => g.Amount),
+                    Currency = "USD"
+                });
+
+            return sankeyFlowBasis.ToList();
         }
     }
 }

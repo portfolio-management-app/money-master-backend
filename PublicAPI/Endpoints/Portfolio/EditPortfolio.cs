@@ -7,7 +7,7 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio
 {
-    public class EditPortfolio: BasePortfolioRelatedEndpoint<EditPortfolioRequest, PortfolioResponse>
+    public class EditPortfolio : BasePortfolioRelatedEndpoint<EditPortfolioRequest, PortfolioResponse>
     {
         private readonly IPortfolioService _portfolioService;
 
@@ -17,13 +17,14 @@ namespace PublicAPI.Endpoints.Portfolio
         }
 
         [HttpPut]
-        public override async Task<ActionResult<PortfolioResponse>> HandleAsync([FromMultipleSource]EditPortfolioRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<PortfolioResponse>> HandleAsync(
+            [FromMultipleSource] EditPortfolioRequest request, CancellationToken cancellationToken = new())
         {
             var resultPortfolio = await _portfolioService.EditPortfolio(request.PortfolioId,
                 request.EditPortfolioCommand.NewName, request.EditPortfolioCommand.NewCurrency);
             if (resultPortfolio is null)
                 return NotFound();
-            return Ok(resultPortfolio.Adapt<PortfolioResponse>()); 
+            return Ok(resultPortfolio.Adapt<PortfolioResponse>());
         }
     }
 }

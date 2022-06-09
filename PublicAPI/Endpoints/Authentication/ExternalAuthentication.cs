@@ -9,8 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace PublicAPI.Endpoints.Authentication
 {
-    
-    public class ExternalAuthentication: 
+    public class ExternalAuthentication :
         EndpointBaseAsync.WithRequest<ExternalAuthenticationRequest>.WithActionResult<AuthenticationResponse>
     {
         private readonly IUserService _userService;
@@ -22,25 +21,24 @@ namespace PublicAPI.Endpoints.Authentication
             _configuration = configuration;
         }
 
-        
-        
+
         [HttpPost("authentication/google")]
-        public override async Task<ActionResult<AuthenticationResponse>> HandleAsync([FromBody]ExternalAuthenticationRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<AuthenticationResponse>> HandleAsync(
+            [FromBody] ExternalAuthenticationRequest request, CancellationToken cancellationToken = new())
         {
             try
             {
                 var user = await _userService.TryGoogleAuthentication(request.ExternalToken);
-                var generatedToken = 
-                                    user.GenerateToken(_configuration["JWTSigningKey"]);
+                var generatedToken =
+                    user.GenerateToken(_configuration["JWTSigningKey"]);
                 var response = user.Adapt<AuthenticationResponse>();
                 response.Token = generatedToken;
-                return Ok(response); 
+                return Ok(response);
             }
             catch (ApplicationException ex)
             {
-                return Unauthorized(ex.Message); 
+                return Unauthorized(ex.Message);
             }
         }
     }
-
 }

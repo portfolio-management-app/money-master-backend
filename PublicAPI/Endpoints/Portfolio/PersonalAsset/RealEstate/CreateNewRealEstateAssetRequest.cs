@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-    public class CreateNewRealEstateAssetCommand: BaseCreateRequest
+    public class CreateNewRealEstateAssetCommand : BaseCreateRequest
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }

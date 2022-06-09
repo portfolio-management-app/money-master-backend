@@ -2,6 +2,6 @@ namespace PublicAPI.Endpoints.Authentication
 {
     public class AddFcmCodeRequest
     {
-       public string FcmCode { get; set; }
+        public string FcmCode { get; set; }
     }
 }

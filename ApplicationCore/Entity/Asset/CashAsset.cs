@@ -40,7 +40,7 @@ namespace ApplicationCore.Entity.Asset
 
         public override async Task<bool> AddValue(decimal amountInAssetUnit)
         {
-            if (this.Amount + amountInAssetUnit < 0)
+            if (Amount + amountInAssetUnit < 0)
                 return false;
             Amount += amountInAssetUnit;
             return true;

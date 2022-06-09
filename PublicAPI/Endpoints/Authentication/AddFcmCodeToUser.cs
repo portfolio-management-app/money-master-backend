@@ -9,7 +9,7 @@ namespace PublicAPI.Endpoints.Authentication
 {
     [Authorize]
     [Route("user/me")]
-    public class AddFcmCodeToUser: EndpointBaseAsync.WithRequest<AddFcmCodeRequest>.WithActionResult<object>
+    public class AddFcmCodeToUser : EndpointBaseAsync.WithRequest<AddFcmCodeRequest>.WithActionResult<object>
     {
         private readonly IUserService _userService;
 
@@ -19,9 +19,10 @@ namespace PublicAPI.Endpoints.Authentication
         }
 
         [HttpPost("fcm")]
-        public override async Task<ActionResult<object>> HandleAsync([FromBody]AddFcmCodeRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<object>> HandleAsync([FromBody] AddFcmCodeRequest request,
+            CancellationToken cancellationToken = new())
         {
-            int userId = (int)HttpContext.Items["userId"]; 
+            var userId = (int)HttpContext.Items["userId"];
             var result = _userService.AddFcmCode(userId, request.FcmCode);
             return Ok(result);
         }

@@ -25,14 +25,16 @@ namespace ApplicationCore.Entity.Asset
             LastChanged = DateTime.Now;
         }
 
-        public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode, ExternalPriceFacade priceFacade);
+        public abstract Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+            ExternalPriceFacade priceFacade);
+
         public abstract string GetAssetType();
 
         public abstract Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
             ExternalPriceFacade priceFacade);
 
-        public abstract Task<bool> AddValue(decimal amountInAssetUnit); 
+        public abstract Task<bool> AddValue(decimal amountInAssetUnit);
         public abstract Task<bool> WithdrawAll();
-        public abstract Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor); 
+        public abstract Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor);
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    public class CreateCustomInterestAssetCommand: BaseCreateRequest
+    public class CreateCustomInterestAssetCommand : BaseCreateRequest
     {
         public string Name { get; set; }
         public DateTime InputDay { get; set; }

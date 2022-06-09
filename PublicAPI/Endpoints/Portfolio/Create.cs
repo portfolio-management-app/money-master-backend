@@ -45,7 +45,7 @@ namespace PublicAPI.Endpoints.Portfolio
                 PurchasePrice = request.InitialCash
             };
             _ = _cashService.CreateNewCashAsset(newPortfolio.Id, cashDto);
-            _ = _investFundService.AddNewInvestFundToPortfolio(newPortfolio.Id); 
+            _ = _investFundService.AddNewInvestFundToPortfolio(newPortfolio.Id);
             return Ok(newPortfolio.Adapt<PortfolioResponse>());
         }
     }

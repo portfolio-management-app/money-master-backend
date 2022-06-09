@@ -12,12 +12,15 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-    public class Create : BasePortfolioRelatedEndpoint<CreateCustomInterestAssetRequest,CreateCustomInterestAssetResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateCustomInterestAssetRequest,
+        CreateCustomInterestAssetResponse>
     {
         private readonly ICustomAssetService _customAssetService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _assetTransactionService;
-        public Create(ICustomAssetService customAssetService, IAuthorizationService authorizationService, IAssetTransactionService assetTransactionService)
+
+        public Create(ICustomAssetService customAssetService, IAuthorizationService authorizationService,
+            IAssetTransactionService assetTransactionService)
         {
             _customAssetService = customAssetService;
             _authorizationService = authorizationService;
@@ -25,12 +28,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         }
 
         [HttpPost("custom/{customInfoId}")]
-        public override async Task<ActionResult<CreateCustomInterestAssetResponse>> HandleAsync([FromMultipleSource]CreateCustomInterestAssetRequest request,
-            CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CreateCustomInterestAssetResponse>> HandleAsync(
+            [FromMultipleSource] CreateCustomInterestAssetRequest request,
+            CancellationToken cancellationToken = new())
         {
-            
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-                return  Unauthorized(NotAllowedPortfolioMessage);
+                return Unauthorized(NotAllowedPortfolioMessage);
 
             try
             {
@@ -40,7 +43,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
                     await _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
                 _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
-                    newAsset.InputCurrency,dto.IsUsingInvestFund,dto.IsUsingCash, dto.UsingCashId ,dto.Fee,dto.Tax);
+                    newAsset.InputCurrency, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee, dto.Tax);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }
             catch (ApplicationException ex)

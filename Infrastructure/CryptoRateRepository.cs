@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
 
-
 namespace Infrastructure
 {
     public class CryptoRateRepository : ICryptoRateRepository
@@ -48,7 +47,7 @@ namespace Infrastructure
         public async Task<decimal> GetPastPriceInCurrency(string cryptoId, string currencyCode, DateTime dateTime)
         {
             var client = _factory.CreateClient();
-            string strDateTime = dateTime.ToString("dd-MM-yyyy");
+            var strDateTime = dateTime.ToString("dd-MM-yyyy");
             var baseUrl
                 = $"https://api.coingecko.com/api/v3/coins/{cryptoId}/history?date={strDateTime}&localization=false";
             client.BaseAddress = new Uri(baseUrl);
@@ -89,9 +88,7 @@ namespace Infrastructure
             return priceObject;
         }
     }
-
-
-
+    
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class CodeAdditionsDeletions4Weeks
     {
@@ -339,6 +336,5 @@ namespace Infrastructure
         public double link { get; set; }
         public double sats { get; set; }
     }
-
 
 }

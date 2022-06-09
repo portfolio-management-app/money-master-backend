@@ -20,7 +20,7 @@ namespace ApplicationCore.InvestFundAggregate
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
             IBaseRepository<InvestFundTransaction> investFundTransactionRepository,
-             ExternalPriceFacade priceFacade, IBaseRepository<SingleAssetTransaction> assetTransactionRepository)
+            ExternalPriceFacade priceFacade, IBaseRepository<SingleAssetTransaction> assetTransactionRepository)
         {
             _investFundRepository = investFundRepository;
             _investFundTransactionRepository = investFundTransactionRepository;
@@ -30,15 +30,13 @@ namespace ApplicationCore.InvestFundAggregate
 
         public async Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset)
         {
-            var foundFund = _investFundRepository.GetFirst(i => i.PortfolioId == portfolioId, i => i.Include(fund => fund.Portfolio));
+            var foundFund = _investFundRepository.GetFirst(i => i.PortfolioId == portfolioId,
+                i => i.Include(fund => fund.Portfolio));
 
             var fundCurrency = foundFund.Portfolio.InitialCurrency;
 
             var assetValueInFundCurrency = await buyingAsset.CalculateValueInCurrency(fundCurrency, _priceFacade);
-            if (foundFund.CurrentAmount < assetValueInFundCurrency)
-            {
-                return false;
-            }
+            if (foundFund.CurrentAmount < assetValueInFundCurrency) return false;
 
             foundFund.CurrentAmount -= assetValueInFundCurrency;
             var newOutgoingTransaction = new InvestFundTransaction(buyingAsset.GetAssetType(), buyingAsset.Id,
@@ -49,7 +47,6 @@ namespace ApplicationCore.InvestFundAggregate
             _investFundTransactionRepository.Insert(newOutgoingTransaction);
 
             return true;
-
         }
 
         public InvestFund AddNewInvestFundToPortfolio(int portfolioId)
@@ -65,14 +62,30 @@ namespace ApplicationCore.InvestFundAggregate
 
         public async Task<InvestFund> EditCurrency(int portfolioId, string newCurrencyCode)
         {
-            var fund = GetInvestFundByPortfolio(portfolioId); 
+            var fund = GetInvestFundByPortfolio(portfolioId);
             // exchange
-            var newCurrencyValue = await _priceFacade.CurrencyRateRepository.GetRateObject(fund.Portfolio.InitialCurrency);
+            var newCurrencyValue =
+                await _priceFacade.CurrencyRateRepository.GetRateObject(fund.Portfolio.InitialCurrency);
             var rate = newCurrencyValue.GetValue(newCurrencyCode);
 
             fund.CurrentAmount = rate * fund.CurrentAmount;
             _investFundRepository.Update(fund);
-            return fund; 
+            return fund;
+        }
+
+        public async Task WithdrawFromInvestFund(int requestPortfolioId, decimal amount,
+            string currencyCode)
+        {
+            var investFund = GetInvestFundByPortfolio(requestPortfolioId);
+            var withdrawAmountInFundCurrency = decimal.Zero;
+
+            var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
+            withdrawAmountInFundCurrency = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
+            if (withdrawAmountInFundCurrency > investFund.CurrentAmount)
+                throw new OperationCanceledException("Insufficient amount in fund");
+
+            investFund.CurrentAmount -= withdrawAmountInFundCurrency;
+            _investFundRepository.Update(investFund);
         }
 
         public InvestFund GetInvestFundByPortfolio(int portfolioId)
@@ -85,7 +98,7 @@ namespace ApplicationCore.InvestFundAggregate
         {
             return _investFundTransactionRepository
                 .List(trans => trans.InvestFund.PortfolioId == portfolioId,
-                   include: t => t.Include(transaction => transaction.InvestFund))
+                    include: t => t.Include(transaction => transaction.InvestFund))
                 .ToList();
         }
 
@@ -100,7 +113,7 @@ namespace ApplicationCore.InvestFundAggregate
             if (isTransferringAll)
             {
                 withdrawAmount = await asset.CalculateValueInCurrency(fundCurrencyCode,
-                    _priceFacade); 
+                    _priceFacade);
                 investFund.CurrentAmount += withdrawAmount;
                 await asset.WithdrawAll();
             }
@@ -140,11 +153,12 @@ namespace ApplicationCore.InvestFundAggregate
             return newFundTransaction;
         }
 
-        public async Task<InvestFundTransaction> WithdrawFromInvestFund(int portfolioId, CashAsset asset, decimal amount,
+        public async Task<InvestFundTransaction> WithdrawFromInvestFundToCash(int portfolioId, CashAsset asset,
+            decimal amount,
             string currencyCode)
         {
             var investFund = GetInvestFundByPortfolio(portfolioId);
-            decimal withdrawAmountInFundCurrency = decimal.Zero;
+            var withdrawAmountInFundCurrency = decimal.Zero;
 
             var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
             withdrawAmountInFundCurrency = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
@@ -163,7 +177,6 @@ namespace ApplicationCore.InvestFundAggregate
 
             _investFundTransactionRepository.Insert(newTransaction);
             return newTransaction;
-
         }
     }
 }

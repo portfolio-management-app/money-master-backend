@@ -24,8 +24,8 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 
         public CustomAssetService(IBaseRepository<User> userRepository,
             IBaseRepository<CustomInterestAssetInfo> customInterestAssetInfoRepo,
-            IBaseRepository<CustomInterestAsset> customInterestAssetRepo, 
-             IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
+            IBaseRepository<CustomInterestAsset> customInterestAssetRepo,
+            IInvestFundService investFundService, ExternalPriceFacade priceFacade, ICashService cashService)
         {
             _userRepository = userRepository;
             _customInterestAssetInfoRepo = customInterestAssetInfoRepo;
@@ -57,27 +57,26 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             int portfolioId,
             CreateNewCustomInterestAssetDto dto)
         {
-          
             var foundCustomCategory = _customInterestAssetInfoRepo.GetFirst(c => c.Id == customInterestInfoId);
             if (foundCustomCategory.UserId != userId)
                 throw new ApplicationException("Unauthorized to access this category");
-            
+
             if (dto.IsUsingCash && dto.UsingCashId is not null && !dto.IsUsingInvestFund)
             {
                 var cashId = dto.UsingCashId;
-                        
+
                 var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.InputMoneyAmount, dto.InputCurrency, _priceFacade);
-                        
+
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
             }
 
             var newAsset = dto.Adapt<CustomInterestAsset>();
             newAsset.PortfolioId = portfolioId;
-            newAsset.CustomInterestAssetInfoId = customInterestInfoId; 
+            newAsset.CustomInterestAssetInfoId = customInterestInfoId;
             _customInterestAssetRepo.Insert(newAsset);
             if (!dto.IsUsingInvestFund) return newAsset;
             var useFundResult = await _investFundService.BuyUsingInvestFund(portfolioId, newAsset);
@@ -103,15 +102,13 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
         }
 
 
-
-
         public async Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode)
         {
             var customAsset = await ListByPortfolio(portfolioId);
             var unifyCurrencyValue =
                 customAsset.Select(ca =>
                     ca.CalculateValueInCurrency(currencyCode, _priceFacade
-                        ));
+                    ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;
@@ -119,11 +116,10 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 
         public CustomInterestAsset GetById(int assetId)
         {
-            
             return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);
         }
 
-        public async  Task<List<CustomInterestAsset>> ListByPortfolio(int portfolioId)
+        public async Task<List<CustomInterestAsset>> ListByPortfolio(int portfolioId)
         {
             var foundCustomInterestAsset = _customInterestAssetRepo
                 .List(ca => ca.PortfolioId == portfolioId, null

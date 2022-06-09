@@ -20,7 +20,8 @@ namespace ApplicationCore.Entity.Asset
             ExternalPriceFacade priceFacade)
         {
             var currentPriceInCurrency =
-                await priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode, destinationCurrencyCode);
+                await priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(CryptoCoinCode,
+                    destinationCurrencyCode);
             return currentPriceInCurrency * CurrentAmountHolding;
         }
 

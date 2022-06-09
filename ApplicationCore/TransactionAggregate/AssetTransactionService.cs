@@ -11,6 +11,7 @@ using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
+using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.TransactionAggregate.DTOs;
 
 namespace ApplicationCore.TransactionAggregate
@@ -26,12 +27,13 @@ namespace ApplicationCore.TransactionAggregate
         private readonly ICryptoService _cryptoService;
         private readonly IStockService _stockService;
         private readonly IRealEstateService _realEstateService;
+        private readonly IInvestFundService _investFundService;
 
 
         public AssetTransactionService(IBaseRepository<SingleAssetTransaction> transactionRepository,
             ICashService cashService, IBaseRepository<CashAsset> cashRepository, ExternalPriceFacade priceFacade,
             IBankSavingService bankSavingService, ICustomAssetService customAssetService, ICryptoService cryptoService,
-            IStockService stockService, IRealEstateService realEstateService)
+            IStockService stockService, IRealEstateService realEstateService, IInvestFundService investFundService)
         {
             _transactionRepository = transactionRepository;
             _cashService = cashService;
@@ -42,6 +44,7 @@ namespace ApplicationCore.TransactionAggregate
             _cryptoService = cryptoService;
             _stockService = stockService;
             _realEstateService = realEstateService;
+            _investFundService = investFundService;
         }
 
         public SingleAssetTransaction AddCreateNewAssetTransaction
@@ -55,7 +58,7 @@ namespace ApplicationCore.TransactionAggregate
             decimal? tax)
         {
             var singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromOutside;
-            var resultReferentialAssetId = -1;
+            int? resultReferentialAssetId = null;
             string resultReferentialAssetType = null;
             string resultReferentialAssetName = null;
             if (isUsingInvestFund)
@@ -107,7 +110,8 @@ namespace ApplicationCore.TransactionAggregate
             return listTransaction.ToList();
         }
 
-        public async Task<SingleAssetTransaction> CreateAddValueTransaction(CreateTransactionDto createTransactionDto)
+        public async Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,
+            CreateTransactionDto createTransactionDto)
         {
             const SingleAssetTransactionTypes singleAssetTransactionType = SingleAssetTransactionTypes.AddValue;
             var sourceAssetId = createTransactionDto.ReferentialAssetId;
@@ -116,35 +120,21 @@ namespace ApplicationCore.TransactionAggregate
             PersonalAsset targetAsset = null;
             if (targetAssetId != null)
             {
-                targetAsset = createTransactionDto.DestinationAssetType
-                   switch
-                {
-                    "bankSaving" => _bankSavingService.GetById(targetAssetId.Value),
-                    "custom" => _customAssetService.GetById(targetAssetId.Value),
-                    "crypto" => _cryptoService.GetById(targetAssetId.Value),
-                    "stock" => _stockService.GetById(targetAssetId.Value),
-                    "realEstate" => _realEstateService.GetById(targetAssetId.Value),
-                    "cash" => _cashService.GetById(targetAssetId.Value),
-                    _ => throw new ArgumentException()
-                };
+                targetAsset = GetAssetByIdAndType(createTransactionDto.DestinationAssetType, targetAssetId.Value);
                 if (sourceAssetId != null)
                 {
-                    sourceAsset = createTransactionDto.ReferentialAssetType
-                        switch
-                    {
-                        "bankSaving" => _bankSavingService.GetById(sourceAssetId.Value),
-                        "custom" => _customAssetService.GetById(sourceAssetId.Value),
-                        "crypto" => _cryptoService.GetById(sourceAssetId.Value),
-                        "stock" => _stockService.GetById(sourceAssetId.Value),
-                        "realEstate" => _realEstateService.GetById(sourceAssetId.Value),
-                        "cash" => _cashService.GetById(sourceAssetId.Value),
-                        _ => throw new ArgumentException()
-                    };
-
+                    sourceAsset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType, sourceAssetId.Value);
                     if (!await sourceAsset.Withdraw
                             (createTransactionDto.Amount, createTransactionDto.CurrencyCode, _priceFacade))
                         throw new InvalidOperationException("Insufficient amount in source asset");
                 }
+                else if (createTransactionDto.IsUsingFundAsSource)
+                {
+                     await _investFundService.WithdrawFromInvestFund(requestPortfolioId, createTransactionDto.Amount,
+                        createTransactionDto.CurrencyCode);
+                }
+
+
                 if (createTransactionDto.AmountInDestinationAssetUnit != null)
                     _ = await targetAsset.AddValue(
                         createTransactionDto.AmountInDestinationAssetUnit.Value);
@@ -171,18 +161,46 @@ namespace ApplicationCore.TransactionAggregate
             };
 
             _transactionRepository.Insert(newTransaction);
-
             return newTransaction;
-
         }
 
-        public Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto)
+        public async Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(
+            CreateTransactionDto createTransactionDto)
         {
-            throw new NotImplementedException();
+            if (createTransactionDto.ReferentialAssetId is null) throw new InvalidOperationException("Asset not found");
+            var sourceAssetId = createTransactionDto.ReferentialAssetId.Value;
+            var foundAsset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType,
+                sourceAssetId);
+            if (foundAsset is null)
+                throw new InvalidOperationException("Asset not found");
+            var withdrawResult = await foundAsset.Withdraw(createTransactionDto.Amount, createTransactionDto.CurrencyCode, _priceFacade);
+            if (!withdrawResult) throw new InvalidOperationException("Insufficient value to withdraw");
+            var newTransaction = new SingleAssetTransaction()
+            {
+                ReferentialAssetId = sourceAssetId,
+                ReferentialAssetType = createTransactionDto.ReferentialAssetType,
+                ReferentialAssetName = foundAsset.Name,
+                Amount = createTransactionDto.Amount,
+                CurrencyCode = createTransactionDto.CurrencyCode,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToOutside,
+                Fee = createTransactionDto.Fee,
+                Tax = createTransactionDto.Tax,
+                CreatedAt = DateTime.Now,
+                LastChanged = DateTime.Now,
+                DestinationAssetId = null,
+                DestinationAssetName = null,
+                DestinationAssetType = null,
+                DestinationAmount = createTransactionDto.Amount,
+                DestinationCurrency = createTransactionDto.CurrencyCode,
+                AmountInDestinationAssetUnit = createTransactionDto.Amount
+            };
+
+            _transactionRepository.Insert(newTransaction);
+            return newTransaction;
         }
 
         public decimal CalculateSubTransactionProfitLoss
-                (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
+            (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
         {
             return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionTypes switch
             {
@@ -192,6 +210,16 @@ namespace ApplicationCore.TransactionAggregate
                 SingleAssetTransactionTypes.BuyFromFund => 0,
                 _ => 0
             });
+        }
+
+        public List<SingleAssetTransaction> GetTransactionsByType(
+            params SingleAssetTransactionTypes[] assetTransactionTypesArray)
+        {
+            var resultTransactions = _transactionRepository.List(transaction =>
+                !transaction.IsDeleted &&
+                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionTypes));
+
+            return resultTransactions.ToList();
         }
 
         public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(
@@ -204,19 +232,10 @@ namespace ApplicationCore.TransactionAggregate
 
             decimal valueToAddToCash = 0;
             var sourceAssetId = createTransactionDto.ReferentialAssetId;
-            PersonalAsset sourceAsset = null;
+            PersonalAsset sourceAsset;
             if (sourceAssetId is not null)
             {
-                sourceAsset = createTransactionDto.ReferentialAssetType switch
-                {
-                    "bankSaving" => _bankSavingService.GetById(sourceAssetId.Value),
-                    "custom" => _customAssetService.GetById(sourceAssetId.Value),
-                    "crypto" => _cryptoService.GetById(sourceAssetId.Value),
-                    "stock" => _stockService.GetById(sourceAssetId.Value),
-                    "realEstate" => _realEstateService.GetById(sourceAssetId.Value),
-                    "cash" => _cashService.GetById(sourceAssetId.Value),
-                    _ => throw new ArgumentException()
-                };
+                sourceAsset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType, sourceAssetId.Value);
                 if (createTransactionDto.IsTransferringAll)
                 {
                     var valueInDestinationCurrency = await sourceAsset.CalculateValueInCurrency(foundCash.CurrencyCode,
@@ -256,63 +275,49 @@ namespace ApplicationCore.TransactionAggregate
                 throw new InvalidOperationException("Source asset is not specified");
             }
 
-            if (createTransactionDto.ReferentialAssetId != null)
-            {
-                var newTransaction = new SingleAssetTransaction
-                {
-                    ReferentialAssetId = sourceAssetId.Value,
-                    ReferentialAssetType = createTransactionDto.ReferentialAssetType,
-                    ReferentialAssetName = sourceAsset.Name,
-                    Amount = createTransactionDto.Amount,
-                    CurrencyCode = createTransactionDto.CurrencyCode,
-                    SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
-                    Fee = createTransactionDto.Fee,
-                    Tax = createTransactionDto.Tax,
-                    CreatedAt = DateTime.Now,
-                    LastChanged = DateTime.Now,
-                    DestinationAssetId = foundCash.Id,
-                    DestinationAssetName = foundCash.Name,
-                    DestinationAssetType = foundCash.GetAssetType(),
-                    DestinationAmount = valueToAddToCash,
-                    DestinationCurrency = foundCash.CurrencyCode
-                };
-                _transactionRepository.Insert(newTransaction);
-
-                return newTransaction;
-            }
-
-            throw new InvalidOperationException();
-        }
-
-        public async Task<SingleAssetTransaction> CreateMoveToFundTransaction(
-          int portfolioId, PersonalAsset asset, decimal amount,
-            string currencyCode, bool isTransferringAll)
-        {
+            if (createTransactionDto.ReferentialAssetId == null) throw new InvalidOperationException();
             var newTransaction = new SingleAssetTransaction
             {
-                ReferentialAssetId = asset.Id,
-                ReferentialAssetType = asset.GetAssetType(),
-                ReferentialAssetName = asset.Name,
-                Amount = amount,
-                CurrencyCode = currencyCode,
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.MoveToFund,
-                Fee = 0,
-                Tax = 0,
+                ReferentialAssetId = sourceAssetId.Value,
+                ReferentialAssetType = createTransactionDto.ReferentialAssetType,
+                ReferentialAssetName = sourceAsset.Name,
+                Amount = createTransactionDto.Amount,
+                CurrencyCode = createTransactionDto.CurrencyCode,
+                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
+                Fee = createTransactionDto.Fee,
+                Tax = createTransactionDto.Tax,
                 CreatedAt = DateTime.Now,
                 LastChanged = DateTime.Now,
-                DestinationAssetId = null,
-                DestinationAssetName = null,
-                DestinationAssetType = null,
-                DestinationAmount = 0,
-                DestinationCurrency = currencyCode,
+                DestinationAssetId = foundCash.Id,
+                DestinationAssetName = foundCash.Name,
+                DestinationAssetType = foundCash.GetAssetType(),
+                DestinationAmount = valueToAddToCash,
+                DestinationCurrency = foundCash.CurrencyCode,
+                AmountInDestinationAssetUnit = valueToAddToCash
             };
             _transactionRepository.Insert(newTransaction);
+
             return newTransaction;
+
         }
 
         public async Task<SingleAssetTransaction> Fake()
         {
             return new SingleAssetTransaction();
+        }
+
+        private PersonalAsset GetAssetByIdAndType(string type, int id)
+        {
+            return type switch
+            {
+                "bankSaving" => _bankSavingService.GetById(id),
+                "custom" => _customAssetService.GetById(id),
+                "crypto" => _cryptoService.GetById(id),
+                "stock" => _stockService.GetById(id),
+                "realEstate" => _realEstateService.GetById(id),
+                "cash" => _cashService.GetById(id),
+                _ => throw new ArgumentException()
+            };
         }
     }
 }

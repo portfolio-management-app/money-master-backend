@@ -11,14 +11,14 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-
     public class Create : BasePortfolioRelatedEndpoint<CreateCashRequest, CashResponse>
     {
         private readonly ICashService _cashService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _transactionService;
 
-        public Create(ICashService cashService, IAuthorizationService authorizationService, IAssetTransactionService transactionService)
+        public Create(ICashService cashService, IAuthorizationService authorizationService,
+            IAssetTransactionService transactionService)
         {
             _cashService = cashService;
             _authorizationService = authorizationService;
@@ -26,10 +26,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         }
 
         [HttpPost("cash")]
-        public override async Task<ActionResult<CashResponse>> HandleAsync([FromMultipleSource] CreateCashRequest request,
+        public override async Task<ActionResult<CashResponse>> HandleAsync(
+            [FromMultipleSource] CreateCashRequest request,
             CancellationToken cancellationToken = new())
         {
-
+            
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
 
@@ -39,7 +40,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
                 var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
                 var unused =
                     _transactionService.AddCreateNewAssetTransaction(newCashAsset, newCashAsset.Amount,
-                        newCashAsset.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee, dto.Tax);
+                        newCashAsset.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee,
+                        dto.Tax);
                 return Ok(newCashAsset.Adapt<CashResponse>());
             }
             catch (Exception ex)

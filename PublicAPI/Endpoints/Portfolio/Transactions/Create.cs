@@ -10,26 +10,23 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.Transactions
 {
-    public class Create: BasePortfolioRelatedEndpoint<CreateTransactionRequest, TransactionResponse>
+    public class Create : BasePortfolioRelatedEndpoint<CreateTransactionRequest, TransactionResponse>
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IAssetTransactionService _transactionService; 
+        private readonly IAssetTransactionService _transactionService;
 
         public Create(IAuthorizationService authorizationService, IAssetTransactionService transactionService)
         {
             _authorizationService = authorizationService;
             _transactionService = transactionService;
         }
-        
+
         [HttpPost("transactions")]
         public override async Task<ActionResult<TransactionResponse>> HandleAsync
-            ([FromMultipleSource]CreateTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+            ([FromMultipleSource] CreateTransactionRequest request, CancellationToken cancellationToken = new())
         {
-
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-            {
-                return Unauthorized(NotAllowedPortfolioMessage); 
-            }
+                return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateTransactionCommand.Adapt<CreateTransactionDto>();
 
             try
@@ -37,9 +34,9 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
                 var transaction = request.CreateTransactionCommand.TransactionType switch
                 {
                     "withdrawToCash" => await _transactionService.CreateWithdrawToCashTransaction(dto),
-                    "withdrawToOutside" => await _transactionService.Fake(),
+                    "withdrawToOutside" => await _transactionService.CreateWithdrawToOutsideTransaction(dto),
                     "moveToFund" => await _transactionService.Fake(),
-                    "addValue" => await _transactionService.CreateAddValueTransaction(dto),
+                    "addValue" => await _transactionService.CreateAddValueTransaction(request.PortfolioId, dto),
                     _ => throw new InvalidOperationException()
                 };
 

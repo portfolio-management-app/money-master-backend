@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-    public class CreateCashCommand: BaseCreateRequest
+    public class CreateCashCommand : BaseCreateRequest
     {
         [Required] public string CurrencyCode { get; set; }
         [Required] public decimal Amount { get; set; }

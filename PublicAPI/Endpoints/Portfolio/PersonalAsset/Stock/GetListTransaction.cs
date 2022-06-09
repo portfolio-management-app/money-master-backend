@@ -11,7 +11,7 @@ using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-    public class GetListTransaction: BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
+    public class GetListTransaction : BasePortfolioRelatedEndpoint<GetListTransactionRequest, List<TransactionResponse>>
     {
         private readonly IStockService _stockService;
         private readonly IAssetTransactionService _transactionService;
@@ -32,6 +32,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(stock);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
-        }  
+        }
     }
 }

@@ -12,14 +12,14 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-
     public class Create : BasePortfolioRelatedEndpoint<CreateNewStockRequest, StockResponse>
     {
         private readonly IStockService _stockService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAssetTransactionService _transactionService;
 
-        public Create(IStockService stockService, IAuthorizationService authorizationService, IAssetTransactionService transactionService)
+        public Create(IStockService stockService, IAuthorizationService authorizationService,
+            IAssetTransactionService transactionService)
         {
             _stockService = stockService;
             _authorizationService = authorizationService;
@@ -27,9 +27,9 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         }
 
         [HttpPost("stock")]
-
-        public override async Task<ActionResult<StockResponse>> HandleAsync([FromMultipleSource]CreateNewStockRequest request, CancellationToken cancellationToken = new CancellationToken())
-        {  
+        public override async Task<ActionResult<StockResponse>> HandleAsync(
+            [FromMultipleSource] CreateNewStockRequest request, CancellationToken cancellationToken = new())
+        {
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
             var dto = request.CreateNewStockCommand.Adapt<StockDto>();
@@ -38,8 +38,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
                 var newStock = await _stockService.CreateNewStockAsset(request.PortfolioId, dto);
                 _ = _transactionService.AddCreateNewAssetTransaction(newStock,
                     newStock.PurchasePrice * newStock.CurrentAmountHolding, newStock.CurrencyCode
-                    ,dto.IsUsingInvestFund,dto.IsUsingCash,dto.UsingCashId
-                    ,dto.Fee,dto.Tax);
+                    , dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId
+                    , dto.Fee, dto.Tax);
                 return Ok(newStock.Adapt<StockResponse>());
             }
             catch (Exception ex)

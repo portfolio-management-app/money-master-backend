@@ -10,7 +10,7 @@ using PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-    public class Edit: BasePortfolioRelatedEndpoint<EditCryptoRequest, CryptoResponse>
+    public class Edit : BasePortfolioRelatedEndpoint<EditCryptoRequest, CryptoResponse>
     {
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationService _authorizationService;
@@ -20,22 +20,20 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             _cryptoService = cryptoService;
             _authorizationService = authorizationService;
         }
-    
+
         [HttpPut("crypto/{cryptoId}")]
-        public override async Task<ActionResult<CryptoResponse>> HandleAsync([FromMultipleSource]EditCryptoRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CryptoResponse>> HandleAsync(
+            [FromMultipleSource] EditCryptoRequest request, CancellationToken cancellationToken = new())
         {
-            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
-            {
-                return Unauthorized(); 
-            }
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService)) return Unauthorized();
 
             var dto = request.EditCryptoCommand.Adapt<EditCryptoDto>();
             var result = _cryptoService.EditCrypto(request.CryptoId, dto);
             if (result is null)
-                return NotFound(); 
-            
+                return NotFound();
 
-            return Ok(result.Adapt<CryptoResponse>()); 
+
+            return Ok(result.Adapt<CryptoResponse>());
         }
     }
 }

@@ -15,14 +15,13 @@ namespace ApplicationCore.Entity.Asset
         public decimal? CurrentPrice { get; set; } = null;
 
 
-        public async Task<decimal> GetCurrentPricePerUnit( ExternalPriceFacade priceFacade)
+        public async Task<decimal> GetCurrentPricePerUnit(ExternalPriceFacade priceFacade)
         {
             var priceInUsdDto = await priceFacade.StockPriceRepository.GetPrice(StockCode);
             if (CurrencyCode == "USD") return priceInUsdDto.CurrentPrice;
             var ratesObj = await priceFacade.CurrencyRateRepository.GetRateObject("USD");
 
-           return ratesObj.GetValue(CurrencyCode) * priceInUsdDto.CurrentPrice;
-
+            return ratesObj.GetValue(CurrencyCode) * priceInUsdDto.CurrentPrice;
         }
 
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
@@ -44,7 +43,7 @@ namespace ApplicationCore.Entity.Asset
             ExternalPriceFacade priceFacade)
         {
             var currentValue =
-                await CalculateValueInCurrency(currencyCode,priceFacade);
+                await CalculateValueInCurrency(currencyCode, priceFacade);
             if (currentValue < withdrawAmount)
                 return false;
             CurrentAmountHolding -= withdrawAmount * CurrentAmountHolding / currentValue;
@@ -54,8 +53,8 @@ namespace ApplicationCore.Entity.Asset
         public override async Task<bool> AddValue(decimal amountInAssetUnit)
         {
             if (CurrentAmountHolding + amountInAssetUnit < 0)
-                return false; 
-            this.CurrentAmountHolding += amountInAssetUnit;
+                return false;
+            CurrentAmountHolding += amountInAssetUnit;
             return true;
         }
 
