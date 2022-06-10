@@ -169,21 +169,25 @@ namespace ApplicationCore.ReportAggregate
                 TargetName = _outsideOut,
                 TargetType = _outsideOut,
                 Amount =  
-                    await GetType2SankeyChartCalculationHelper
-                        (g.Select(trans => trans.CalculateSumOfTaxAndFee("USD", _priceFacade)
-                                )
-                                .ToList()
-                                .AddRange()),
+                    await GetType2SankeyChartCalculationHelper(g),
                 Currency = "USD" });
 
             return await Task.WhenAll(sankeyBasis);
 
         }
 
-        private async Task<decimal> GetType2SankeyChartCalculationHelper(IEnumerable<Task<decimal>> transactionsCalculationTasks)
+
+        private async Task<decimal> GetType2SankeyChartCalculationHelper(
+            IEnumerable<SingleAssetTransaction> singleAssetTransactions)
         {
-            var listSum =  await Task.WhenAll(transactionsCalculationTasks);
-            return listSum.Sum();
+            var listTask = singleAssetTransactions
+                .Select(t => t.CalculateSumOfTaxAndFee("USD", _priceFacade)).ToList();
+            var addList = singleAssetTransactions.Select(t => t.CalculateValueInCurrency("USD", _priceFacade))
+                .ToList();
+            listTask.AddRange(addList);
+
+            var calculatedSegments = await Task.WhenAll(listTask);
+            return calculatedSegments.Sum();
         }
     }
 }
