@@ -57,13 +57,13 @@ namespace ApplicationCore.TransactionAggregate
             decimal? fee,
             decimal? tax)
         {
-            var singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromOutside;
+            var singleAssetTransactionType = SingleAssetTransactionType.BuyFromOutside;
             int? resultReferentialAssetId = null;
             string resultReferentialAssetType = null;
             string resultReferentialAssetName = null;
             if (isUsingInvestFund)
             {
-                singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromFund;
+                singleAssetTransactionType = SingleAssetTransactionType.BuyFromFund;
                 resultReferentialAssetId = -1;
                 resultReferentialAssetType = "fund";
                 resultReferentialAssetName = "fund";
@@ -72,7 +72,7 @@ namespace ApplicationCore.TransactionAggregate
             if (isUsingCash && usingCashId is not null)
             {
                 var foundCash = _cashService.GetById(usingCashId.Value);
-                singleAssetTransactionType = SingleAssetTransactionTypes.BuyFromCash;
+                singleAssetTransactionType = SingleAssetTransactionType.BuyFromCash;
                 resultReferentialAssetId = usingCashId.Value;
                 resultReferentialAssetType = foundCash.GetAssetType();
                 resultReferentialAssetName = foundCash.Name;
@@ -80,7 +80,7 @@ namespace ApplicationCore.TransactionAggregate
 
             var newAssetTransaction = new SingleAssetTransaction()
             {
-                SingleAssetTransactionTypes = singleAssetTransactionType,
+                SingleAssetTransactionType = singleAssetTransactionType,
                 ReferentialAssetId = resultReferentialAssetId,
                 ReferentialAssetType = resultReferentialAssetType,
                 ReferentialAssetName = resultReferentialAssetName,
@@ -113,7 +113,7 @@ namespace ApplicationCore.TransactionAggregate
         public async Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,
             CreateTransactionDto createTransactionDto)
         {
-            const SingleAssetTransactionTypes singleAssetTransactionType = SingleAssetTransactionTypes.AddValue;
+            const SingleAssetTransactionType singleAssetTransactionType = SingleAssetTransactionType.AddValue;
             var sourceAssetId = createTransactionDto.ReferentialAssetId;
             var targetAssetId = createTransactionDto.DestinationAssetId;
             PersonalAsset sourceAsset = null;
@@ -142,7 +142,7 @@ namespace ApplicationCore.TransactionAggregate
 
             var newTransaction = new SingleAssetTransaction()
             {
-                SingleAssetTransactionTypes = singleAssetTransactionType,
+                SingleAssetTransactionType = singleAssetTransactionType,
                 ReferentialAssetId = createTransactionDto.ReferentialAssetId,
                 ReferentialAssetType = createTransactionDto.ReferentialAssetType,
                 ReferentialAssetName = sourceAsset?.Name,
@@ -184,7 +184,7 @@ namespace ApplicationCore.TransactionAggregate
                 ReferentialAssetName = foundAsset.Name,
                 Amount = createTransactionDto.Amount,
                 CurrencyCode = createTransactionDto.CurrencyCode,
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToOutside,
+                SingleAssetTransactionType = SingleAssetTransactionType.WithdrawToOutside,
                 Fee = createTransactionDto.Fee,
                 Tax = createTransactionDto.Tax,
                 CreatedAt = DateTime.Now,
@@ -204,22 +204,22 @@ namespace ApplicationCore.TransactionAggregate
         public decimal CalculateSubTransactionProfitLoss
             (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
         {
-            return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionTypes switch
+            return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionType switch
             {
-                SingleAssetTransactionTypes.MoveToFund => transaction.Amount,
-                SingleAssetTransactionTypes.WithdrawToCash => transaction.Amount,
-                SingleAssetTransactionTypes.AddValue => -transaction.Amount,
-                SingleAssetTransactionTypes.BuyFromFund => 0,
+                SingleAssetTransactionType.MoveToFund => transaction.Amount,
+                SingleAssetTransactionType.WithdrawToCash => transaction.Amount,
+                SingleAssetTransactionType.AddValue => -transaction.Amount,
+                SingleAssetTransactionType.BuyFromFund => 0,
                 _ => 0
             });
         }
 
         public List<SingleAssetTransaction> GetTransactionsByType(
-            params SingleAssetTransactionTypes[] assetTransactionTypesArray)
+            params SingleAssetTransactionType[] assetTransactionTypesArray)
         {
             var resultTransactions = _transactionRepository.List(transaction =>
                 !transaction.IsDeleted &&
-                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionTypes));
+                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionType));
 
             return resultTransactions.ToList();
         }
@@ -285,7 +285,7 @@ namespace ApplicationCore.TransactionAggregate
                 ReferentialAssetName = sourceAsset.Name,
                 Amount = createTransactionDto.Amount,
                 CurrencyCode = createTransactionDto.CurrencyCode,
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.WithdrawToCash,
+                SingleAssetTransactionType = SingleAssetTransactionType.WithdrawToCash,
                 Fee = createTransactionDto.Fee,
                 Tax = createTransactionDto.Tax,
                 CreatedAt = DateTime.Now,
@@ -314,7 +314,7 @@ namespace ApplicationCore.TransactionAggregate
                 ReferentialAssetName = asset.Name,
                 Amount = amount,
                 CurrencyCode = currencyCode,
-                SingleAssetTransactionTypes = SingleAssetTransactionTypes.MoveToFund,
+                SingleAssetTransactionType = SingleAssetTransactionType.MoveToFund,
                 Fee = 0,
                 Tax = 0,
                 CreatedAt = DateTime.Now,

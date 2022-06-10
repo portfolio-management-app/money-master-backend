@@ -24,11 +24,15 @@ namespace ApplicationCore.ReportAggregate
         private readonly IStockService _stockService;
         private readonly IBankSavingService _bankSavingService;
         private readonly IAssetTransactionService _assetTransactionService;
+        private readonly ExternalPriceFacade _priceFacade;
+
+        private string _outsideOut = "OutsideOut";
+        private string _outsideIn = "OutsideIn"; 
 
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
             IStockService stockService, IBankSavingService bankSavingService,
-            IAssetTransactionService assetTransactionService)
+            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -38,6 +42,7 @@ namespace ApplicationCore.ReportAggregate
             _stockService = stockService;
             _bankSavingService = bankSavingService;
             _assetTransactionService = assetTransactionService;
+            _priceFacade = priceFacade;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -96,19 +101,21 @@ namespace ApplicationCore.ReportAggregate
                 }
             };
         }
+        
+        
 
         public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId)
         {
             // Get Type 1:
             // Get related transaction: 
             var relatedToFromOutsideTransactions =
-                _assetTransactionService.GetTransactionsByType(SingleAssetTransactionTypes.AddValue,
-                    SingleAssetTransactionTypes.BuyFromOutside);
+                _assetTransactionService.GetTransactionsByType(SingleAssetTransactionType.AddValue,
+                    SingleAssetTransactionType.BuyFromOutside);
             var removedBuyNotFromOutsideTransactions = relatedToFromOutsideTransactions
                 .Where(transaction =>
-                    !(transaction.SingleAssetTransactionTypes == SingleAssetTransactionTypes.AddValue
+                    !(transaction.SingleAssetTransactionType == SingleAssetTransactionType.AddValue
                       && transaction.ReferentialAssetType is null));
-            var sankeyFlowBasis = relatedToFromOutsideTransactions
+            var sankeyFlowBasis = removedBuyNotFromOutsideTransactions
                 .GroupBy(transaction => new
                 {
                     transaction.DestinationAssetId, transaction.DestinationAssetName,
@@ -116,8 +123,8 @@ namespace ApplicationCore.ReportAggregate
                 })
                 .Select(group => new SankeyFlowBasis()
                 {
-                    SourceType = "outsideIn",
-                    SourceName = "outsideIn",
+                    SourceType = _outsideIn,
+                    SourceName = _outsideIn,
                     SourceId = null,
                     TargetName = group.Key.DestinationAssetName,
                     TargetType = group.Key.DestinationAssetType,
@@ -127,6 +134,56 @@ namespace ApplicationCore.ReportAggregate
                 });
 
             return sankeyFlowBasis.ToList();
+            
+        }
+        // The below code implements the sankey type elements, documented in the sankey formation documentation 
+        
+        
+        
+        /// <summary>
+        /// Type 2: flow from asset to outside out 
+        /// </summary>
+        /// <param name="portfolioId">portfolioId</param>
+        /// <returns>The partial list of sankey flow basis</returns>
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(int portfolioId)
+        {
+            var listTransactions = _assetTransactionService.GetTransactionsByType
+            (SingleAssetTransactionType.AddValue,
+                SingleAssetTransactionType.WithdrawToOutside,
+                SingleAssetTransactionType.BuyFromCash,
+                SingleAssetTransactionType.AddValue);
+
+            var eligibleTransactions = listTransactions
+                .Where(t => !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue
+                              && t.ReferentialAssetType != "cash"));
+
+            var sankeyBasis = listTransactions.GroupBy(transaction => new
+            {
+                transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
+            }).Select(async g => new SankeyFlowBasis()
+            {
+                SourceId = g.Key.ReferentialAssetId!.Value,
+                SourceType = g.Key.ReferentialAssetType,
+                SourceName = g.Key.ReferentialAssetName,
+                TargetId = null,
+                TargetName = _outsideOut,
+                TargetType = _outsideOut,
+                Amount =  
+                    await GetType2SankeyChartCalculationHelper
+                        (g.Select(trans => trans.CalculateSumOfTaxAndFee("USD", _priceFacade)
+                                )
+                                .ToList()
+                                .AddRange()),
+                Currency = "USD" });
+
+            return await Task.WhenAll(sankeyBasis);
+
+        }
+
+        private async Task<decimal> GetType2SankeyChartCalculationHelper(IEnumerable<Task<decimal>> transactionsCalculationTasks)
+        {
+            var listSum =  await Task.WhenAll(transactionsCalculationTasks);
+            return listSum.Sum();
         }
     }
 }

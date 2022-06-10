@@ -25,15 +25,15 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
 
         public TransactionResponse(SingleAssetTransaction assetTransaction)
         {
-            SingleAssetTransactionType = assetTransaction.SingleAssetTransactionTypes switch
+            SingleAssetTransactionType = assetTransaction.SingleAssetTransactionType switch
             {
-                SingleAssetTransactionTypes.AddValue => "addValue",
-                SingleAssetTransactionTypes.WithdrawToCash => "withdrawToCash",
-                SingleAssetTransactionTypes.WithdrawToOutside => "withdrawToOutside",
-                SingleAssetTransactionTypes.MoveToFund => "moveToFund",
-                SingleAssetTransactionTypes.BuyFromFund => "buyFromFund",
-                SingleAssetTransactionTypes.BuyFromCash => "buyFromCash",
-                SingleAssetTransactionTypes.BuyFromOutside => "buyFromOutside",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.AddValue => "addValue",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.WithdrawToCash => "withdrawToCash",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.WithdrawToOutside => "withdrawToOutside",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.MoveToFund => "moveToFund",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.BuyFromFund => "buyFromFund",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.BuyFromCash => "buyFromCash",
+                ApplicationCore.Entity.Transactions.SingleAssetTransactionType.BuyFromOutside => "buyFromOutside",
                 _ => throw new ArgumentOutOfRangeException()
             };
             Id = assetTransaction.Id;

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.ExternalService;
@@ -57,48 +58,42 @@ namespace ApplicationCore.BackgroundTask
             return Task.CompletedTask;
         }
 
-        public void RunService()
+        private void RunService()
         {
             _logger.LogInformation("Notification service run");
             RunCoinService();
             RunStockService();
         }
-        public async void RunCoinService()
+
+        private async void RunCoinService()
         {
-
-
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var highSubscribers = notificationService.GetActiveHighNotifications("crypto");
-                var lowSubscribers = notificationService.GetActiveLowNotifications("crypto");
-                var highQueries = GetCryptoQueryString(highSubscribers);
-                var lowQueries = GetCryptoQueryString(lowSubscribers);
-                var highPrices = await GetCryptoPrice(highQueries);
-                var lowPrices = await GetCryptoPrice(lowQueries);
-                PushHighCryptoNotification(highPrices, highSubscribers);
-                PushLowCryptoNotification(lowPrices, lowSubscribers);
-            }
+            using var scope = _scopeFactory.CreateScope();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var highSubscribers = notificationService.GetActiveHighNotifications("crypto");
+            var lowSubscribers = notificationService.GetActiveLowNotifications("crypto");
+            var highQueries = GetCryptoQueryString(highSubscribers);
+            var lowQueries = GetCryptoQueryString(lowSubscribers);
+            var highPrices = await GetCryptoPrice(highQueries);
+            var lowPrices = await GetCryptoPrice(lowQueries);
+            PushHighCryptoNotification(highPrices, highSubscribers);
+            PushLowCryptoNotification(lowPrices, lowSubscribers);
         }
 
-        public async void RunStockService()
+        private async void RunStockService()
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var highSubscribers = notificationService.GetActiveHighNotifications("stock");
-                var lowSubscribers = notificationService.GetActiveLowNotifications("stock");
-                await PushHighStockNotification(highSubscribers);
-                await PushLowStockNotification(lowSubscribers);
-
-            }
+            using var scope = _scopeFactory.CreateScope();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var highSubscribers = notificationService.GetActiveHighNotifications("stock");
+            var lowSubscribers = notificationService.GetActiveLowNotifications("stock");
+            await PushHighStockNotification(highSubscribers);
+            await PushLowStockNotification(lowSubscribers);
         }
 
-        public string[] GetCryptoQueryString(List<Notification> subscribers)
+        private string[] GetCryptoQueryString(List<Notification> subscribers)
         {
 
-            Dictionary<string, int> coinCodes = new Dictionary<string, int>();
-            Dictionary<string, int> currencyCodes = new Dictionary<string, int>();
+            var coinCodes = new Dictionary<string, int>();
+            var currencyCodes = new Dictionary<string, int>();
             foreach (var item in subscribers)
             {
                 if (!coinCodes.ContainsKey(item.CoinCode))
@@ -111,147 +106,125 @@ namespace ApplicationCore.BackgroundTask
                 }
 
             }
-            string coinCodeQuery = "";
-            string currencyQuery = "";
-            foreach (var code in coinCodes)
-            {
-                coinCodeQuery += $"{code.Key},";
-            }
 
-            foreach (var currency in currencyCodes)
-            {
-                currencyQuery += $"{currency.Key},";
-            }
+            string coinCodeQuery = coinCodes.Aggregate("", (current, code) => current + $"{code.Key},");
+
+            string currencyQuery = currencyCodes.Aggregate("", (current, currency) => current + $"{currency.Key},");
 
             var result = new string[] { coinCodeQuery, currencyQuery };
             return result;
         }
 
-        public async Task<Dictionary<string, Dictionary<string, decimal>>> GetCryptoPrice(string[] queries)
+        private async Task<Dictionary<string, Dictionary<string, decimal>>> GetCryptoPrice(string[] queries)
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var cryptoRateService = scope.ServiceProvider.GetRequiredService<ICryptoRateRepository>();
-                var result = await cryptoRateService.GetListCoinPrice(queries[0], queries[1]);
-                return result;
-            }
+            using var scope = _scopeFactory.CreateScope();
+            var cryptoRateService = scope.ServiceProvider.GetRequiredService<ICryptoRateRepository>();
+            var result = await cryptoRateService.GetListCoinPrice(queries[0], queries[1]);
+            return result;
         }
 
-        public async Task<decimal> GetStockPrice(string stockSymbol)
+        private async Task<decimal> GetStockPrice(string stockSymbol)
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var stockRateService = scope.ServiceProvider.GetRequiredService<IStockPriceRepository>();
-                var result = await stockRateService.GetPrice(stockSymbol);
-                return result.CurrentPrice;
-            }
+            using var scope = _scopeFactory.CreateScope();
+            var stockRateService = scope.ServiceProvider.GetRequiredService<IStockPriceRepository>();
+            var result = await stockRateService.GetPrice(stockSymbol);
+            return result.CurrentPrice;
         }
-        public void PushHighCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
+
+        private void PushHighCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            using var scope = _scopeFactory.CreateScope();
+            var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            foreach (var subscriber in subscribers)
             {
-                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
-                foreach (var subscriber in subscribers)
+                subscriber.Currency = subscriber.Currency.ToLower();
+                if (priceObject.ContainsKey(subscriber.CoinCode))
                 {
-                    subscriber.Currency = subscriber.Currency.ToLower();
-                    if (priceObject.ContainsKey(subscriber.CoinCode))
+                    if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
-                        if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
+                        var value = priceObject[subscriber.CoinCode][subscriber.Currency];
+                        if (value > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
                         {
-                            var value = priceObject[subscriber.CoinCode][subscriber.Currency];
-                            if (value > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
-                            {
 
-                                var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                                _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
-                                notificationService.TurnOffHighNotificationById(subscriber.Id);
-                                userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
-                            }
+                            var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
+                            _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
+                            notificationService.TurnOffHighNotificationById(subscriber.Id);
+                            userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
                         }
                     }
                 }
-
             }
         }
 
-        public void PushLowCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
+        private void PushLowCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            using var scope = _scopeFactory.CreateScope();
+            var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            foreach (var subscriber in subscribers)
             {
-                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
-                foreach (var subscriber in subscribers)
+                subscriber.Currency = subscriber.Currency.ToLower();
+                if (priceObject.ContainsKey(subscriber.CoinCode))
                 {
-                    subscriber.Currency = subscriber.Currency.ToLower();
-                    if (priceObject.ContainsKey(subscriber.CoinCode))
+                    if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
-                        if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
+                        var value = priceObject[subscriber.CoinCode][subscriber.Currency];
+                        if (value < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
                         {
-                            var value = priceObject[subscriber.CoinCode][subscriber.Currency];
-                            if (value < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
-                            {
 
-                                var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                                _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
-                                notificationService.TurnOffLowNotificationById(subscriber.Id);
-                                userNotificationService.InsertNewNotification(subscriber, assetReachLow);
-                            }
+                            var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
+                            _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
+                            notificationService.TurnOffLowNotificationById(subscriber.Id);
+                            userNotificationService.InsertNewNotification(subscriber, assetReachLow);
                         }
                     }
                 }
+            }
+        }
+
+        private async Task PushHighStockNotification(List<Notification> subscribers)
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            foreach (var subscriber in subscribers)
+            {
+                var price = await GetStockPrice(subscriber.StockCode);
+                if (price > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
+                {
+                    var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
+                    _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
+                    userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
+                    notificationService.TurnOffHighNotificationById(subscriber.Id);
+                }
 
             }
         }
 
-        public async Task PushHighStockNotification(List<Notification> subscribers)
+        private async Task PushLowStockNotification(List<Notification> subscribers)
         {
-            using (var scope = _scopeFactory.CreateScope())
+            using var scope = _scopeFactory.CreateScope();
+            var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            foreach (var subscriber in subscribers)
             {
-                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
-                foreach (var subscriber in subscribers)
+                var price = await GetStockPrice(subscriber.StockCode);
+                if (price < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
                 {
-                    var price = await GetStockPrice(subscriber.StockCode);
-                    if (price > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
-                    {
-                        var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                        _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
-                        userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
-                        notificationService.TurnOffHighNotificationById(subscriber.Id);
-                    }
-
+                    var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
+                    _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
+                    notificationService.TurnOffLowNotificationById(subscriber.Id);
+                    userNotificationService.InsertNewNotification(subscriber, assetReachLow);
                 }
             }
-
         }
 
-        public async Task PushLowStockNotification(List<Notification> subscribers)
-        {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-                var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
-                foreach (var subscriber in subscribers)
-                {
-                    var price = await GetStockPrice(subscriber.StockCode);
-                    if (price < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
-                    {
-                        var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                        _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
-                        notificationService.TurnOffLowNotificationById(subscriber.Id);
-                        userNotificationService.InsertNewNotification(subscriber, assetReachLow);
-                    }
-                }
-            }
-
-        }
-
-        public Dictionary<string, string> BuildDataForNotification(Notification notification, string type)
+        private Dictionary<string, string> BuildDataForNotification(Notification notification, string type)
         {
             return new Dictionary<string, string>(){
                 {"title","Asset reach value"},

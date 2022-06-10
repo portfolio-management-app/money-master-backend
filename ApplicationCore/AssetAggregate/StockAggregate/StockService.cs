@@ -55,8 +55,8 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
 
         public async Task<decimal> CalculateSumByPortfolio(int portfolioId, string currencyCode)
         {
-            var cashAssets = await ListByPortfolio(portfolioId);
-            var unifyCurrencyValue = cashAssets.Select
+            var assets = await ListByPortfolio(portfolioId);
+            var unifyCurrencyValue = assets.Select
             (stock =>
                 stock.CalculateValueInCurrency(currencyCode, _priceFacade
                 ));
