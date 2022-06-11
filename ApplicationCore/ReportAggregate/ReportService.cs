@@ -113,7 +113,16 @@ namespace ApplicationCore.ReportAggregate
             var type1SankeyBasis = await GetType1SankeyBasis(currency, portfolioId);
             var type2SankeyBasis = await GetType2SankeyBasis(currency, portfolioId);
             var type3SankeyBasis = await GetType3SankeyBasis(currency, portfolioId);
-            return new List<SankeyFlowBasis>();
+            var type4SankeyBasis = await GetType4SankeyBasis(currency, portfolioId); 
+            var type5SankeyBasis = await GetType5SankeyBasis(currency, portfolioId); 
+
+            var resultList = new List<SankeyFlowBasis>();
+            resultList.AddRange(type1SankeyBasis);
+            resultList.AddRange(type2SankeyBasis);
+            resultList.AddRange(type3SankeyBasis);
+            resultList.AddRange(type4SankeyBasis);
+            resultList.AddRange(type5SankeyBasis);
+            return resultList;
         }
         // The below code implements the sankey type elements, documented in the sankey formation documentation 
 
@@ -256,5 +265,105 @@ namespace ApplicationCore.ReportAggregate
             var calculatedSegments = await Task.WhenAll(taskList);
             return calculatedSegments.Sum();
         }
+
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType4SankeyBasis(string inputCurrency, int portfolioId)
+        {
+            var listTransactions = _assetTransactionService.GetTransactionsByType(portfolioId,
+                SingleAssetTransactionType.MoveToFund
+                , SingleAssetTransactionType.BuyFromFund,
+                SingleAssetTransactionType.AddValue);
+            var eligibleTransactions = listTransactions
+                .Where(t => !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue &&
+                              t.ReferentialAssetType != "fund"));
+            var sankeyBasis = eligibleTransactions.GroupBy(transaction => new
+            {
+                transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName,
+                transaction.DestinationAssetId, transaction.DestinationAssetType, transaction.DestinationAssetName
+            }).Select(async g => new SankeyFlowBasis()
+            {
+                TargetId = g.Key.DestinationAssetId,
+                TargetName = g.Key.DestinationAssetName,
+                TargetType = g.Key.DestinationAssetType,
+                SourceId = g.Key.ReferentialAssetId,
+                SourceName = g.Key.ReferentialAssetName,
+                SourceType = g.Key.ReferentialAssetType,
+                Amount = await GetType4SankeyBasisHelper(inputCurrency, g)
+            });
+
+            return await Task.WhenAll(sankeyBasis);
+
+        }
+
+        private async Task<decimal> GetType4SankeyBasisHelper(string inputCurrency,
+            IEnumerable<SingleAssetTransaction> eligibleTransactions)
+        {
+            var assetTransactions = eligibleTransactions as SingleAssetTransaction[] ?? eligibleTransactions.ToArray();
+            var listTasks = assetTransactions
+                .Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade));
+            var calculationSegments = await Task.WhenAll(listTasks);
+
+
+            var result =  assetTransactions.Select((t, i) => t.SingleAssetTransactionType switch
+                {
+                    SingleAssetTransactionType.MoveToFund => calculationSegments[i],
+                    SingleAssetTransactionType.BuyFromFund => -calculationSegments[i],
+                    SingleAssetTransactionType.AddValue => -calculationSegments[i], 
+                    _ => throw new InvalidOperationException("Invalid transaction while calculating type 4 sankey")
+                })
+                .Sum();
+
+            if (result < 0)
+                return -result;
+            return result;
+        }
+
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType5SankeyBasis(string inputCurrency, int portfolioId)
+        {
+            var listTransactions = _assetTransactionService.GetTransactionsByType(portfolioId,
+                SingleAssetTransactionType.AddValue,
+                SingleAssetTransactionType.BuyFromCash,
+                SingleAssetTransactionType.WithdrawToCash);
+
+            var eligibleTransaction = listTransactions.Where(
+                t => !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue &&
+                       t.ReferentialAssetType != "cash"));
+
+            var sankeyBasis = eligibleTransaction.GroupBy(transaction => new
+            {
+                transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName,
+                transaction.DestinationAssetId, transaction.DestinationAssetType, transaction.DestinationAssetName
+            }).Select(async g => new SankeyFlowBasis()
+            {
+                SourceId = g.Key.ReferentialAssetId,
+                SourceName = g.Key.ReferentialAssetName,
+                SourceType = g.Key.ReferentialAssetType,
+                TargetId = g.Key.DestinationAssetId,
+                TargetName = g.Key.DestinationAssetName,
+                TargetType = g.Key.DestinationAssetType,
+                Amount = await GetType5SankeyBasisHelper(inputCurrency, g)
+            });
+            return await Task.WhenAll(sankeyBasis);
+        }
+
+        private async Task<decimal> GetType5SankeyBasisHelper(string inputCurrency,
+            IEnumerable<SingleAssetTransaction> eligibleTransactions)
+        {
+            var assetTransactions = eligibleTransactions as SingleAssetTransaction[] ?? eligibleTransactions.ToArray();
+            var listTasks = assetTransactions
+                .Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade));
+            var calculationSegments = await Task.WhenAll(listTasks);
+            var result = assetTransactions.Select((t, i) => t.SingleAssetTransactionType switch
+                {
+                    SingleAssetTransactionType.AddValue => -calculationSegments[i],
+                    SingleAssetTransactionType.BuyFromCash => calculationSegments[i],
+                    SingleAssetTransactionType.WithdrawToCash => -calculationSegments[i],
+                    _ => throw new InvalidOperationException("Invalid transaction type in type 5 sankey")
+                })
+                .Sum();
+
+            if (result < 0) return -result;
+            return result;
+        }
+        
     }
 }
