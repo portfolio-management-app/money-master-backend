@@ -8,6 +8,7 @@ using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
+using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
@@ -48,7 +49,7 @@ namespace ApplicationCore.TransactionAggregate
         }
 
         public SingleAssetTransaction AddCreateNewAssetTransaction
-        (PersonalAsset asset,
+        (int portfolioId, PersonalAsset asset,
             decimal moneyAmount,
             string currency,
             bool isUsingInvestFund,
@@ -94,7 +95,8 @@ namespace ApplicationCore.TransactionAggregate
                 CurrencyCode = currency,
                 LastChanged = DateTime.Now,
                 Fee = fee,
-                Tax = tax
+                Tax = tax,
+                PortfolioId = portfolioId
             };
 
             _transactionRepository.Insert(newAssetTransaction);
@@ -110,7 +112,7 @@ namespace ApplicationCore.TransactionAggregate
             return listTransaction.ToList();
         }
 
-        public async Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,
+        public async Task<SingleAssetTransaction> CreateAddValueTransaction(int portfolioId,
             CreateTransactionDto createTransactionDto)
         {
             const SingleAssetTransactionType singleAssetTransactionType = SingleAssetTransactionType.AddValue;
@@ -130,7 +132,8 @@ namespace ApplicationCore.TransactionAggregate
                 }
                 else if (createTransactionDto.IsUsingFundAsSource)
                 {
-                     await _investFundService.WithdrawFromInvestFund(requestPortfolioId, createTransactionDto.Amount,
+                     
+                     await _investFundService.WithdrawFromInvestFund(portfolioId, createTransactionDto.Amount,
                         createTransactionDto.CurrencyCode);
                 }
 
@@ -144,8 +147,8 @@ namespace ApplicationCore.TransactionAggregate
             {
                 SingleAssetTransactionType = singleAssetTransactionType,
                 ReferentialAssetId = createTransactionDto.ReferentialAssetId,
-                ReferentialAssetType = createTransactionDto.ReferentialAssetType,
-                ReferentialAssetName = sourceAsset?.Name,
+                ReferentialAssetType = (createTransactionDto.IsUsingFundAsSource) ? "fund" : createTransactionDto.ReferentialAssetType,
+                ReferentialAssetName = (createTransactionDto.IsUsingFundAsSource) ? "fund" :  sourceAsset?.Name,
                 DestinationAssetId = targetAssetId,
                 DestinationAssetName = targetAsset?.Name,
                 DestinationAssetType = createTransactionDto.DestinationAssetType,
@@ -157,7 +160,8 @@ namespace ApplicationCore.TransactionAggregate
                 CurrencyCode = createTransactionDto.CurrencyCode,
                 LastChanged = DateTime.Now,
                 Fee = createTransactionDto.Fee,
-                Tax = createTransactionDto.Tax
+                Tax = createTransactionDto.Tax,
+                PortfolioId = portfolioId
             };
 
             _transactionRepository.Insert(newTransaction);
@@ -166,7 +170,7 @@ namespace ApplicationCore.TransactionAggregate
 
 
 
-        public async Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(
+        public async Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(int portfolioId,
             CreateTransactionDto createTransactionDto)
         {
             if (createTransactionDto.ReferentialAssetId is null) throw new InvalidOperationException("Asset not found");
@@ -194,7 +198,8 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = null,
                 DestinationAmount = createTransactionDto.Amount,
                 DestinationCurrency = createTransactionDto.CurrencyCode,
-                AmountInDestinationAssetUnit = createTransactionDto.Amount
+                AmountInDestinationAssetUnit = createTransactionDto.Amount,
+                PortfolioId = portfolioId
             };
 
             _transactionRepository.Insert(newTransaction);
@@ -214,17 +219,19 @@ namespace ApplicationCore.TransactionAggregate
             });
         }
 
-        public List<SingleAssetTransaction> GetTransactionsByType(
+        public List<SingleAssetTransaction> GetTransactionsByType(int portfolioId,
             params SingleAssetTransactionType[] assetTransactionTypesArray)
         {
-            var resultTransactions = _transactionRepository.List(transaction =>
+            var resultTransactions = _transactionRepository.List
+            (transaction =>
                 !transaction.IsDeleted &&
-                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionType));
+                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionType)
+                && transaction.PortfolioId == portfolioId);
 
             return resultTransactions.ToList();
         }
 
-        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(
+        public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(int portfolioId,
             CreateTransactionDto createTransactionDto)
         {
             var foundCash = _cashRepository.GetFirst(c => c.Id == createTransactionDto.DestinationAssetId);
@@ -295,7 +302,8 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = foundCash.GetAssetType(),
                 DestinationAmount = valueToAddToCash,
                 DestinationCurrency = foundCash.CurrencyCode,
-                AmountInDestinationAssetUnit = valueToAddToCash
+                AmountInDestinationAssetUnit = valueToAddToCash,
+                PortfolioId = portfolioId
             };
             _transactionRepository.Insert(newTransaction);
 
@@ -324,6 +332,7 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAssetType = null,
                 DestinationAmount = 0,
                 DestinationCurrency = currencyCode,
+                PortfolioId = portfolioId
             };
             _transactionRepository.Insert(newTransaction);
             return newTransaction;

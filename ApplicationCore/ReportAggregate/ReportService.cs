@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace ApplicationCore.ReportAggregate
         private readonly ExternalPriceFacade _priceFacade;
 
         private string _outsideOut = "OutsideOut";
-        private string _outsideIn = "OutsideIn"; 
+        private string _outsideIn = "OutsideIn";
 
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
@@ -101,15 +102,32 @@ namespace ApplicationCore.ReportAggregate
                 }
             };
         }
-        
-        
+
 
         public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId)
         {
-            // Get Type 1:
-            // Get related transaction: 
+            var foundPortfolio = _portfolioService.GetPortfolioById(portfolioId);
+            if (foundPortfolio is null)
+                throw new InvalidOperationException("Portfolio not found");
+            var currency = foundPortfolio.InitialCurrency;
+            var type1SankeyBasis = await GetType1SankeyBasis(currency, portfolioId);
+            var type2SankeyBasis = await GetType2SankeyBasis(currency, portfolioId);
+            var type3SankeyBasis = await GetType3SankeyBasis(currency, portfolioId);
+            return new List<SankeyFlowBasis>();
+        }
+        // The below code implements the sankey type elements, documented in the sankey formation documentation 
+
+
+        /// <summary>
+        /// Type 1 sankey: outside to assets
+        /// </summary>
+        /// <param name="inputCurrency"></param>
+        /// <param name="portfolioId"></param>
+        /// <returns></returns>
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType1SankeyBasis(string inputCurrency, int portfolioId)
+        {
             var relatedToFromOutsideTransactions =
-                _assetTransactionService.GetTransactionsByType(SingleAssetTransactionType.AddValue,
+                _assetTransactionService.GetTransactionsByType(portfolioId, SingleAssetTransactionType.AddValue,
                     SingleAssetTransactionType.BuyFromOutside);
             var removedBuyNotFromOutsideTransactions = relatedToFromOutsideTransactions
                 .Where(transaction =>
@@ -121,34 +139,40 @@ namespace ApplicationCore.ReportAggregate
                     transaction.DestinationAssetId, transaction.DestinationAssetName,
                     transaction.DestinationAssetType
                 })
-                .Select(group => new SankeyFlowBasis()
+                .Select(async grouping => new SankeyFlowBasis()
                 {
                     SourceType = _outsideIn,
                     SourceName = _outsideIn,
                     SourceId = null,
-                    TargetName = group.Key.DestinationAssetName,
-                    TargetType = group.Key.DestinationAssetType,
-                    TargetId = group.Key.DestinationAssetId,
-                    Amount = group.Sum(g => g.Amount),
-                    Currency = "USD"
+                    TargetName = grouping.Key.DestinationAssetName,
+                    TargetType = grouping.Key.DestinationAssetType,
+                    TargetId = grouping.Key.DestinationAssetId,
+                    Amount = await GetType1SankeyChartCalculationHelper(inputCurrency, grouping),
+                    Currency = inputCurrency
                 });
 
-            return sankeyFlowBasis.ToList();
-            
+            return await Task.WhenAll(sankeyFlowBasis);
         }
-        // The below code implements the sankey type elements, documented in the sankey formation documentation 
-        
-        
-        
+
+        private async Task<decimal> GetType1SankeyChartCalculationHelper(string inputCurrency,
+            IEnumerable<SingleAssetTransaction> singleAssetTransactions)
+        {
+            var taskList = singleAssetTransactions
+                .Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade));
+            var calculationSegments = await Task.WhenAll(taskList);
+            return calculationSegments.Sum();
+        }
+
         /// <summary>
         /// Type 2: flow from asset to outside out 
         /// </summary>
+        /// <param name="inputCurrency"></param>
         /// <param name="portfolioId">portfolioId</param>
         /// <returns>The partial list of sankey flow basis</returns>
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(string inputCurrency, int portfolioId)
         {
             var listTransactions = _assetTransactionService.GetTransactionsByType
-            (SingleAssetTransactionType.AddValue,
+            (portfolioId, SingleAssetTransactionType.AddValue,
                 SingleAssetTransactionType.WithdrawToOutside,
                 SingleAssetTransactionType.BuyFromCash,
                 SingleAssetTransactionType.AddValue);
@@ -157,7 +181,7 @@ namespace ApplicationCore.ReportAggregate
                 .Where(t => !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue
                               && t.ReferentialAssetType != "cash"));
 
-            var sankeyBasis = listTransactions.GroupBy(transaction => new
+            var sankeyBasis = eligibleTransactions.GroupBy(transaction => new
             {
                 transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
             }).Select(async g => new SankeyFlowBasis()
@@ -168,25 +192,68 @@ namespace ApplicationCore.ReportAggregate
                 TargetId = null,
                 TargetName = _outsideOut,
                 TargetType = _outsideOut,
-                Amount =  
-                    await GetType2SankeyChartCalculationHelper(g),
-                Currency = "USD" });
+                Amount =
+                    await GetType2SankeyChartCalculationHelper(inputCurrency, g),
+                Currency = inputCurrency
+            });
 
             return await Task.WhenAll(sankeyBasis);
-
         }
 
 
-        private async Task<decimal> GetType2SankeyChartCalculationHelper(
+        private async Task<decimal> GetType2SankeyChartCalculationHelper(string inputCurrency,
             IEnumerable<SingleAssetTransaction> singleAssetTransactions)
         {
-            var listTask = singleAssetTransactions
-                .Select(t => t.CalculateSumOfTaxAndFee("USD", _priceFacade)).ToList();
-            var addList = singleAssetTransactions.Select(t => t.CalculateValueInCurrency("USD", _priceFacade))
+            var assetTransactions =
+                singleAssetTransactions as SingleAssetTransaction[] ?? singleAssetTransactions.ToArray();
+            var taskList = assetTransactions
+                .Select(t => t.CalculateSumOfTaxAndFee(inputCurrency, _priceFacade)).ToList();
+            var addList = assetTransactions.Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade))
                 .ToList();
-            listTask.AddRange(addList);
+            taskList.AddRange(addList);
 
-            var calculatedSegments = await Task.WhenAll(listTask);
+            var calculatedSegments = await Task.WhenAll(taskList);
+            return calculatedSegments.Sum();
+        }
+
+        /// <summary>
+        /// Get Type 3 sankey flow basis
+        /// </summary>
+        /// <param name="inputCurrency"></param>
+        /// <param name="portfolioId"></param>
+        /// <returns></returns>
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType3SankeyBasis(string inputCurrency, int portfolioId)
+        {
+            var listTransactions = _assetTransactionService
+                .GetTransactionsByType(portfolioId, SingleAssetTransactionType.BuyFromFund,
+                    SingleAssetTransactionType.AddValue);
+            var eligibleTransactions = listTransactions.Where(t =>
+                !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue &&
+                  t.ReferentialAssetType != "fund"));
+
+            var sankeyBasis = eligibleTransactions.GroupBy(transaction => new
+            {
+                transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
+            }).Select(async g => new SankeyFlowBasis()
+                {
+                    SourceId = null,
+                    SourceName = "fund",
+                    SourceType = "fund",
+                    Amount = await GetType3SankeyBasisHelper(inputCurrency, g),
+                    TargetId = null,
+                    TargetName = _outsideOut,
+                    TargetType = _outsideOut
+                }
+            );
+            return await Task.WhenAll(sankeyBasis);
+        }
+
+        private async Task<decimal> GetType3SankeyBasisHelper(string inputCurrency,
+            IEnumerable<SingleAssetTransaction> singleAssetTransactions)
+        {
+            var taskList = singleAssetTransactions
+                .Select(t => t.CalculateSumOfTaxAndFee(inputCurrency, _priceFacade));
+            var calculatedSegments = await Task.WhenAll(taskList);
             return calculatedSegments.Sum();
         }
     }

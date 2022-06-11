@@ -42,7 +42,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
                 var newAsset =
                     await _customAssetService.AddCustomInterestAsset(userId, request.CustomInterestAssetInfoId,
                         request.PortfolioId, dto);
-                _ = _assetTransactionService.AddCreateNewAssetTransaction(newAsset, newAsset.InputMoneyAmount,
+                _ = _assetTransactionService.AddCreateNewAssetTransaction(request.PortfolioId,newAsset, newAsset.InputMoneyAmount,
                     newAsset.InputCurrency, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee, dto.Tax);
                 return Ok(newAsset.Adapt<CreateCustomInterestAssetResponse>());
             }

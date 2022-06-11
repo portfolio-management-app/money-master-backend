@@ -22,6 +22,8 @@ namespace ApplicationCore.Entity.Transactions
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime LastChanged { get; set; } = DateTime.Now;
+        public Portfolio Portfolio { get; set; } 
+        public int PortfolioId { get; set; }
 
         public Transaction(string referentialAssetType, int referentialAssetId, decimal amount,
             string currencyCode)

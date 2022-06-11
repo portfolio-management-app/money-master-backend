@@ -10,7 +10,7 @@ namespace ApplicationCore.TransactionAggregate
     public interface IAssetTransactionService
     {
         SingleAssetTransaction AddCreateNewAssetTransaction
-            (PersonalAsset asset,
+            (int portfolioId,PersonalAsset asset,
                 decimal moneyAmount,
                 string currency,
                 bool isUsingInvestFund,
@@ -18,11 +18,11 @@ namespace ApplicationCore.TransactionAggregate
                 decimal? fee, decimal? tax);
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
-            (CreateTransactionDto createTransactionDto);
+            (int portfolioId, CreateTransactionDto createTransactionDto);
 
-        Task<SingleAssetTransaction> CreateAddValueTransaction(int requestPortfolioId,CreateTransactionDto createTransactionDto);
+        Task<SingleAssetTransaction> CreateAddValueTransaction(int portfolioId,CreateTransactionDto createTransactionDto);
 
-        Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(CreateTransactionDto createTransactionDto);
+        Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(int portfolioId,CreateTransactionDto createTransactionDto);
         Task<SingleAssetTransaction> CreateMoveToFundTransaction(
         int portfolioId, PersonalAsset asset, decimal amount,
           string currencyCode, bool isTransferringAll);
@@ -30,7 +30,7 @@ namespace ApplicationCore.TransactionAggregate
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode);
 
         public List<SingleAssetTransaction> GetTransactionsByType(
-            params SingleAssetTransactionType[] assetTransactionTypesArray);
+            int portfolioId,params SingleAssetTransactionType[] assetTransactionTypesArray);
 
 
         Task<SingleAssetTransaction> Fake();
