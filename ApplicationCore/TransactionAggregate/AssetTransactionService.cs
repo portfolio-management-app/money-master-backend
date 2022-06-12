@@ -311,31 +311,60 @@ namespace ApplicationCore.TransactionAggregate
 
         }
         
-        public async Task<SingleAssetTransaction> CreateMoveToFundTransaction(
-            int portfolioId, PersonalAsset asset, decimal amount,
-            string currencyCode, bool isTransferringAll)
+        public async Task<SingleAssetTransaction> CreateMoveToFundTransaction(int portfolioId, CreateTransactionDto createTransactionDto)
         {
+            var foundFund =  _investFundService.GetInvestFundByPortfolio(portfolioId);
+            if (createTransactionDto.ReferentialAssetId == null) throw new InvalidOperationException();
+            var asset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType,
+                createTransactionDto.ReferentialAssetId.Value);
+            var rateObj =
+                await _priceFacade.CurrencyRateRepository.GetRateObject(foundFund.Portfolio.InitialCurrency);
+            var valueToAddToFund =
+                rateObj.GetValue(createTransactionDto.CurrencyCode) * createTransactionDto.Amount;
+            
+            var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
+            if (createTransactionDto.IsTransferringAll)
+            {
+                var withdrawAmount = await asset.CalculateValueInCurrency(foundFund.Portfolio.InitialCurrency, _priceFacade);
+                valueToAddToFund = withdrawAmount;
+                await asset.WithdrawAll();
+            }
+            else
+            {
+                if (mandatoryWithdrawAll.Contains(asset.GetAssetType()))
+                {
+                    throw new OperationCanceledException($"Not allowed for partial withdraw");
+                }
+                if (!await asset.Withdraw(createTransactionDto.Amount, createTransactionDto.CurrencyCode, _priceFacade))
+                    throw new OperationCanceledException("Insufficient amount");
+            }
+
+            foundFund.CurrentAmount += valueToAddToFund;
+            
+
             var newTransaction = new SingleAssetTransaction
             {
                 ReferentialAssetId = asset.Id,
                 ReferentialAssetType = asset.GetAssetType(),
                 ReferentialAssetName = asset.Name,
-                Amount = amount,
-                CurrencyCode = currencyCode,
+                Amount = createTransactionDto.Amount,
+                CurrencyCode = createTransactionDto.CurrencyCode,
                 SingleAssetTransactionType = SingleAssetTransactionType.MoveToFund,
-                Fee = 0,
-                Tax = 0,
+                Fee = createTransactionDto.Fee,
+                Tax = createTransactionDto.Tax,
                 CreatedAt = DateTime.Now,
                 LastChanged = DateTime.Now,
                 DestinationAssetId = null,
-                DestinationAssetName = null,
-                DestinationAssetType = null,
-                DestinationAmount = 0,
-                DestinationCurrency = currencyCode,
-                PortfolioId = portfolioId
+                DestinationAssetName = "fund",
+                DestinationAssetType = "fund",
+                DestinationAmount = valueToAddToFund,
+                DestinationCurrency = foundFund.Portfolio.InitialCurrency,
+                PortfolioId = portfolioId,
+                AmountInDestinationAssetUnit = valueToAddToFund
             };
             _transactionRepository.Insert(newTransaction);
             return newTransaction;
+
         } 
 
         public async Task<SingleAssetTransaction> Fake()

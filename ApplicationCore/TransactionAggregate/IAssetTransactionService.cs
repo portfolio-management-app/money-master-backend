@@ -24,8 +24,7 @@ namespace ApplicationCore.TransactionAggregate
 
         Task<SingleAssetTransaction> CreateWithdrawToOutsideTransaction(int portfolioId,CreateTransactionDto createTransactionDto);
         Task<SingleAssetTransaction> CreateMoveToFundTransaction(
-        int portfolioId, PersonalAsset asset, decimal amount,
-          string currencyCode, bool isTransferringAll);
+          int portfolioId, CreateTransactionDto createTransactionDto);
 
         decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode);
 

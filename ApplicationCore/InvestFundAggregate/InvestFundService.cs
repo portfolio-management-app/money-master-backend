@@ -94,89 +94,14 @@ namespace ApplicationCore.InvestFundAggregate
                 i => i.Include(inf => inf.Portfolio));
         }
 
-        public List<InvestFundTransaction> GetInvestFundTransactionByPortfolio(int portfolioId)
+        public List<SingleAssetTransaction> GetInvestFundTransactionByPortfolio(int portfolioId)
         {
-            return _investFundTransactionRepository
-                .List(trans => trans.InvestFund.PortfolioId == portfolioId,
-                    include: t => t.Include(transaction => transaction.InvestFund))
-                .ToList();
-        }
-
-        public async Task<InvestFundTransaction> AddToInvestFund(int portfolioId, PersonalAsset asset, decimal amount,
-            string currencyCode, bool isTransferringAll)
-        {
-            var investFund = GetInvestFundByPortfolio(portfolioId) ?? AddNewInvestFundToPortfolio(portfolioId);
-            var assetType = asset.GetAssetType();
-            var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
-            var fundCurrencyCode = investFund.Portfolio.InitialCurrency;
-            decimal withdrawAmount = 0;
-            if (isTransferringAll)
-            {
-                withdrawAmount = await asset.CalculateValueInCurrency(fundCurrencyCode,
-                    _priceFacade);
-                investFund.CurrentAmount += withdrawAmount;
-                await asset.WithdrawAll();
-            }
-            else
-            {
-                if (mandatoryWithdrawAll.Contains(assetType))
-                    throw new OperationCanceledException($"Not allowed for partial withdraw: {assetType}");
-                if (!await asset.Withdraw(amount, currencyCode, _priceFacade))
-                    throw new OperationCanceledException(LackAmountErrorMessage);
-                if (investFund.Portfolio.InitialCurrency == currencyCode)
-                {
-                    investFund.CurrentAmount += amount;
-                }
-                else
-                {
-                    var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
-                    var realAmountToAdd = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
-                    investFund.CurrentAmount += realAmountToAdd;
-                    withdrawAmount = amount;
-                }
-            }
-
-            _investFundRepository.Update(investFund);
-            var newFundTransaction =
-                new InvestFundTransaction
-                (asset.GetAssetType()
-                    , asset.Id,
-                    isTransferringAll ? withdrawAmount : amount,
-                    currencyCode,
-                    investFund.Id,
-                    true)
-                {
-                    ReferentialAssetName = asset.Name
-                };
-            _investFundTransactionRepository.Insert(newFundTransaction);
-
-            return newFundTransaction;
-        }
-
-        public async Task<InvestFundTransaction> WithdrawFromInvestFundToCash(int portfolioId, CashAsset asset,
-            decimal amount,
-            string currencyCode)
-        {
-            var investFund = GetInvestFundByPortfolio(portfolioId);
-            var withdrawAmountInFundCurrency = decimal.Zero;
-
-            var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
-            withdrawAmountInFundCurrency = rateObj.GetValue(investFund.Portfolio.InitialCurrency) * amount;
-            if (withdrawAmountInFundCurrency > investFund.CurrentAmount)
-                throw new OperationCanceledException("Insufficient amount");
-
-            investFund.CurrentAmount -= withdrawAmountInFundCurrency;
-
-            asset.Amount += rateObj.GetValue(asset.CurrencyCode) * amount;
-
-            var newTransaction = new InvestFundTransaction("cash", asset.Id, withdrawAmountInFundCurrency,
-                investFund.Portfolio.InitialCurrency, investFund.Id, false)
-            {
-                ReferentialAssetName = asset.Name
-            };
-
-            _investFundTransactionRepository.Insert(newTransaction);
-            return newTransaction;
+            return _assetTransactionRepository
+                .List(t =>t.PortfolioId == portfolioId &&
+            (t.ReferentialAssetType == "fund" || t.DestinationAssetType == "fund " ))
+            .ToList(); 
         }
     }
+
+
 }

@@ -74,7 +74,6 @@ namespace PublicAPI
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRealEstateService, RealEstateService>();
             services.AddScoped<IAuthorizationHandler, IsPortfolioOwnerHandler>();
-            services.AddSingleton(typeof(TransactionFactory));
             services.AddScoped<ICashService, CashService>();
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IStockService, StockService>();
