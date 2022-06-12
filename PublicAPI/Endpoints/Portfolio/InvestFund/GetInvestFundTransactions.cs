@@ -5,6 +5,7 @@ using ApplicationCore.InvestFundAggregate;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PublicAPI.Endpoints.Portfolio.Transactions;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
@@ -28,7 +29,7 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return Unauthorized("You are allowed for this portfolio");
             var listTransactions = _investFundService.GetInvestFundTransactionByPortfolio(portfolioId);
-            var listResponse = listTransactions.Adapt<List<InvestFundTransactionResponse>>();
+            var listResponse = listTransactions.Adapt<List<TransactionResponse>>();
             return Ok(listResponse);
         }
     }
