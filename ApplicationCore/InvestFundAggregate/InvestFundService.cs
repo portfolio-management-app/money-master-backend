@@ -97,9 +97,9 @@ namespace ApplicationCore.InvestFundAggregate
         public List<SingleAssetTransaction> GetInvestFundTransactionByPortfolio(int portfolioId)
         {
             return _assetTransactionRepository
-                .List(t =>t.PortfolioId == portfolioId &&
-            (t.ReferentialAssetType == "fund" || t.DestinationAssetType == "fund " ))
-            .ToList(); 
+                .List(t => t.PortfolioId == portfolioId &&
+            (t.ReferentialAssetType == "fund" || t.DestinationAssetType == "fund"))
+            .ToList();
         }
     }
 
