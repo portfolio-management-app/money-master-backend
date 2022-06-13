@@ -13,17 +13,14 @@ namespace ApplicationCore.InvestFundAggregate
     public class InvestFundService : IInvestFundService
     {
         private readonly IBaseRepository<InvestFund> _investFundRepository;
-        private readonly IBaseRepository<InvestFundTransaction> _investFundTransactionRepository;
         private readonly IBaseRepository<SingleAssetTransaction> _assetTransactionRepository;
         private readonly ExternalPriceFacade _priceFacade;
         private string LackAmountErrorMessage => "Insufficient value left in asset";
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
-            IBaseRepository<InvestFundTransaction> investFundTransactionRepository,
             ExternalPriceFacade priceFacade, IBaseRepository<SingleAssetTransaction> assetTransactionRepository)
         {
             _investFundRepository = investFundRepository;
-            _investFundTransactionRepository = investFundTransactionRepository;
             _priceFacade = priceFacade;
             _assetTransactionRepository = assetTransactionRepository;
         }
@@ -39,13 +36,7 @@ namespace ApplicationCore.InvestFundAggregate
             if (foundFund.CurrentAmount < assetValueInFundCurrency) return false;
 
             foundFund.CurrentAmount -= assetValueInFundCurrency;
-            var newOutgoingTransaction = new InvestFundTransaction(buyingAsset.GetAssetType(), buyingAsset.Id,
-                assetValueInFundCurrency, fundCurrency, foundFund.Id, false)
-            {
-                ReferentialAssetName = buyingAsset.Name
-            };
-            _investFundTransactionRepository.Insert(newOutgoingTransaction);
-
+            _investFundRepository.Update(foundFund);
             return true;
         }
 

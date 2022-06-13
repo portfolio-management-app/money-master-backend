@@ -65,7 +65,7 @@ namespace ApplicationCore.TransactionAggregate
             if (isUsingInvestFund)
             {
                 singleAssetTransactionType = SingleAssetTransactionType.BuyFromFund;
-                resultReferentialAssetId = -1;
+                resultReferentialAssetId = null;
                 resultReferentialAssetType = "fund";
                 resultReferentialAssetName = "fund";
             }
@@ -132,9 +132,9 @@ namespace ApplicationCore.TransactionAggregate
                 }
                 else if (createTransactionDto.IsUsingFundAsSource)
                 {
-                     
-                     await _investFundService.WithdrawFromInvestFund(portfolioId, createTransactionDto.Amount,
-                        createTransactionDto.CurrencyCode);
+
+                    await _investFundService.WithdrawFromInvestFund(portfolioId, createTransactionDto.Amount,
+                       createTransactionDto.CurrencyCode);
                 }
 
 
@@ -148,7 +148,7 @@ namespace ApplicationCore.TransactionAggregate
                 SingleAssetTransactionType = singleAssetTransactionType,
                 ReferentialAssetId = createTransactionDto.ReferentialAssetId,
                 ReferentialAssetType = (createTransactionDto.IsUsingFundAsSource) ? "fund" : createTransactionDto.ReferentialAssetType,
-                ReferentialAssetName = (createTransactionDto.IsUsingFundAsSource) ? "fund" :  sourceAsset?.Name,
+                ReferentialAssetName = (createTransactionDto.IsUsingFundAsSource) ? "fund" : sourceAsset?.Name,
                 DestinationAssetId = targetAssetId,
                 DestinationAssetName = targetAsset?.Name,
                 DestinationAssetType = createTransactionDto.DestinationAssetType,
@@ -310,10 +310,10 @@ namespace ApplicationCore.TransactionAggregate
             return newTransaction;
 
         }
-        
+
         public async Task<SingleAssetTransaction> CreateMoveToFundTransaction(int portfolioId, CreateTransactionDto createTransactionDto)
         {
-            var foundFund =  _investFundService.GetInvestFundByPortfolio(portfolioId);
+            var foundFund = _investFundService.GetInvestFundByPortfolio(portfolioId);
             if (createTransactionDto.ReferentialAssetId == null) throw new InvalidOperationException();
             var asset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType,
                 createTransactionDto.ReferentialAssetId.Value);
@@ -321,7 +321,7 @@ namespace ApplicationCore.TransactionAggregate
                 await _priceFacade.CurrencyRateRepository.GetRateObject(foundFund.Portfolio.InitialCurrency);
             var valueToAddToFund =
                 rateObj.GetValue(createTransactionDto.CurrencyCode) * createTransactionDto.Amount;
-            
+
             var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
             if (createTransactionDto.IsTransferringAll)
             {
@@ -340,7 +340,7 @@ namespace ApplicationCore.TransactionAggregate
             }
 
             foundFund.CurrentAmount += valueToAddToFund;
-            
+
 
             var newTransaction = new SingleAssetTransaction
             {
@@ -365,7 +365,7 @@ namespace ApplicationCore.TransactionAggregate
             _transactionRepository.Insert(newTransaction);
             return newTransaction;
 
-        } 
+        }
 
         public async Task<SingleAssetTransaction> Fake()
         {
