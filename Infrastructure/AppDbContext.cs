@@ -3,6 +3,7 @@ using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Entity.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure
 {
@@ -30,6 +31,7 @@ namespace Infrastructure
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<OTP> OTPs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
