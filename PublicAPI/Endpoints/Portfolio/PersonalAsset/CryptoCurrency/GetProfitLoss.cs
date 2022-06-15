@@ -19,11 +19,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         }
 
         [HttpGet("crypto/{assetId}/profitLoss")]
-        public async override Task<ActionResult<List<ProfitLossBasis>>> HandleAsync([FromMultipleSource]GetProfitLossRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<List<ProfitLossBasis>>> HandleAsync([FromMultipleSource]GetProfitLossRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
             var listProfitLosses = request.Period switch
             {
-                "day" => _reportService.GetPeriodProfitLossByAsset(request.AssetId,"crypto"),
+                "day" => await _reportService.GetPeriodProfitLossByAsset(request.AssetId,"crypto"),
                 "week" => throw new NotImplementedException(),
                 "month" => throw new NotImplementedException(),
                 _ => throw new InvalidOperationException("Unsupported type ")

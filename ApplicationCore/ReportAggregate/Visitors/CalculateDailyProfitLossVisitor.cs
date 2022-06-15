@@ -39,8 +39,20 @@ namespace ApplicationCore.ReportAggregate.Visitors
                 var subListTransactionsArr = subListTransactions as SingleAssetTransaction[] ?? subListTransactions.ToArray();
                 var sellAndBuyDifference  = await 
                     _assetTransactionService.CalculateSubTransactionProfitLoss(subListTransactionsArr, asset.CurrencyCode);
+                var firstTransactionInPeriod = subListTransactionsArr.FirstOrDefault();
+                if (firstTransactionInPeriod is null)
+                {
+                   result.Add(new ProfitLossBasis()
+                   {
+                       Amount = 0,
+                       Unit = asset.CurrencyCode,
+                       StartTime = endTime - TimeSpan.FromDays(1),
+                       EndTime = endTime
+                   });
+                   continue;
+                }
                 var amountAtTheStartOfPeriod =
-                    subListTransactionsArr.First().AmountOfReferentialAssetBeforeCreatingTransaction;
+                    firstTransactionInPeriod.AmountOfReferentialAssetBeforeCreatingTransaction;
 
                 var periodProfitLoss = pastPrice * amountAtTheStartOfPeriod + sellAndBuyDifference;
                 if (periodProfitLoss != null)
