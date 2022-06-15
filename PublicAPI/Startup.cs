@@ -1,5 +1,6 @@
 using System;
 using ApplicationCore;
+using ApplicationCore.ExternalService;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
@@ -29,6 +30,7 @@ using Microsoft.OpenApi.Models;
 using PublicAPI.AuthorizationsPolicies;
 using PublicAPI.Configures;
 using PublicAPI.Filters;
+
 
 namespace PublicAPI
 {
@@ -88,6 +90,7 @@ namespace PublicAPI
             services.AddScoped<IAssetTransactionService, AssetTransactionService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
+            services.AddScoped<IEmailSender, MailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
