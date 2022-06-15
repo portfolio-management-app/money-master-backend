@@ -145,7 +145,9 @@ namespace ApplicationCore.UserAggregate
                 _otpRepository.Insert(otp);
                 return otp;
             }
+            existedOTP.CreateDate = DateTime.Now;
             existedOTP.Code = OTP;
+            _otpRepository.Update(existedOTP);
             return existedOTP;
         }
 

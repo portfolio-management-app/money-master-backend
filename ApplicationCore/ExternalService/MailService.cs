@@ -21,24 +21,29 @@ namespace ApplicationCore.ExternalService
 
         public async Task SendEmail(string address, string subject, string htmlMessage)
         {
-            var senderAddress = _configuration["MailSettings:Account"];
-            Console.WriteLine(senderAddress);
-            var email = new MimeMessage { Sender = new MailboxAddress("MoneyMaster", senderAddress) };
-            email.From.Add(new MailboxAddress("MoneyMaster", senderAddress));
-            email.To.Add(MailboxAddress.Parse(address));
-            email.Subject = subject;
+            try
+            {
+                var senderAddress = _configuration["MailSettings:Account"];
+                var email = new MimeMessage { Sender = new MailboxAddress("MoneyMaster", senderAddress) };
+                email.From.Add(new MailboxAddress("MoneyMaster", senderAddress));
+                email.To.Add(MailboxAddress.Parse(address));
+                email.Subject = subject;
 
-            var builder = new BodyBuilder { HtmlBody = htmlMessage };
-            email.Body = builder.ToMessageBody();
+                var builder = new BodyBuilder { HtmlBody = htmlMessage };
+                email.Body = builder.ToMessageBody();
 
-            var smtpHost = _configuration["MailSettings:Host"];
-            await _smtpClient.ConnectAsync(smtpHost);
-            var senderPassword = _configuration["MailSettings:Password"];
-            Console.WriteLine(senderPassword);
-            await _smtpClient.AuthenticateAsync(senderAddress, senderPassword);
-            await _smtpClient.SendAsync(email);
+                var smtpHost = _configuration["MailSettings:Host"];
+                await _smtpClient.ConnectAsync(smtpHost);
+                var senderPassword = _configuration["MailSettings:Password"];
+                await _smtpClient.AuthenticateAsync(senderAddress, senderPassword);
+                await _smtpClient.SendAsync(email);
 
-            await _smtpClient.DisconnectAsync(true);
+                await _smtpClient.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Cannot send email");
+            }
         }
 
 

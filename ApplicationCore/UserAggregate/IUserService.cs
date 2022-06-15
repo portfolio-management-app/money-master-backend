@@ -9,6 +9,7 @@ namespace ApplicationCore.UserAggregate
     {
         User GetUserById(int id);
         User AddNewUser(string email, string password);
+        public User GetUserByEmail(string email);
         User TryAuthenticate(string email, string password);
 
         Task<User> TryGoogleAuthentication(string token);
