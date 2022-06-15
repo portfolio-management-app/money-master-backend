@@ -8,9 +8,11 @@ using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
+using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
 using ApplicationCore.TransactionAggregate;
 
 namespace ApplicationCore.ReportAggregate
@@ -26,6 +28,7 @@ namespace ApplicationCore.ReportAggregate
         private readonly IBankSavingService _bankSavingService;
         private readonly IAssetTransactionService _assetTransactionService;
         private readonly ExternalPriceFacade _priceFacade;
+        private readonly CalculateDailyProfitLossVisitor _calculateDailyProfitLossVisitor; 
 
         private string _outsideOut = "OutsideOut";
         private string _outsideIn = "OutsideIn";
@@ -33,7 +36,7 @@ namespace ApplicationCore.ReportAggregate
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
             IStockService stockService, IBankSavingService bankSavingService,
-            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade)
+            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade, CalculateDailyProfitLossVisitor calculateDailyProfitLossVisitor)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -44,6 +47,7 @@ namespace ApplicationCore.ReportAggregate
             _bankSavingService = bankSavingService;
             _assetTransactionService = assetTransactionService;
             _priceFacade = priceFacade;
+            _calculateDailyProfitLossVisitor = calculateDailyProfitLossVisitor;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -113,8 +117,8 @@ namespace ApplicationCore.ReportAggregate
             var type1SankeyBasis = await GetType1SankeyBasis(currency, portfolioId);
             var type2SankeyBasis = await GetType2SankeyBasis(currency, portfolioId);
             var type3SankeyBasis = await GetType3SankeyBasis(currency, portfolioId);
-            var type4SankeyBasis = await GetType4SankeyBasis(currency, portfolioId); 
-            var type5SankeyBasis = await GetType5SankeyBasis(currency, portfolioId); 
+            var type4SankeyBasis = await GetType4SankeyBasis(currency, portfolioId);
+            var type5SankeyBasis = await GetType5SankeyBasis(currency, portfolioId);
 
             var resultList = new List<SankeyFlowBasis>();
             resultList.AddRange(type1SankeyBasis);
@@ -124,6 +128,8 @@ namespace ApplicationCore.ReportAggregate
             resultList.AddRange(type5SankeyBasis);
             return resultList;
         }
+
+
         // The below code implements the sankey type elements, documented in the sankey formation documentation 
 
 
@@ -291,7 +297,6 @@ namespace ApplicationCore.ReportAggregate
             });
 
             return await Task.WhenAll(sankeyBasis);
-
         }
 
         private async Task<decimal> GetType4SankeyBasisHelper(string inputCurrency,
@@ -303,11 +308,11 @@ namespace ApplicationCore.ReportAggregate
             var calculationSegments = await Task.WhenAll(listTasks);
 
 
-            var result =  assetTransactions.Select((t, i) => t.SingleAssetTransactionType switch
+            var result = assetTransactions.Select((t, i) => t.SingleAssetTransactionType switch
                 {
                     SingleAssetTransactionType.MoveToFund => calculationSegments[i],
                     SingleAssetTransactionType.BuyFromFund => -calculationSegments[i],
-                    SingleAssetTransactionType.AddValue => -calculationSegments[i], 
+                    SingleAssetTransactionType.AddValue => -calculationSegments[i],
                     _ => throw new InvalidOperationException("Invalid transaction while calculating type 4 sankey")
                 })
                 .Sum();
@@ -364,6 +369,34 @@ namespace ApplicationCore.ReportAggregate
             if (result < 0) return -result;
             return result;
         }
-        
+
+        public async Task<List<ProfitLossBasis>> GetPeriodProfitLossByAsset(int assetId, string assetType,
+            string period = "day")
+        {
+            var asset = GetAssetByIdAndType(assetType, assetId);
+            var visitor = period switch
+            {
+                "day" => _calculateDailyProfitLossVisitor,
+                "week" => _calculateDailyProfitLossVisitor,
+                "month" => _calculateDailyProfitLossVisitor,
+                _ => throw new InvalidOperationException()
+            };
+            var result = await asset.AcceptVisitor(visitor);
+            return result.ToList();
+        }
+
+        private PersonalAsset GetAssetByIdAndType(string type, int id)
+        {
+            return type switch
+            {
+                "bankSaving" => _bankSavingService.GetById(id),
+                "custom" => _customAssetService.GetById(id),
+                "crypto" => _cryptoService.GetById(id),
+                "stock" => _stockService.GetById(id),
+                "realEstate" => _realEstateService.GetById(id),
+                "cash" => _cashService.GetById(id),
+                _ => throw new ArgumentException()
+            };
+        }
     }
 }

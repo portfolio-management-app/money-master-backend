@@ -12,6 +12,7 @@ using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.NotificationAggregate;
 using ApplicationCore.PortfolioAggregate;
 using ApplicationCore.ReportAggregate;
+using ApplicationCore.ReportAggregate.Visitors;
 using ApplicationCore.TransactionAggregate;
 using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
@@ -81,6 +82,7 @@ namespace PublicAPI
             services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
             services.AddSingleton(typeof(ExternalPriceFacade));
+            services.AddScoped(typeof(CalculateDailyProfitLossVisitor));
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
             services.AddScoped<IAssetTransactionService, AssetTransactionService>();

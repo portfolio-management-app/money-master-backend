@@ -8,5 +8,7 @@ namespace ApplicationCore.ReportAggregate
     {
         Task<List<PieChartElementModel>> GetPieChart(int portfolioId);
         Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId);
+
+        Task<List<ProfitLossBasis>> GetPeriodProfitLossByAsset(int assetId, string assetType, string period = "day");
     }
 }

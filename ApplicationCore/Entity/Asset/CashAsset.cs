@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
@@ -52,7 +53,7 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
-        public override Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        public override Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor)
         {
             throw new NotImplementedException();
         }

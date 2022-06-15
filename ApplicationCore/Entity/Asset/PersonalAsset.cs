@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.ReportAggregate.Models;
@@ -35,6 +36,6 @@ namespace ApplicationCore.Entity.Asset
 
         public abstract Task<bool> AddValue(decimal amountInAssetUnit);
         public abstract Task<bool> WithdrawAll();
-        public abstract Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor);
+        public abstract Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor);
     }
 }

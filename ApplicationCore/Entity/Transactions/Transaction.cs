@@ -6,6 +6,7 @@ namespace ApplicationCore.Entity.Transactions
     {
         public int Id { get; set; }
 
+        public decimal? AmountOfReferentialAssetBeforeCreatingTransaction { get; set; }
         public int? ReferentialAssetId { get; set; }
         public string ReferentialAssetType { get; set; }
 

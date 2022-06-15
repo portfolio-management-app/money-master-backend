@@ -26,7 +26,8 @@ namespace ApplicationCore.TransactionAggregate
         Task<SingleAssetTransaction> CreateMoveToFundTransaction(
           int portfolioId, CreateTransactionDto createTransactionDto);
 
-        decimal CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode);
+        Task<decimal> CalculateSubTransactionProfitLoss(IEnumerable<SingleAssetTransaction> singleAssetTransactions,
+            string currencyCode);
 
         public List<SingleAssetTransaction> GetTransactionsByType(
             int portfolioId,params SingleAssetTransactionType[] assetTransactionTypesArray);

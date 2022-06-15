@@ -206,17 +206,31 @@ namespace ApplicationCore.TransactionAggregate
             return newTransaction;
         }
 
-        public decimal CalculateSubTransactionProfitLoss
+        public async Task<decimal> CalculateSubTransactionProfitLoss
             (IEnumerable<SingleAssetTransaction> singleAssetTransactions, string currencyCode)
         {
-            return singleAssetTransactions.Sum(transaction => transaction.SingleAssetTransactionType switch
-            {
-                SingleAssetTransactionType.MoveToFund => transaction.Amount,
-                SingleAssetTransactionType.WithdrawToCash => transaction.Amount,
-                SingleAssetTransactionType.AddValue => -transaction.Amount,
-                SingleAssetTransactionType.BuyFromFund => 0,
-                _ => 0
-            });
+            var assetTransactions = singleAssetTransactions as SingleAssetTransaction[] ?? singleAssetTransactions.ToArray();
+            var listTask = 
+                assetTransactions.Select(t => t.CalculateValueInCurrency(currencyCode, _priceFacade));
+            var listTaskTaxAndFee =
+                assetTransactions.Select(t => t.CalculateSumOfTaxAndFee(currencyCode, _priceFacade));
+            var calculatedValueSegments = await Task.WhenAll(listTask);
+            var calculatedTaxAndFeeSegments = await Task.WhenAll(listTaskTaxAndFee);
+            var result = calculatedValueSegments.Select((bareValue, i) =>
+                assetTransactions[i].SingleAssetTransactionType switch
+                {
+                    SingleAssetTransactionType.AddValue => -bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.BuyFromCash => -bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.BuyFromFund => -bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.BuyFromOutside => -bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.MoveToFund => bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.WithdrawToCash => bareValue - calculatedTaxAndFeeSegments[i],
+                    SingleAssetTransactionType.WithdrawToOutside => bareValue - calculatedValueSegments[i],
+                    _ => throw new InvalidOperationException()
+                }).Sum();
+
+            return result; 
+
         }
 
         public List<SingleAssetTransaction> GetTransactionsByType(int portfolioId,

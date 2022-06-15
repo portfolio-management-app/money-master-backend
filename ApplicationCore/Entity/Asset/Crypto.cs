@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.Interfaces;
@@ -56,7 +57,7 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
-        public override async Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        public override async Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor)
         {
             return await visitor.VisitCrypto(this);
         }

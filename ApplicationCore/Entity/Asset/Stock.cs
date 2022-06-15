@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
 using ApplicationCore.ReportAggregate.Models;
@@ -64,7 +65,7 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
-        public override Task<ProfitLossBasis> AcceptVisitor(IVisitor visitor)
+        public override Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor)
         {
             throw new System.NotImplementedException();
         }
