@@ -13,6 +13,8 @@ using ApplicationCore.Entity;
 using Microsoft.VisualBasic;
 using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
+using ApplicationCore.AssetAggregate.StockAggregate;
+using ApplicationCore.AssetAggregate.CryptoAggregate;
 
 namespace ApplicationCore.BackgroundTask
 {
@@ -137,6 +139,7 @@ namespace ApplicationCore.BackgroundTask
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
             var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            var cryptoService = scope.ServiceProvider.GetRequiredService<ICryptoService>();
             foreach (var subscriber in subscribers)
             {
                 subscriber.Currency = subscriber.Currency.ToLower();
@@ -145,7 +148,8 @@ namespace ApplicationCore.BackgroundTask
                     if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
                         var value = priceObject[subscriber.CoinCode][subscriber.Currency];
-                        if (value > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
+                        var cryptoAsset = cryptoService.GetById(subscriber.AssetId);
+                        if (value * cryptoAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
                         {
 
                             var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
@@ -164,6 +168,8 @@ namespace ApplicationCore.BackgroundTask
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
             var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            var cryptoService = scope.ServiceProvider.GetRequiredService<ICryptoService>();
+
             foreach (var subscriber in subscribers)
             {
                 subscriber.Currency = subscriber.Currency.ToLower();
@@ -172,7 +178,8 @@ namespace ApplicationCore.BackgroundTask
                     if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
                         var value = priceObject[subscriber.CoinCode][subscriber.Currency];
-                        if (value < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
+                        var cryptoAsset = cryptoService.GetById(subscriber.AssetId);
+                        if (value * cryptoAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
                         {
 
                             var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
@@ -191,10 +198,12 @@ namespace ApplicationCore.BackgroundTask
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
             var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            var stockService = scope.ServiceProvider.GetRequiredService<IStockService>();
             foreach (var subscriber in subscribers)
             {
                 var price = await GetStockPrice(subscriber.StockCode);
-                if (price > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
+                var stockAsset = stockService.GetById(subscriber.AssetId);
+                if (price * stockAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
                     _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
@@ -211,10 +220,12 @@ namespace ApplicationCore.BackgroundTask
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
             var userNotificationService = scope.ServiceProvider.GetRequiredService<IUserNotificationService>();
+            var stockService = scope.ServiceProvider.GetRequiredService<IStockService>();
             foreach (var subscriber in subscribers)
             {
                 var price = await GetStockPrice(subscriber.StockCode);
-                if (price < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
+                var stockAsset = stockService.GetById(subscriber.AssetId);
+                if (price * stockAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
                     _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));

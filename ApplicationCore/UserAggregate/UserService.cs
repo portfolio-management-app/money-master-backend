@@ -171,6 +171,7 @@ namespace ApplicationCore.UserAggregate
                 throw new ApplicationException("Old password not correct");
             }
             existedUser.SetPassword(newPassword);
+            _userRepository.Update(existedUser);
             return existedUser;
         }
     }
