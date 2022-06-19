@@ -16,6 +16,7 @@ namespace ApplicationCore.TransactionAggregate
                 bool isUsingInvestFund,
                 bool isUsingCash, int? usingCashId,
                 decimal? fee, decimal? tax);
+        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset, int? pageNumber, int? pageSize, DateTime? startDate, DateTime? endDate );
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (int portfolioId, CreateTransactionDto createTransactionDto);

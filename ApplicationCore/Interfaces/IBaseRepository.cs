@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using ApplicationCore.Entity;
+using ApplicationCore.Entity.Transactions;
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace ApplicationCore.Interfaces
@@ -29,6 +31,9 @@ namespace ApplicationCore.Interfaces
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null
         );
+        
+        IEnumerable<TEntity> List(
+            ISpecification<TEntity> specification );
 
         decimal CalculateSum(Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null);

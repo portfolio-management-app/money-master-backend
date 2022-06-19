@@ -4,6 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using ApplicationCore.Entity;
 using ApplicationCore.Interfaces;
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -89,6 +91,13 @@ namespace Infrastructure
             return query.ToList();
         }
 
+        public IEnumerable<TEntity> List(ISpecification<TEntity> specification)
+        {
+            var query = ApplySpecification(specification);
+            query = query.Where(entity => !entity.IsDeleted);
+            return query.ToList();
+        }
+
         public decimal CalculateSum(Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
         {
@@ -102,6 +111,11 @@ namespace Infrastructure
                 query = query.Where(filter);
 
             return query.Count();
+        }
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
+        {
+            var evaluator = new SpecificationEvaluator();
+            return evaluator.GetQuery(_dbSet.Set<TEntity>().AsQueryable(), spec);
         }
     }
 }

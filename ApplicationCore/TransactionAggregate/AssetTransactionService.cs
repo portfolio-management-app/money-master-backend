@@ -106,6 +106,15 @@ namespace ApplicationCore.TransactionAggregate
             return newAssetTransaction;
         }
 
+        public List<SingleAssetTransaction> GetTransactionListByAsset
+            (PersonalAsset asset, int? pageNumber, int? pageSize, DateTime? startDate, DateTime? endDate)
+        {
+            var listTransaction = _transactionRepository.List(
+                new TransactionWithPagingAndTimeSpec(asset,pageNumber,pageSize,startDate,endDate)
+           );
+            return listTransaction.ToList();
+        }
+
         public List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset)
         {
             var listTransaction = _transactionRepository.List(
