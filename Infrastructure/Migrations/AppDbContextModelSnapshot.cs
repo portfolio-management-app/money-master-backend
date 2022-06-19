@@ -457,9 +457,6 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("AmountInDestinationAssetUnit")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal?>("AmountOfReferentialAssetBeforeCreatingTransaction")
-                        .HasColumnType("numeric");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -496,6 +493,9 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("Tax")
                         .HasColumnType("numeric");
 
+                    b.Property<decimal?>("ValueOfReferentialAssetBeforeCreatingTransaction")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
                     b.HasIndex("InvestFundId");
@@ -518,7 +518,10 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("AmountInDestinationAssetUnit")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal?>("AmountOfReferentialAssetBeforeCreatingTransaction")
+                    b.Property<decimal?>("AmountOfDestinationAfterCreatingTransactionInSpecificUnit")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
@@ -567,6 +570,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("Tax")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("ValueOfReferentialAssetBeforeCreatingTransaction")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");

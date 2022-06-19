@@ -37,6 +37,7 @@ namespace ApplicationCore.Entity.Asset
         public abstract Task<bool> AddValue(decimal amountInAssetUnit);
         public abstract Task<bool> WithdrawAll();
         public abstract Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor);
-        public abstract decimal GetAssetSpecificAmount(); 
+        public abstract decimal GetAssetSpecificAmount();
+        public abstract string GetCurrency();
     }
 }

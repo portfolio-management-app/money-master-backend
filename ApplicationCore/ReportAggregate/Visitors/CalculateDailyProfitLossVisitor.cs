@@ -24,46 +24,60 @@ namespace ApplicationCore.ReportAggregate.Visitors
             _priceFacade = priceFacade;
         }
 
+        private decimal? DecideHistoryAssetSpecificAmountHelper(SingleAssetTransaction transaction) =>
+            transaction.SingleAssetTransactionType switch
+            {
+                SingleAssetTransactionType.BuyFromFund => transaction
+                    .AmountOfDestinationAfterCreatingTransactionInSpecificUnit,
+                SingleAssetTransactionType.BuyFromCash => transaction
+                    .AmountOfDestinationAfterCreatingTransactionInSpecificUnit,
+                SingleAssetTransactionType.AddValue => transaction
+                    .AmountOfDestinationAfterCreatingTransactionInSpecificUnit,
+                SingleAssetTransactionType.BuyFromOutside => transaction
+                    .AmountOfDestinationAfterCreatingTransactionInSpecificUnit,
+                _ => transaction.AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit
+            };
+
         public override async Task<IEnumerable<ProfitLossBasis>> VisitCrypto(Crypto asset)
         {
             var listTransaction = _assetTransactionService.GetTransactionListByAsset(asset);
-            var currentAssetValue = await asset.CalculateValueInCurrency(asset.CurrencyCode, _priceFacade);
             var result = new List<ProfitLossBasis>();
-            for (var time = DateTime.Now; time > asset.InputDay; time -= TimeSpan.FromDays(1))
+            decimal currentAssetUnitAmount = 0; 
+            decimal accumulatedTransactionValues = 0; 
+            for (var time = asset.InputDay; time < DateTime.Now; time += TimeSpan.FromDays(1))
             {
-                var pastPrice = await _priceFacade.CryptoRateRepository.GetPastPriceInCurrency(asset.CryptoCoinCode,
-                    asset.CurrencyCode, time);
-                var endTime = time;
-                var subListTransactions = listTransaction
-                    .Where(t => t.CreatedAt < endTime && t.CreatedAt >= endTime - TimeSpan.FromDays(1));
-                var subListTransactionsArr = subListTransactions as SingleAssetTransaction[] ?? subListTransactions.ToArray();
-                var sellAndBuyDifference  = await 
-                    _assetTransactionService.CalculateSubTransactionProfitLoss(subListTransactionsArr, asset.CurrencyCode);
-                var firstTransactionInPeriod = subListTransactionsArr.FirstOrDefault();
-                if (firstTransactionInPeriod is null)
+                var isCurrentTimePeriod = false;
+                var startTime = time;
+                if (startTime + TimeSpan.FromDays(1) >= DateTime.Now)
                 {
-                   result.Add(new ProfitLossBasis()
-                   {
-                       Amount = 0,
-                       Unit = asset.CurrencyCode,
-                       StartTime = endTime - TimeSpan.FromDays(1),
-                       EndTime = endTime
-                   });
-                   continue;
+                    isCurrentTimePeriod = true;
                 }
-                var amountAtTheStartOfPeriod =
-                    firstTransactionInPeriod.AmountOfReferentialAssetBeforeCreatingTransaction;
+                var basePrice = isCurrentTimePeriod ? 
+                    await _priceFacade.CryptoRateRepository
+                        .GetCurrentPriceInCurrency(asset.CryptoCoinCode,asset.CurrencyCode) 
+                    : await _priceFacade.CryptoRateRepository
+                        .GetPastPriceInCurrency(asset.CryptoCoinCode,
+                    asset.CurrencyCode, startTime + TimeSpan.FromDays(1));
 
-                var periodProfitLoss = pastPrice * amountAtTheStartOfPeriod + sellAndBuyDifference;
-                if (periodProfitLoss != null)
-                    result.Add(new ProfitLossBasis()
-                    {
-                        Amount = periodProfitLoss.Value,
-                        Unit =asset.CurrencyCode,
-                        StartTime = endTime - TimeSpan.FromDays(1),
-                        EndTime = endTime
-                        
-                    });
+                var subListTransactions = listTransaction
+                    .Where(t => t.CreatedAt >= startTime && t.CreatedAt < startTime + TimeSpan.FromDays(1));
+                var subListTransactionsArr = subListTransactions as SingleAssetTransaction[] ?? subListTransactions.ToArray();
+                var sellAndBuyDifferenceInPeriod  = await 
+                    _assetTransactionService.CalculateSubTransactionProfitLoss(subListTransactionsArr, asset.CurrencyCode);
+
+                var lastPeriodTransaction = subListTransactionsArr.LastOrDefault();
+                if (lastPeriodTransaction is not null)
+                    currentAssetUnitAmount =
+                        DecideHistoryAssetSpecificAmountHelper(lastPeriodTransaction) ?? 0;
+                accumulatedTransactionValues += sellAndBuyDifferenceInPeriod;
+                
+                result.Add(new ProfitLossBasis()
+                {
+                    Amount = currentAssetUnitAmount * basePrice + accumulatedTransactionValues,
+                    StartTime = startTime,
+                    EndTime = startTime + TimeSpan.FromDays(1),
+                    Unit = asset.CurrencyCode
+                });
             }
 
             return result;

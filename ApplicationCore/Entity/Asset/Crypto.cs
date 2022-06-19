@@ -66,5 +66,10 @@ namespace ApplicationCore.Entity.Asset
         {
             return this.CurrentAmountHolding; 
         }
+
+        public override string GetCurrency()
+        {
+            return this.CurrencyCode; 
+        }
     }
 }

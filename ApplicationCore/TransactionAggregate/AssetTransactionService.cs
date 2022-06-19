@@ -8,7 +8,6 @@ using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
-using ApplicationCore.Entity;
 using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
@@ -85,7 +84,9 @@ namespace ApplicationCore.TransactionAggregate
                 ReferentialAssetId = resultReferentialAssetId,
                 ReferentialAssetType = resultReferentialAssetType,
                 ReferentialAssetName = resultReferentialAssetName,
-                AmountOfReferentialAssetBeforeCreatingTransaction = 0,
+                ValueOfReferentialAssetBeforeCreatingTransaction = 0,
+                AmountOfDestinationAfterCreatingTransactionInSpecificUnit = asset.GetAssetSpecificAmount(),
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = null,
                 AmountInDestinationAssetUnit = asset.GetAssetSpecificAmount(),
                 DestinationAssetId = asset.Id,
                 DestinationAssetName = asset.Name,
@@ -93,7 +94,7 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = moneyAmount,
                 DestinationCurrency = currency,
                 Amount = moneyAmount,
-                CreatedAt = DateTime.Now,
+                CreatedAt = asset.InputDay,
                 CurrencyCode = currency,
                 LastChanged = DateTime.Now,
                 Fee = fee,
@@ -125,6 +126,7 @@ namespace ApplicationCore.TransactionAggregate
             if (targetAssetId != null)
             {
                 targetAsset = GetAssetByIdAndType(createTransactionDto.DestinationAssetType, targetAssetId.Value);
+                if (targetAsset is null) throw new InvalidOperationException("Target asset not found");
                 if (sourceAssetId != null)
                 {
                     sourceAsset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType, sourceAssetId.Value);
@@ -144,6 +146,10 @@ namespace ApplicationCore.TransactionAggregate
                     _ = await targetAsset.AddValue(
                         createTransactionDto.AmountInDestinationAssetUnit.Value);
             }
+            else
+            {
+                throw new InvalidOperationException("Target asset not exists");
+            }
 
             var newTransaction = new SingleAssetTransaction()
             {
@@ -157,7 +163,10 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = createTransactionDto.Amount,
                 DestinationCurrency = createTransactionDto.CurrencyCode,
                 AmountInDestinationAssetUnit = createTransactionDto.AmountInDestinationAssetUnit,
-                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction,
+                ValueOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.ValueOfReferentialAssetBeforeCreatingTransaction,
+                AmountOfDestinationAfterCreatingTransactionInSpecificUnit = targetAsset.GetAssetSpecificAmount(),
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit =
+                    sourceAsset?.GetAssetSpecificAmount() ?? 0,
                 Amount = createTransactionDto.Amount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = createTransactionDto.CurrencyCode,
@@ -169,6 +178,7 @@ namespace ApplicationCore.TransactionAggregate
 
             _transactionRepository.Insert(newTransaction);
             return newTransaction;
+            
         }
 
 
@@ -202,7 +212,9 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = createTransactionDto.Amount,
                 DestinationCurrency = createTransactionDto.CurrencyCode,
                 AmountInDestinationAssetUnit = createTransactionDto.Amount,
-                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction,
+                ValueOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.ValueOfReferentialAssetBeforeCreatingTransaction,
+                AmountOfDestinationAfterCreatingTransactionInSpecificUnit =  null,
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = foundAsset.GetAssetSpecificAmount(),
                 PortfolioId = portfolioId
             };
 
@@ -256,6 +268,7 @@ namespace ApplicationCore.TransactionAggregate
             if (foundCash is null)
                 throw new InvalidOperationException(
                     $"Cash with Id {createTransactionDto.DestinationAssetId} not found");
+            var oldCashAmount = foundCash.Amount;
 
             decimal valueToAddToCash = 0;
             var sourceAssetId = createTransactionDto.ReferentialAssetId;
@@ -322,7 +335,9 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationCurrency = foundCash.CurrencyCode,
                 AmountInDestinationAssetUnit = valueToAddToCash,
                 PortfolioId = portfolioId,
-                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction
+                ValueOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.ValueOfReferentialAssetBeforeCreatingTransaction,
+                AmountOfDestinationAfterCreatingTransactionInSpecificUnit = foundCash.Amount,
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = foundCash.Amount
             };
             _transactionRepository.Insert(newTransaction);
 
@@ -336,6 +351,7 @@ namespace ApplicationCore.TransactionAggregate
             if (createTransactionDto.ReferentialAssetId == null) throw new InvalidOperationException();
             var asset = GetAssetByIdAndType(createTransactionDto.ReferentialAssetType,
                 createTransactionDto.ReferentialAssetId.Value);
+            var oldAssetValue = await asset.CalculateValueInCurrency(asset.GetCurrency(), _priceFacade);
             var rateObj =
                 await _priceFacade.CurrencyRateRepository.GetRateObject(foundFund.Portfolio.InitialCurrency);
             var valueToAddToFund =
@@ -379,7 +395,10 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = valueToAddToFund,
                 DestinationCurrency = foundFund.Portfolio.InitialCurrency,
                 PortfolioId = portfolioId,
-                AmountInDestinationAssetUnit = valueToAddToFund
+                AmountInDestinationAssetUnit = valueToAddToFund,
+                AmountOfDestinationAfterCreatingTransactionInSpecificUnit = foundFund.CurrentAmount,
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = asset.GetAssetSpecificAmount(),
+                ValueOfReferentialAssetBeforeCreatingTransaction = oldAssetValue
             };
             _transactionRepository.Insert(newTransaction);
             return newTransaction;

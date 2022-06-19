@@ -9,7 +9,7 @@ namespace ApplicationCore.TransactionAggregate.DTOs
         /// </summary>
         public decimal? AmountInDestinationAssetUnit { get; set; }
 
-        public decimal? AmountOfReferentialAssetBeforeCreatingTransaction { get; set; }
+        public decimal? ValueOfReferentialAssetBeforeCreatingTransaction { get; set; }
         public string CurrencyCode { get; set; }
         public int? DestinationAssetId { get; set; } = null;
         public string DestinationAssetType { get; set; } = null;

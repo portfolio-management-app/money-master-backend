@@ -11,6 +11,9 @@ namespace ApplicationCore.Entity.Transactions
         public string DestinationAssetType { get; set; } = null;
         public string DestinationAssetName { get; set; } = null;
 
+        public decimal? AmountOfDestinationAfterCreatingTransactionInSpecificUnit { get; set; } = null;
+        public decimal? AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit { get; set; } = null; 
+
         public decimal DestinationAmount { get; set; }
         public string DestinationCurrency { get; set; }
 

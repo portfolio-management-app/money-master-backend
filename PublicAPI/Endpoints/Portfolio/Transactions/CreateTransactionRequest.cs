@@ -11,7 +11,7 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
         /// for example: 3 bitcoin -> send 3. null by default
         /// </summary>
         [FromBody]
-        public decimal? AmountOfReferentialAssetBeforeCreatingTransaction { get; set; }
+        public decimal? ValueOfReferentialAssetBeforeCreatingTransaction { get; set; }
         [FromBody]
         public decimal? AmountInDestinationAssetUnit { get; set; }
 
