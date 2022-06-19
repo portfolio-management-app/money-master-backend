@@ -34,32 +34,19 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SingleAssetTransactions",
+                name: "OTPs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SingleAssetTransactionTypes = table.Column<int>(type: "integer", nullable: false),
-                    DestinationAssetId = table.Column<int>(type: "integer", nullable: true),
-                    DestinationAssetType = table.Column<string>(type: "text", nullable: true),
-                    DestinationAssetName = table.Column<string>(type: "text", nullable: true),
-                    DestinationAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    DestinationCurrency = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ReferentialAssetId = table.Column<int>(type: "integer", nullable: true),
-                    ReferentialAssetType = table.Column<string>(type: "text", nullable: true),
-                    ReferentialAssetName = table.Column<string>(type: "text", nullable: true),
-                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    AmountInDestinationAssetUnit = table.Column<decimal>(type: "numeric", nullable: true),
-                    CurrencyCode = table.Column<string>(type: "text", nullable: true),
-                    Fee = table.Column<decimal>(type: "numeric", nullable: true),
-                    Tax = table.Column<decimal>(type: "numeric", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Code = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SingleAssetTransactions", x => x.Id);
+                    table.PrimaryKey("PK_OTPs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -330,6 +317,43 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SingleAssetTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SingleAssetTransactionType = table.Column<int>(type: "integer", nullable: false),
+                    DestinationAssetId = table.Column<int>(type: "integer", nullable: true),
+                    DestinationAssetType = table.Column<string>(type: "text", nullable: true),
+                    DestinationAssetName = table.Column<string>(type: "text", nullable: true),
+                    DestinationAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    DestinationCurrency = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    AmountOfReferentialAssetBeforeCreatingTransaction = table.Column<decimal>(type: "numeric", nullable: true),
+                    ReferentialAssetId = table.Column<int>(type: "integer", nullable: true),
+                    ReferentialAssetType = table.Column<string>(type: "text", nullable: true),
+                    ReferentialAssetName = table.Column<string>(type: "text", nullable: true),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    AmountInDestinationAssetUnit = table.Column<decimal>(type: "numeric", nullable: true),
+                    CurrencyCode = table.Column<string>(type: "text", nullable: true),
+                    Fee = table.Column<decimal>(type: "numeric", nullable: true),
+                    Tax = table.Column<decimal>(type: "numeric", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    PortfolioId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SingleAssetTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SingleAssetTransactions_Portfolios_PortfolioId",
+                        column: x => x.PortfolioId,
+                        principalTable: "Portfolios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stocks",
                 columns: table => new
                 {
@@ -368,6 +392,7 @@ namespace Infrastructure.Migrations
                     InvestFundId = table.Column<int>(type: "integer", nullable: false),
                     IsIngoing = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    AmountOfReferentialAssetBeforeCreatingTransaction = table.Column<decimal>(type: "numeric", nullable: true),
                     ReferentialAssetId = table.Column<int>(type: "integer", nullable: true),
                     ReferentialAssetType = table.Column<string>(type: "text", nullable: true),
                     ReferentialAssetName = table.Column<string>(type: "text", nullable: true),
@@ -377,7 +402,8 @@ namespace Infrastructure.Migrations
                     Fee = table.Column<decimal>(type: "numeric", nullable: true),
                     Tax = table.Column<decimal>(type: "numeric", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    PortfolioId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -386,6 +412,12 @@ namespace Infrastructure.Migrations
                         name: "FK_InvestFundTransactions_InvestFunds_InvestFundId",
                         column: x => x.InvestFundId,
                         principalTable: "InvestFunds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InvestFundTransactions_Portfolios_PortfolioId",
+                        column: x => x.PortfolioId,
+                        principalTable: "Portfolios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -431,6 +463,11 @@ namespace Infrastructure.Migrations
                 column: "InvestFundId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvestFundTransactions_PortfolioId",
+                table: "InvestFundTransactions",
+                column: "PortfolioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Portfolios_UserId",
                 table: "Portfolios",
                 column: "UserId");
@@ -438,6 +475,11 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_RealEstateAssets_PortfolioId",
                 table: "RealEstateAssets",
+                column: "PortfolioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SingleAssetTransactions_PortfolioId",
+                table: "SingleAssetTransactions",
                 column: "PortfolioId");
 
             migrationBuilder.CreateIndex(
@@ -465,6 +507,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "OTPs");
 
             migrationBuilder.DropTable(
                 name: "RealEstateAssets");

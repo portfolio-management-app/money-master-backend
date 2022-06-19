@@ -69,5 +69,10 @@ namespace ApplicationCore.Entity.Asset
         {
             throw new System.NotImplementedException();
         }
+
+        public override decimal GetAssetSpecificAmount()
+        {
+            return this.CurrentAmountHolding;
+        }
     }
 }

@@ -61,5 +61,10 @@ namespace ApplicationCore.Entity.Asset
         {
             return await visitor.VisitCrypto(this);
         }
+
+        public override decimal GetAssetSpecificAmount()
+        {
+            return this.CurrentAmountHolding; 
+        }
     }
 }

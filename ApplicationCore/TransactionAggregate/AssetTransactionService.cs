@@ -85,6 +85,8 @@ namespace ApplicationCore.TransactionAggregate
                 ReferentialAssetId = resultReferentialAssetId,
                 ReferentialAssetType = resultReferentialAssetType,
                 ReferentialAssetName = resultReferentialAssetName,
+                AmountOfReferentialAssetBeforeCreatingTransaction = 0,
+                AmountInDestinationAssetUnit = asset.GetAssetSpecificAmount(),
                 DestinationAssetId = asset.Id,
                 DestinationAssetName = asset.Name,
                 DestinationAssetType = asset.GetAssetType(),
@@ -155,6 +157,7 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = createTransactionDto.Amount,
                 DestinationCurrency = createTransactionDto.CurrencyCode,
                 AmountInDestinationAssetUnit = createTransactionDto.AmountInDestinationAssetUnit,
+                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction,
                 Amount = createTransactionDto.Amount,
                 CreatedAt = DateTime.Now,
                 CurrencyCode = createTransactionDto.CurrencyCode,
@@ -199,6 +202,7 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = createTransactionDto.Amount,
                 DestinationCurrency = createTransactionDto.CurrencyCode,
                 AmountInDestinationAssetUnit = createTransactionDto.Amount,
+                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction,
                 PortfolioId = portfolioId
             };
 
@@ -317,7 +321,8 @@ namespace ApplicationCore.TransactionAggregate
                 DestinationAmount = valueToAddToCash,
                 DestinationCurrency = foundCash.CurrencyCode,
                 AmountInDestinationAssetUnit = valueToAddToCash,
-                PortfolioId = portfolioId
+                PortfolioId = portfolioId,
+                AmountOfReferentialAssetBeforeCreatingTransaction = createTransactionDto.AmountOfReferentialAssetBeforeCreatingTransaction
             };
             _transactionRepository.Insert(newTransaction);
 
