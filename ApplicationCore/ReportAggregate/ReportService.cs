@@ -187,7 +187,7 @@ namespace ApplicationCore.ReportAggregate
         private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(string inputCurrency, int portfolioId)
         {
             var listTransactions = _assetTransactionService.GetTransactionsByType
-            (portfolioId, SingleAssetTransactionType.AddValue,
+            (portfolioId, SingleAssetTransactionType.WithdrawToCash,
                 SingleAssetTransactionType.WithdrawToOutside,
                 SingleAssetTransactionType.BuyFromCash,
                 SingleAssetTransactionType.AddValue);
@@ -200,17 +200,17 @@ namespace ApplicationCore.ReportAggregate
             {
                 transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
             }).Select(async g => new SankeyFlowBasis()
-            {
-                SourceId = g.Key.ReferentialAssetId!.Value,
-                SourceType = g.Key.ReferentialAssetType,
-                SourceName = g.Key.ReferentialAssetName,
-                TargetId = null,
-                TargetName = _outsideOut,
-                TargetType = _outsideOut,
-                Amount =
-                    await GetType2SankeyChartCalculationHelper(inputCurrency, g),
-                Currency = inputCurrency
-            });
+                {
+                    SourceId = g.Key.ReferentialAssetId!.Value,
+                    SourceType = g.Key.ReferentialAssetType,
+                    SourceName = g.Key.ReferentialAssetName,
+                    TargetId = null,
+                    TargetName = _outsideOut,
+                    TargetType = _outsideOut,
+                    Amount = 
+                        await GetType2SankeyChartCalculationHelper(inputCurrency, g),
+                    Currency = inputCurrency
+                });
 
             return await Task.WhenAll(sankeyBasis);
         }
@@ -223,8 +223,9 @@ namespace ApplicationCore.ReportAggregate
                 singleAssetTransactions as SingleAssetTransaction[] ?? singleAssetTransactions.ToArray();
             var taskList = assetTransactions
                 .Select(t => t.CalculateSumOfTaxAndFee(inputCurrency, _priceFacade)).ToList();
-            var addList = assetTransactions.Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade))
-                .ToList();
+            var withdrawToOutsideTransactions = assetTransactions.Where(t=> t.SingleAssetTransactionType == SingleAssetTransactionType.WithdrawToOutside);
+            var addList = withdrawToOutsideTransactions.Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade)).ToList();
+
             taskList.AddRange(addList);
 
             var calculatedSegments = await Task.WhenAll(taskList);
@@ -359,7 +360,7 @@ namespace ApplicationCore.ReportAggregate
             var calculationSegments = await Task.WhenAll(listTasks);
             var result = assetTransactions.Select((t, i) => t.SingleAssetTransactionType switch
                 {
-                    SingleAssetTransactionType.AddValue => -calculationSegments[i],
+                    SingleAssetTransactionType.AddValue => calculationSegments[i],
                     SingleAssetTransactionType.BuyFromCash => calculationSegments[i],
                     SingleAssetTransactionType.WithdrawToCash => -calculationSegments[i],
                     _ => throw new InvalidOperationException("Invalid transaction type in type 5 sankey")
