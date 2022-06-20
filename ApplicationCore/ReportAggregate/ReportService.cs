@@ -28,7 +28,7 @@ namespace ApplicationCore.ReportAggregate
         private readonly IBankSavingService _bankSavingService;
         private readonly IAssetTransactionService _assetTransactionService;
         private readonly ExternalPriceFacade _priceFacade;
-        private readonly CalculateDailyProfitLossVisitor _calculateDailyProfitLossVisitor;
+        private readonly CalculateProfitLossVisitor _calculateProfitLossVisitor;
 
         private string _outsideOut = "OutsideOut";
         private string _outsideIn = "OutsideIn";
@@ -37,7 +37,7 @@ namespace ApplicationCore.ReportAggregate
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
             IStockService stockService, IBankSavingService bankSavingService,
             IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade,
-            CalculateDailyProfitLossVisitor calculateDailyProfitLossVisitor)
+            CalculateProfitLossVisitor calculateProfitLossVisitor)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -48,7 +48,7 @@ namespace ApplicationCore.ReportAggregate
             _bankSavingService = bankSavingService;
             _assetTransactionService = assetTransactionService;
             _priceFacade = priceFacade;
-            _calculateDailyProfitLossVisitor = calculateDailyProfitLossVisitor;
+            _calculateProfitLossVisitor = calculateProfitLossVisitor;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -378,14 +378,14 @@ namespace ApplicationCore.ReportAggregate
             string period = "day")
         {
             var asset = GetAssetByIdAndType(assetType, assetId);
-            var visitor = period switch
+            var periodLength = period switch
             {
-                "day" => _calculateDailyProfitLossVisitor,
-                "week" => _calculateDailyProfitLossVisitor,
-                "month" => _calculateDailyProfitLossVisitor,
-                _ => throw new InvalidOperationException()
+                "day" => 1,
+                "week" => 7,
+                "month" => 30,
+                _ => throw new InvalidOperationException("Invalid period")
             };
-            var result = await asset.AcceptVisitor(visitor);
+            var result = await asset.AcceptVisitor(_calculateProfitLossVisitor,periodLength);
             return result.ToList();
         }
 

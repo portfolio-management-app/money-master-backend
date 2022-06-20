@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Attributes;
 
-namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
+namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
 {
     public class GetProfitLossRequest
     {

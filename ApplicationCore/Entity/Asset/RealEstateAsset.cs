@@ -48,9 +48,9 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
-        public override Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor)
+        public override async Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor, int period)
         {
-            throw new System.NotImplementedException();
+            return await visitor.VisitRealEstate(this, period);
         }
 
         public override decimal GetAssetSpecificAmount()

@@ -84,7 +84,7 @@ namespace PublicAPI
             services.AddSingleton<ICurrencyRateRepository, CurrencyRateRepository>();
             services.AddSingleton<IStockPriceRepository, StockPriceRepository>();
             services.AddSingleton(typeof(ExternalPriceFacade));
-            services.AddScoped(typeof(CalculateDailyProfitLossVisitor));
+            services.AddScoped(typeof(CalculateProfitLossVisitor));
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IInvestFundService, InvestFundService>();
             services.AddScoped<IAssetTransactionService, AssetTransactionService>();
