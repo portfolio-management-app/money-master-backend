@@ -5,29 +5,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Ardalis.Specification" Version="6.0.1" />
-        <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
-        <PackageReference Include="Google.Apis.Auth" Version="1.57.0" />
-        <PackageReference Include="MailKit" Version="3.3.0" />
-        <PackageReference Include="Mapster" Version="7.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+        <PackageReference Include="Ardalis.Specification" Version="6.0.1"/>
+        <PackageReference Include="FirebaseAdmin" Version="2.3.0"/>
+        <PackageReference Include="Google.Apis.Auth" Version="1.57.0"/>
+        <PackageReference Include="MailKit" Version="3.3.0"/>
+        <PackageReference Include="Mapster" Version="7.2.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="ReportAggregate\Visitors\**" />
-      <Compile Include="ReportAggregate\Visitors\CalculateDailyProfitLossVisitor.cs" />
-      <Compile Include="ReportAggregate\Visitors\CalculatePeriodProfitLossVisitor.cs" />
-      <Compile Include="ReportAggregate\Visitors\IVisitor.cs" />
+        <Compile Remove="ReportAggregate\Visitors\**"/>
+        <Compile Include="ReportAggregate\Visitors\CalculateDailyProfitLossVisitor.cs"/>
+        <Compile Include="ReportAggregate\Visitors\CalculatePeriodProfitLossVisitor.cs"/>
+        <Compile Include="ReportAggregate\Visitors\IVisitor.cs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="ReportAggregate\Visitors\**" />
+        <EmbeddedResource Remove="ReportAggregate\Visitors\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="ReportAggregate\Visitors\**" />
+        <None Remove="ReportAggregate\Visitors\**"/>
     </ItemGroup>
 
 </Project>

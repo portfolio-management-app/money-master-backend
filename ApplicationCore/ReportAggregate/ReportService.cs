@@ -28,7 +28,7 @@ namespace ApplicationCore.ReportAggregate
         private readonly IBankSavingService _bankSavingService;
         private readonly IAssetTransactionService _assetTransactionService;
         private readonly ExternalPriceFacade _priceFacade;
-        private readonly CalculateDailyProfitLossVisitor _calculateDailyProfitLossVisitor; 
+        private readonly CalculateDailyProfitLossVisitor _calculateDailyProfitLossVisitor;
 
         private string _outsideOut = "OutsideOut";
         private string _outsideIn = "OutsideIn";
@@ -36,7 +36,8 @@ namespace ApplicationCore.ReportAggregate
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
             IStockService stockService, IBankSavingService bankSavingService,
-            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade, CalculateDailyProfitLossVisitor calculateDailyProfitLossVisitor)
+            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade,
+            CalculateDailyProfitLossVisitor calculateDailyProfitLossVisitor)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -200,17 +201,17 @@ namespace ApplicationCore.ReportAggregate
             {
                 transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
             }).Select(async g => new SankeyFlowBasis()
-                {
-                    SourceId = g.Key.ReferentialAssetId!.Value,
-                    SourceType = g.Key.ReferentialAssetType,
-                    SourceName = g.Key.ReferentialAssetName,
-                    TargetId = null,
-                    TargetName = _outsideOut,
-                    TargetType = _outsideOut,
-                    Amount = 
-                        await GetType2SankeyChartCalculationHelper(inputCurrency, g),
-                    Currency = inputCurrency
-                });
+            {
+                SourceId = g.Key.ReferentialAssetId!.Value,
+                SourceType = g.Key.ReferentialAssetType,
+                SourceName = g.Key.ReferentialAssetName,
+                TargetId = null,
+                TargetName = _outsideOut,
+                TargetType = _outsideOut,
+                Amount =
+                    await GetType2SankeyChartCalculationHelper(inputCurrency, g),
+                Currency = inputCurrency
+            });
 
             return await Task.WhenAll(sankeyBasis);
         }
@@ -223,8 +224,10 @@ namespace ApplicationCore.ReportAggregate
                 singleAssetTransactions as SingleAssetTransaction[] ?? singleAssetTransactions.ToArray();
             var taskList = assetTransactions
                 .Select(t => t.CalculateSumOfTaxAndFee(inputCurrency, _priceFacade)).ToList();
-            var withdrawToOutsideTransactions = assetTransactions.Where(t=> t.SingleAssetTransactionType == SingleAssetTransactionType.WithdrawToOutside);
-            var addList = withdrawToOutsideTransactions.Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade)).ToList();
+            var withdrawToOutsideTransactions = assetTransactions.Where(t =>
+                t.SingleAssetTransactionType == SingleAssetTransactionType.WithdrawToOutside);
+            var addList = withdrawToOutsideTransactions
+                .Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade)).ToList();
 
             taskList.AddRange(addList);
 

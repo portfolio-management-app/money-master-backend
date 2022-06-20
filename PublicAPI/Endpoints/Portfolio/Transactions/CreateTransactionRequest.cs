@@ -12,8 +12,8 @@ namespace PublicAPI.Endpoints.Portfolio.Transactions
         /// </summary>
         [FromBody]
         public decimal? ValueOfReferentialAssetBeforeCreatingTransaction { get; set; }
-        [FromBody]
-        public decimal? AmountInDestinationAssetUnit { get; set; }
+
+        [FromBody] public decimal? AmountInDestinationAssetUnit { get; set; }
 
         [FromBody] public string CurrencyCode { get; set; }
 

@@ -47,7 +47,6 @@ namespace ApplicationCore.ExternalService
         }
 
 
-
         public Task BulkSendEmail(List<string> addresses, string subject, string htmlMessage)
         {
             foreach (var address in addresses) SendEmail(address, subject, htmlMessage);

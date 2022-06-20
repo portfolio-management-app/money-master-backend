@@ -13,8 +13,8 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.Notification
 {
-
-    public class GetNotificationAsset : BasePortfolioRelatedEndpoint<GetAssetNotificationRequest, RegisterNotificationResponse>
+    public class
+        GetNotificationAsset : BasePortfolioRelatedEndpoint<GetAssetNotificationRequest, RegisterNotificationResponse>
 
     {
         private readonly INotificationService _notificationService;
@@ -23,16 +23,18 @@ namespace PublicAPI.Endpoints.Portfolio.Notification
         {
             _notificationService = notificationService;
         }
+
         [HttpGet("notification/asset/{assetId}")]
-        public override async Task<ActionResult<RegisterNotificationResponse>> HandleAsync([FromMultipleSource] GetAssetNotificationRequest request, CancellationToken cancellationToken = new())
+        public override async Task<ActionResult<RegisterNotificationResponse>> HandleAsync(
+            [FromMultipleSource] GetAssetNotificationRequest request, CancellationToken cancellationToken = new())
         {
             var userId = (int)HttpContext.Items["userId"]!;
 
-            var result = _notificationService.GetNotificationByAssetIdAndAssetType(request.AssetId, userId, request.PortfolioId, request.AssetType);
+            var result = _notificationService.GetNotificationByAssetIdAndAssetType(request.AssetId, userId,
+                request.PortfolioId, request.AssetType);
             if (result is null)
                 return NotFound();
             return Ok(result.Adapt<RegisterNotificationResponse>());
         }
-
     }
 }

@@ -1,4 +1,5 @@
 using System;
+
 namespace ApplicationCore.NotificationAggregate.DTOs
 {
     public class NotificationDto

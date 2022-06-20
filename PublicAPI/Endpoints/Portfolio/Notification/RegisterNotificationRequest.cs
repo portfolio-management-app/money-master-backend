@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.Notification
 {
-
     public class RegisterNotificationCommand
     {
         public int AssetId { get; set; }
@@ -22,7 +21,6 @@ namespace PublicAPI.Endpoints.Portfolio.Notification
         public string StockCode { get; set; }
 
         public bool IsHigh { get; set; }
-
     }
 
     public class RegisterNotificationRequest

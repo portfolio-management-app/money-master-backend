@@ -10,7 +10,6 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInterestAsset
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, SingleCustomInterestAssetResponse>
     {
         private readonly ICustomAssetService _customAssetService;
@@ -19,11 +18,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
         public Get(ICustomAssetService customAssetService)
         {
             _customAssetService = customAssetService;
-
         }
 
         [HttpGet("custom/{assetId}")]
-        public override async Task<ActionResult<SingleCustomInterestAssetResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<SingleCustomInterestAssetResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundAsset = _customAssetService.GetById(request.AssetId);
             if (foundAsset is null)
@@ -32,5 +31,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             return Ok(foundAsset.Adapt<SingleCustomInterestAssetResponse>());
         }
     }
-
 }

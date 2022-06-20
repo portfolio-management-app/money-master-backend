@@ -22,6 +22,5 @@ namespace ApplicationCore.UserAggregate
         public User SetPassword(string email, string newPassword);
         public User UpdatePassword(int userId, string newPassword, string oldPassword);
         public OTP AddNewOtp(string email, string OTP);
-
     }
 }

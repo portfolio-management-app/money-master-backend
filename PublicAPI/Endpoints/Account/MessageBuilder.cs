@@ -1,13 +1,11 @@
-
 using System;
+
 namespace PublicAPI.Endpoints.Account
 {
     public static class MessageBuilder
     {
         public static string BuildHtmlMessage(string lang, string otp)
         {
-
-
             switch (lang)
             {
                 case "en":
@@ -31,6 +29,5 @@ namespace PublicAPI.Endpoints.Account
                     return "";
             }
         }
-
     }
 }

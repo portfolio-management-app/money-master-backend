@@ -30,7 +30,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             var bankSavingAsset = _bankService.GetById(request.AssetId);
             if (bankSavingAsset is null)
                 return NotFound();
-            var listTransactions = _transactionService.GetTransactionListByAsset(bankSavingAsset,request.PageNumber,request.PageSize,request.StartDate,request.EndDate);
+            var listTransactions = _transactionService.GetTransactionListByAsset(bankSavingAsset, request.PageNumber,
+                request.PageSize, request.StartDate, request.EndDate);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }

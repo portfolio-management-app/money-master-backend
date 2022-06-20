@@ -31,7 +31,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             var stock = _stockService.GetById(request.AssetId);
             if (stock is null)
                 return NotFound();
-            var listTransactions = _transactionService.GetTransactionListByAsset(stock,request.PageNumber,request.PageSize,request.StartDate,request.EndDate);
+            var listTransactions = _transactionService.GetTransactionListByAsset(stock, request.PageNumber,
+                request.PageSize, request.StartDate, request.EndDate);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }

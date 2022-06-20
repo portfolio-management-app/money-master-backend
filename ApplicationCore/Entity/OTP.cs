@@ -11,6 +11,5 @@ namespace ApplicationCore.Entity
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
         public string Code { get; set; }
-
     }
 }

@@ -43,11 +43,13 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
                 var foundCash = _cashService.GetById(cashId.Value);
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
-                var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding, dto.CurrencyCode, _priceFacade);
+                var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding,
+                    dto.CurrencyCode, _priceFacade);
 
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");
             }
+
             var newAsset = dto.Adapt<Crypto>();
             newAsset.PortfolioId = portfolioId;
             _cryptoRepository.Insert(newAsset);
@@ -66,7 +68,9 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             {
                 try
                 {
-                    crypto.CurrentPrice = await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode, crypto.CurrencyCode);
+                    crypto.CurrentPrice =
+                        await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode,
+                            crypto.CurrencyCode);
                 }
                 catch (Exception ex)
                 {
@@ -93,7 +97,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var unifyCurrencyValue =
                 cryptoAssets.Select(crypto =>
                     crypto.CalculateValueInCurrency(currencyCode, _priceFacade
-                        ));
+                    ));
             var resultCalc = await Task.WhenAll(unifyCurrencyValue);
             var sumCash = resultCalc.Sum();
             return sumCash;

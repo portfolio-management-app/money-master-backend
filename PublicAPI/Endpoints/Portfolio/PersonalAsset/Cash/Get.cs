@@ -11,7 +11,6 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, CashResponse>
     {
         private readonly ICashService _cashService;
@@ -20,12 +19,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
         public Get(ICashService cashService)
         {
             _cashService = cashService;
-
-
         }
 
         [HttpGet("cash/{assetId}")]
-        public override async Task<ActionResult<CashResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CashResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundCash = _cashService.GetById(request.AssetId);
             if (foundCash is null)
@@ -34,5 +32,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             return Ok(foundCash.Adapt<CashResponse>());
         }
     }
-
 }

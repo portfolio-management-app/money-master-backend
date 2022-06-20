@@ -65,17 +65,17 @@ namespace Infrastructure
             var priceInUsd = passPriceDto.GetPriceValueInUsd();
             var rateObj = await _currencyRateRepository.GetRateObject("USD");
             return priceInUsd * rateObj.GetValue(currencyCode);
-
         }
 
-        public async Task<Dictionary<string, Dictionary<string, decimal>>> GetListCoinPrice(string coinIds, string currencies)
+        public async Task<Dictionary<string, Dictionary<string, decimal>>> GetListCoinPrice(string coinIds,
+            string currencies)
         {
             var client = _factory.CreateClient();
 
             var query = new Dictionary<string, string>()
             {
                 ["ids"] = coinIds,
-                ["vs_currencies"] = currencies,
+                ["vs_currencies"] = currencies
             };
             var uri = QueryHelpers.AddQueryString(_baseUrl, query);
             var apiResult = await client.GetAsync(uri);
@@ -83,19 +83,19 @@ namespace Infrastructure
                 throw new ApplicationException("Cannot call the coingecko api for crypto price");
             var apiResultString = await apiResult.Content.ReadAsStringAsync();
             Console.WriteLine(apiResultString);
-            var priceObject = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(apiResultString);
+            var priceObject =
+                JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(apiResultString);
 
             return priceObject;
         }
     }
-    
+
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class CodeAdditionsDeletions4Weeks
     {
         public object additions { get; set; }
         public object deletions { get; set; }
     }
-
 
 
     public class CurrentPrice
@@ -156,7 +156,6 @@ namespace Infrastructure
         public double link { get; set; }
         public double sats { get; set; }
     }
-
 
 
     public class Image
@@ -247,11 +246,11 @@ namespace Infrastructure
 
         public decimal GetPriceValueInUsd()
         {
-            var usdPrice = this.market_data.current_price.GetType()
+            var usdPrice = market_data.current_price.GetType()
                 .GetProperties()
                 .First(pr
                     => string.Equals(pr.Name, "usd", StringComparison.CurrentCultureIgnoreCase))
-                .GetValue(this.market_data.current_price, null)!;
+                .GetValue(market_data.current_price, null)!;
 
             return Convert.ToDecimal(usdPrice);
         }
@@ -315,5 +314,4 @@ namespace Infrastructure
         public double link { get; set; }
         public double sats { get; set; }
     }
-
 }

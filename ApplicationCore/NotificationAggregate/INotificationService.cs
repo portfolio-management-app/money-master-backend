@@ -18,7 +18,8 @@ namespace ApplicationCore.NotificationAggregate
 
 
         public void TurnOffLowNotificationById(int id);
-        public Notification GetNotificationByAssetIdAndAssetType(int assetId, int userId, int portfolioId, string assetType);
 
+        public Notification GetNotificationByAssetIdAndAssetType(int assetId, int userId, int portfolioId,
+            string assetType);
     }
 }

@@ -10,7 +10,6 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, RealEstateResponse>
     {
         private readonly IRealEstateService _realEstateService;
@@ -18,12 +17,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 
         public Get(IRealEstateService realEstateService)
         {
-            _realEstateService=realEstateService;
-
+            _realEstateService = realEstateService;
         }
 
         [HttpGet("realEstate/{assetId}")]
-        public override async Task<ActionResult<RealEstateResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<RealEstateResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundAsset = _realEstateService.GetById(request.AssetId);
             if (foundAsset is null)
@@ -32,5 +31,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             return Ok(foundAsset.Adapt<RealEstateResponse>());
         }
     }
-
 }

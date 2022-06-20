@@ -55,12 +55,12 @@ namespace ApplicationCore.Entity.Asset
 
         public override decimal GetAssetSpecificAmount()
         {
-            return this.InputMoneyAmount; 
+            return InputMoneyAmount;
         }
 
         public override string GetCurrency()
         {
-            return this.InputCurrency;
+            return InputCurrency;
         }
     }
 }

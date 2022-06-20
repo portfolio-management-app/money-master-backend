@@ -11,7 +11,6 @@ using ApplicationCore;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, StockResponse>
     {
         private readonly IStockService _stockService;
@@ -26,7 +25,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
         }
 
         [HttpGet("stock/{assetId}")]
-        public override async Task<ActionResult<StockResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<StockResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundAsset = _stockService.GetById(request.AssetId);
             if (foundAsset is null)
@@ -36,5 +36,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             return Ok(foundAsset.Adapt<StockResponse>());
         }
     }
-
 }

@@ -27,6 +27,5 @@ namespace ApplicationCore.Entity
         public string NotificationType { get; set; }
 
         public bool IsRead { get; set; } = false;
-
     }
 }

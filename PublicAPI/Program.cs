@@ -21,8 +21,9 @@ namespace PublicAPI
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); }).ConfigureServices(services =>
-                    services.AddHostedService<NotificationTask>());
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); }).ConfigureServices(
+                    services =>
+                        services.AddHostedService<NotificationTask>());
         }
     }
 }

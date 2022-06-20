@@ -8,6 +8,6 @@ namespace ApplicationCore.Entity.Transactions
         BuyFromFund = 8,
         BuyFromCash = 16,
         BuyFromOutside = 32,
-        WithdrawToOutside = 64, 
+        WithdrawToOutside = 64
     }
 }

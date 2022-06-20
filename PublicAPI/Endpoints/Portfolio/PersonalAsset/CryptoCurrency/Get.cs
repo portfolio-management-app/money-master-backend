@@ -12,7 +12,6 @@ using ApplicationCore;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, CryptoResponse>
     {
         private readonly ICryptoService _cryptoService;
@@ -24,22 +23,21 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         {
             _cryptoService = cryptoService;
             _priceFacade = priceFacade;
-
         }
 
         [HttpGet("crypto/{assetId}")]
-        public override async Task<ActionResult<CryptoResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<CryptoResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundAsset = _cryptoService.GetById(request.AssetId);
 
             if (foundAsset is null)
                 return NotFound();
             if (foundAsset.CurrentPrice == 0)
-            {
-                foundAsset.CurrentPrice = await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(foundAsset.CryptoCoinCode, foundAsset.CurrencyCode);
-            }
+                foundAsset.CurrentPrice =
+                    await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(foundAsset.CryptoCoinCode,
+                        foundAsset.CurrencyCode);
             return Ok(foundAsset.Adapt<CryptoResponse>());
         }
     }
-
 }

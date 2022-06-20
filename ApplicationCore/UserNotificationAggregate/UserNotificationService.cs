@@ -36,7 +36,7 @@ namespace ApplicationCore.UserNotificationAggregate
                 HighThreadHoldAmount = notification.HighThreadHoldAmount,
                 LowThreadHoldAmount = notification.LowThreadHoldAmount,
                 NotificationType = notificationType,
-                Currency = notification.Currency,
+                Currency = notification.Currency
             };
             _userNotificationRepository.Insert(userNotification);
             return userNotification;
@@ -56,8 +56,8 @@ namespace ApplicationCore.UserNotificationAggregate
                 _userNotificationRepository.Update(found);
                 return found;
             }
+
             return null;
         }
-
     }
 }

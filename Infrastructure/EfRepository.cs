@@ -112,6 +112,7 @@ namespace Infrastructure
 
             return query.Count();
         }
+
         private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
         {
             var evaluator = new SpecificationEvaluator();

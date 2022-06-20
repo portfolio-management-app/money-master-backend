@@ -30,7 +30,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.CustomerInte
             var customAsset = _customAssetService.GetById(request.AssetId);
             if (customAsset is null)
                 return NotFound();
-            var listTransactions = _transactionService.GetTransactionListByAsset(customAsset,request.PageNumber,request.PageSize,request.StartDate,request.EndDate);
+            var listTransactions = _transactionService.GetTransactionListByAsset(customAsset, request.PageNumber,
+                request.PageSize, request.StartDate, request.EndDate);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }
