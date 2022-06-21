@@ -31,8 +31,9 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             var foundAsset = _stockService.GetById(request.AssetId);
             if (foundAsset is null)
                 return NotFound();
-            var priceInUsdDto = await _priceFacade.StockPriceRepository.GetPrice(foundAsset.StockCode);
-            foundAsset.CurrentPrice = priceInUsdDto.CurrentPrice;
+            var priceInUsdDto = await _priceFacade.StockPriceRepository.GetPriceInUsd(foundAsset.StockCode);
+            var currencyRateObj = await _priceFacade.CurrencyRateRepository.GetRateObject("USD");
+            foundAsset.CurrentPrice = priceInUsdDto.CurrentPrice * currencyRateObj.GetValue(foundAsset.CurrencyCode);
             return Ok(foundAsset.Adapt<StockResponse>());
         }
     }

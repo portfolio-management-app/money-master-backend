@@ -6,7 +6,7 @@ namespace ApplicationCore.Interfaces
 {
     public interface IStockPriceRepository
     {
-        public Task<StockPriceDto> GetPrice(string symbolCode);
-        public Task<StockPriceDto> GetPassPrice(string symbolCode, DateTime time);
+        public Task<StockPriceDto> GetPriceInUsd(string symbolCode);
+        public Task<StockPriceDto> GetPassPriceInUsd(string symbolCode, DateTime time);
     }
 }

@@ -173,9 +173,49 @@ namespace ApplicationCore.ReportAggregate.Visitors
             return await VisitInterestAsset(asset, period);
         }
 
-        public Task<IEnumerable<ProfitLossBasis>> VisitStock(Stock asset, int period = 1)
+        public async Task<IEnumerable<ProfitLossBasis>> VisitStock(Stock asset, int period = 1)
         {
-            throw new NotImplementedException();
+            var listTransaction = _assetTransactionService.GetTransactionListByAsset(asset);
+            var result = new List<ProfitLossBasis>();
+            decimal currentAssetUnitAmount = 0;
+            decimal accumulatedTransactionValues = 0;
+            var rateObj = await _priceFacade.CurrencyRateRepository.GetRateObject("USD");
+            for (var time = asset.InputDay; time < DateTime.Now; time += TimeSpan.FromDays(period))
+            {
+                var isCurrentTimePeriod = false;
+                var startTime = time;
+                if (startTime + TimeSpan.FromDays(period) >= DateTime.Now) isCurrentTimePeriod = true;
+                var basePrice = isCurrentTimePeriod
+                    ? (await _priceFacade.StockPriceRepository.GetPriceInUsd(asset.StockCode)).CurrentPrice
+                    : (await _priceFacade.StockPriceRepository
+                        .GetPassPriceInUsd(asset.StockCode,
+                            startTime + TimeSpan.FromDays(period))).CurrentPrice;
+                basePrice *= rateObj.GetValue(asset.GetCurrency());
+
+                var subListTransactions = listTransaction
+                    .Where(t => t.CreatedAt >= startTime && t.CreatedAt < startTime + TimeSpan.FromDays(period));
+                var subListTransactionsArr =
+                    subListTransactions as SingleAssetTransaction[] ?? subListTransactions.ToArray();
+                var sellAndBuyDifferenceInPeriod = await
+                    _assetTransactionService.CalculateSubTransactionProfitLoss(subListTransactionsArr,
+                        asset.GetCurrency());
+
+                var lastPeriodTransaction = subListTransactionsArr.LastOrDefault();
+                if (lastPeriodTransaction is not null)
+                    currentAssetUnitAmount =
+                        DecideHistoryAssetSpecificAmountHelper(lastPeriodTransaction) ?? 0;
+                accumulatedTransactionValues += sellAndBuyDifferenceInPeriod;
+
+                result.Add(new ProfitLossBasis()
+                {
+                    Amount = currentAssetUnitAmount * basePrice + accumulatedTransactionValues,
+                    StartTime = startTime,
+                    EndTime = startTime + TimeSpan.FromDays(period),
+                    Unit = asset.CurrencyCode
+                });
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<ProfitLossBasis>> VisitRealEstate(RealEstateAsset asset, int period = 1)

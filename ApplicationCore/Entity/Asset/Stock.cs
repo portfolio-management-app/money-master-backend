@@ -18,7 +18,7 @@ namespace ApplicationCore.Entity.Asset
 
         public async Task<decimal> GetCurrentPricePerUnit(ExternalPriceFacade priceFacade)
         {
-            var priceInUsdDto = await priceFacade.StockPriceRepository.GetPrice(StockCode);
+            var priceInUsdDto = await priceFacade.StockPriceRepository.GetPriceInUsd(StockCode);
             if (CurrencyCode == "USD") return priceInUsdDto.CurrentPrice;
             var ratesObj = await priceFacade.CurrencyRateRepository.GetRateObject("USD");
 
@@ -28,7 +28,7 @@ namespace ApplicationCore.Entity.Asset
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ExternalPriceFacade priceFacade)
         {
-            var priceInUsdDto = await priceFacade.StockPriceRepository.GetPrice(StockCode);
+            var priceInUsdDto = await priceFacade.StockPriceRepository.GetPriceInUsd(StockCode);
             if (destinationCurrencyCode == "USD") return priceInUsdDto.CurrentPrice * CurrentAmountHolding;
             var ratesObj = await priceFacade.CurrencyRateRepository.GetRateObject("USD");
 

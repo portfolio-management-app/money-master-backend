@@ -32,7 +32,7 @@ namespace Infrastructure
             _clientFactory = clientFactory;
         }
 
-        public async Task<StockPriceDto> GetPrice(string symbolCode)
+        public async Task<StockPriceDto> GetPriceInUsd(string symbolCode)
         {
             // set up client 
             var client = _clientFactory.CreateClient();
@@ -66,7 +66,7 @@ namespace Infrastructure
             return stockPriceResultDto;
         }
 
-        public Task<StockPriceDto> GetPassPrice(string symbolCode, DateTime time)
+        public Task<StockPriceDto> GetPassPriceInUsd(string symbolCode, DateTime time)
         {
             throw new NotImplementedException();
         }

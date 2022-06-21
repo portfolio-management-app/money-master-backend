@@ -132,7 +132,7 @@ namespace ApplicationCore.BackgroundTask
         {
             using var scope = _scopeFactory.CreateScope();
             var stockRateService = scope.ServiceProvider.GetRequiredService<IStockPriceRepository>();
-            var result = await stockRateService.GetPrice(stockSymbol);
+            var result = await stockRateService.GetPriceInUsd(stockSymbol);
             return result.CurrentPrice;
         }
 
