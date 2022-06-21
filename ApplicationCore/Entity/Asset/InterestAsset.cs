@@ -22,13 +22,28 @@ namespace ApplicationCore.Entity.Asset
             InputCurrency = inputCurrency;
         }
 
-        // TODO: deal with change interest rate (continue with the current amount or reset from start)
         public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
             ExternalPriceFacade priceFacade)
         {
-            if (InputCurrency == destinationCurrencyCode) return InputMoneyAmount;
+            return await CalculateValueInPastInCurrency(DateTime.Now, destinationCurrencyCode, priceFacade);
+        }
+
+        public async Task<decimal> CalculateValueInPastInCurrency(DateTime dateTime, string destinationCurrencyCode,
+            ExternalPriceFacade priceFacade)
+        {
+            var passedPeriod = (dateTime - InputDay) / TimeSpan.FromDays(this.TermRange);
+            var passedPeriodInt = (int)passedPeriod;
+            var total = (double)InputMoneyAmount
+                               * Math.Pow(1 + (double)passedPeriodInt, passedPeriodInt);
+
+            if (InputCurrency == destinationCurrencyCode)
+            {
+                return (decimal)total;
+            }
             var rateObj = await priceFacade.CurrencyRateRepository.GetRateObject(InputCurrency);
-            return rateObj.GetValue(destinationCurrencyCode) * InputMoneyAmount;
+            total *= (double)rateObj.GetValue(destinationCurrencyCode);
+
+            return (decimal)total; 
         }
     }
 }

@@ -50,7 +50,8 @@ namespace ApplicationCore.ReportAggregate.Visitors
                 var startTime = time;
                 if (startTime + TimeSpan.FromDays(period) >= DateTime.Now) isCurrentTimePeriod = true;
                 var basePrice = isCurrentTimePeriod
-                    ? await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(asset.CryptoCoinCode,asset.GetCurrency())
+                    ? await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(asset.CryptoCoinCode,
+                        asset.GetCurrency())
                     : await _priceFacade.CryptoRateRepository
                         .GetPastPriceInCurrency(asset.CryptoCoinCode,
                             asset.CurrencyCode, startTime + TimeSpan.FromDays(period));
@@ -80,7 +81,7 @@ namespace ApplicationCore.ReportAggregate.Visitors
 
             return result;
         }
-        
+
         public async Task<IEnumerable<ProfitLossBasis>> VisitCash(CashAsset asset, int period = 1)
         {
             var listTransaction = _assetTransactionService.GetTransactionListByAsset(asset);
@@ -110,7 +111,7 @@ namespace ApplicationCore.ReportAggregate.Visitors
 
                 result.Add(new ProfitLossBasis()
                 {
-                    Amount = currentAssetUnitAmount * basePrice +  accumulatedTransactionValues,
+                    Amount = currentAssetUnitAmount * basePrice + accumulatedTransactionValues,
                     StartTime = startTime,
                     EndTime = startTime + TimeSpan.FromDays(period),
                     Unit = asset.CurrencyCode
@@ -120,14 +121,56 @@ namespace ApplicationCore.ReportAggregate.Visitors
             return result;
         }
 
-        public Task<IEnumerable<ProfitLossBasis>> VisitBankSaving(BankSavingAsset asset, int period = 1)
+        private async Task<IEnumerable<ProfitLossBasis>> VisitInterestAsset(InterestAsset asset, int period = 1)
         {
-            throw new NotImplementedException();
+            var listTransaction = _assetTransactionService.GetTransactionListByAsset(asset);
+            var result = new List<ProfitLossBasis>();
+            decimal currentAssetUnitAmount = 0;
+            decimal accumulatedTransactionValues = 0;
+            for (var time = asset.InputDay; time < DateTime.Now; time += TimeSpan.FromDays(period))
+            {
+                var isCurrentTimePeriod = false;
+                var startTime = time;
+                if (startTime + TimeSpan.FromDays(period) >= DateTime.Now) isCurrentTimePeriod = true;
+                var basePrice = isCurrentTimePeriod
+                    ? await asset.CalculateValueInCurrency(asset.GetCurrency(), _priceFacade)
+                    : await asset.CalculateValueInPastInCurrency
+                        (startTime + TimeSpan.FromDays(period), asset.GetCurrency(), _priceFacade);
+
+                var subListTransactions = listTransaction
+                    .Where(t => t.CreatedAt >= startTime && t.CreatedAt < startTime + TimeSpan.FromDays(period));
+                var subListTransactionsArr =
+                    subListTransactions as SingleAssetTransaction[] ?? subListTransactions.ToArray();
+                var sellAndBuyDifferenceInPeriod = await
+                    _assetTransactionService.CalculateSubTransactionProfitLoss(subListTransactionsArr,
+                        asset.GetCurrency());
+
+                var lastPeriodTransaction = subListTransactionsArr.LastOrDefault();
+                if (lastPeriodTransaction is not null)
+                    currentAssetUnitAmount =
+                        DecideHistoryAssetSpecificAmountHelper(lastPeriodTransaction) ?? 0;
+                accumulatedTransactionValues += sellAndBuyDifferenceInPeriod;
+
+                result.Add(new ProfitLossBasis()
+                {
+                    Amount = currentAssetUnitAmount * basePrice + accumulatedTransactionValues,
+                    StartTime = startTime,
+                    EndTime = startTime + TimeSpan.FromDays(period),
+                    Unit = asset.InputCurrency
+                });
+            }
+
+            return result;
         }
 
-        public Task<IEnumerable<ProfitLossBasis>> VisitCustomAsset(CustomInterestAsset asset, int period = 1)
+        public async Task<IEnumerable<ProfitLossBasis>> VisitBankSaving(BankSavingAsset asset, int period = 1)
         {
-            throw new NotImplementedException();
+            return await VisitInterestAsset(asset, period);
+        }
+
+        public async Task<IEnumerable<ProfitLossBasis>> VisitCustomAsset(CustomInterestAsset asset, int period = 1)
+        {
+            return await VisitInterestAsset(asset, period);
         }
 
         public Task<IEnumerable<ProfitLossBasis>> VisitStock(Stock asset, int period = 1)
@@ -164,7 +207,7 @@ namespace ApplicationCore.ReportAggregate.Visitors
 
                 result.Add(new ProfitLossBasis()
                 {
-                    Amount = currentAssetUnitAmount * basePrice +  accumulatedTransactionValues,
+                    Amount = currentAssetUnitAmount * basePrice + accumulatedTransactionValues,
                     StartTime = startTime,
                     EndTime = startTime + TimeSpan.FromDays(period),
                     Unit = asset.InputCurrency
