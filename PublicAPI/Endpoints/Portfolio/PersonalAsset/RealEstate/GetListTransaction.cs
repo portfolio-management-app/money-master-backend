@@ -31,7 +31,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             if (realEstateAsset is null)
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(realEstateAsset, request.PageNumber,
-                request.PageSize, request.StartDate, request.EndDate);
+                request.PageSize, request.StartDate, request.EndDate, request.Type);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }
