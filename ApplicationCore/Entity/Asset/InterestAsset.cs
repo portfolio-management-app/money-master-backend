@@ -31,10 +31,10 @@ namespace ApplicationCore.Entity.Asset
         public async Task<decimal> CalculateValueInPastInCurrency(DateTime dateTime, string destinationCurrencyCode,
             ExternalPriceFacade priceFacade)
         {
-            var passedPeriod = (dateTime - InputDay) / TimeSpan.FromDays(this.TermRange);
+            var passedPeriod = (dateTime - InputDay) / TimeSpan.FromDays(TermRange);
             var passedPeriodInt = (int)passedPeriod;
             var total = (double)InputMoneyAmount
-                               * Math.Pow(1 + (double)passedPeriodInt, passedPeriodInt);
+                               * Math.Pow(1 + (double)this.InterestRate, passedPeriodInt);
 
             if (InputCurrency == destinationCurrencyCode)
             {
