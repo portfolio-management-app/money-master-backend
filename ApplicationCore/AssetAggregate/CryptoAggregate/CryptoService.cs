@@ -68,7 +68,7 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
             var priceObject = await _priceFacade.CryptoRateRepository.GetListCoinPrice(queries[0], queries[1]);
             listCrypto.ForEach((crypto) =>
             {
-                crypto.CurrentPrice = priceObject[crypto.CryptoCoinCode][crypto.CurrencyCode];
+                crypto.CurrentPrice = priceObject[crypto.CryptoCoinCode][crypto.CurrencyCode.ToLower()];
             });
 
             return listCrypto.ToList();
