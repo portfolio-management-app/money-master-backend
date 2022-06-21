@@ -63,23 +63,33 @@ namespace ApplicationCore.AssetAggregate.CryptoAggregate
         public async Task<List<Crypto>> ListByPortfolio(int portfolioId)
         {
             var listCrypto = _cryptoRepository.List(c => c.PortfolioId == portfolioId).ToList();
+            var queries = GetCryptoQueryString(listCrypto);
 
-            await AsyncMethod.ParallelForEachAsync(listCrypto, async (crypto) =>
+            var priceObject = await _priceFacade.CryptoRateRepository.GetListCoinPrice(queries[0], queries[1]);
+            listCrypto.ForEach((crypto) =>
             {
-                try
-                {
-                    crypto.CurrentPrice =
-                        await _priceFacade.CryptoRateRepository.GetCurrentPriceInCurrency(crypto.CryptoCoinCode,
-                            crypto.CurrencyCode);
-                }
-                catch (Exception ex)
-                {
-                    throw new OperationCanceledException($"Error when get current crypto price {ex.Message}");
-                }
+                crypto.CurrentPrice = priceObject[crypto.CryptoCoinCode][crypto.CurrencyCode];
             });
 
-
             return listCrypto.ToList();
+        }
+
+        private string[] GetCryptoQueryString(List<Crypto> cryptos)
+        {
+            var coinCodes = new Dictionary<string, int>();
+            var currencyCodes = new Dictionary<string, int>();
+            foreach (var item in cryptos)
+            {
+                if (!coinCodes.ContainsKey(item.CryptoCoinCode)) coinCodes.Add(item.CryptoCoinCode, 0);
+                if (!currencyCodes.ContainsKey(item.CurrencyCode)) currencyCodes.Add(item.CurrencyCode, 0);
+            }
+
+            var coinCodeQuery = coinCodes.Aggregate("", (current, code) => current + $"{code.Key},");
+
+            var currencyQuery = currencyCodes.Aggregate("", (current, currency) => current + $"{currency.Key},");
+
+            var result = new string[] { coinCodeQuery, currencyQuery };
+            return result;
         }
 
         public Crypto SetAssetToDelete(int assetId)
