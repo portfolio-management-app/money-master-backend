@@ -32,6 +32,7 @@ namespace ApplicationCore.Entity.Asset
         {
             var rateObject = await priceFacade.CurrencyRateRepository.GetRateObject(currencyCode);
             var rateToWithdraw = rateObject.GetValue(CurrencyCode);
+
             var valueToWithdraw = rateToWithdraw * withdrawAmount;
             if (valueToWithdraw > Amount) return false;
 
@@ -60,7 +61,7 @@ namespace ApplicationCore.Entity.Asset
 
         public override decimal GetAssetSpecificAmount()
         {
-            return this.Amount; 
+            return this.Amount;
         }
 
         public override string GetCurrency()

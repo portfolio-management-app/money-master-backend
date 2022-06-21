@@ -37,7 +37,7 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
                 if (foundCash is null)
                     throw new InvalidOperationException("Cash not found");
                 var withdrawResult = await foundCash.Withdraw(dto.PurchasePrice * dto.CurrentAmountHolding,
-                    dto.InputCurrency, _priceFacade);
+                    dto.CurrencyCode, _priceFacade);
 
                 if (!withdrawResult)
                     throw new InvalidOperationException("The specified cash does not have sufficient amount");

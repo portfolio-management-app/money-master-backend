@@ -12,6 +12,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
         public decimal PurchasePrice { get; set; }
         public string CurrencyCode { get; set; }
         public string CryptoCoinCode { get; set; }
+        public decimal? Fee { get; set; }
+        public decimal? Tax { get; set; }
     }
 
     public class CreateNewCryptoCurrencyAssetRequest
