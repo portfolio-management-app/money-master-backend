@@ -46,7 +46,7 @@ namespace ApplicationCore.BackgroundTask
             _timer = new Timer(o => { RunService(); },
                 null,
                 TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
+                TimeSpan.FromMinutes(20));
 
             return Task.CompletedTask;
         }
@@ -66,26 +66,40 @@ namespace ApplicationCore.BackgroundTask
 
         private async void RunCoinService()
         {
-            using var scope = _scopeFactory.CreateScope();
-            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-            var highSubscribers = notificationService.GetActiveHighNotifications("crypto");
-            var lowSubscribers = notificationService.GetActiveLowNotifications("crypto");
-            var highQueries = GetCryptoQueryString(highSubscribers);
-            var lowQueries = GetCryptoQueryString(lowSubscribers);
-            var highPrices = await GetCryptoPrice(highQueries);
-            var lowPrices = await GetCryptoPrice(lowQueries);
-            PushHighCryptoNotification(highPrices, highSubscribers);
-            PushLowCryptoNotification(lowPrices, lowSubscribers);
+            try
+            {
+                using var scope = _scopeFactory.CreateScope();
+                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                var highSubscribers = notificationService.GetActiveHighNotifications("crypto");
+                var lowSubscribers = notificationService.GetActiveLowNotifications("crypto");
+                var highQueries = GetCryptoQueryString(highSubscribers);
+                var lowQueries = GetCryptoQueryString(lowSubscribers);
+                var highPrices = await GetCryptoPrice(highQueries);
+                var lowPrices = await GetCryptoPrice(lowQueries);
+                PushHighCryptoNotification(highPrices, highSubscribers);
+                PushLowCryptoNotification(lowPrices, lowSubscribers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private async void RunStockService()
         {
-            using var scope = _scopeFactory.CreateScope();
-            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-            var highSubscribers = notificationService.GetActiveHighNotifications("stock");
-            var lowSubscribers = notificationService.GetActiveLowNotifications("stock");
-            await PushHighStockNotification(highSubscribers);
-            await PushLowStockNotification(lowSubscribers);
+            try
+            {
+                using var scope = _scopeFactory.CreateScope();
+                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                var highSubscribers = notificationService.GetActiveHighNotifications("stock");
+                var lowSubscribers = notificationService.GetActiveLowNotifications("stock");
+                await PushHighStockNotification(highSubscribers);
+                await PushLowStockNotification(lowSubscribers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private string[] GetCryptoQueryString(List<Notification> subscribers)
