@@ -32,7 +32,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             if (stock is null)
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(stock, request.PageNumber,
-                request.PageSize, request.StartDate, request.EndDate);
+                request.PageSize, request.StartDate, request.EndDate, request.Type);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }
