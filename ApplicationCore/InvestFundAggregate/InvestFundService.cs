@@ -7,14 +7,70 @@ using ApplicationCore.Entity.Asset;
 using ApplicationCore.Entity.Transactions;
 using ApplicationCore.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using ApplicationCore.ReportAggregate.Models;
+using ApplicationCore.ReportAggregate.Visitors;
+using ApplicationCore.TransactionAggregate;
+
 
 namespace ApplicationCore.InvestFundAggregate
+
 {
+    public class InvestFundAsset : PersonalAsset
+    {
+
+
+        public override async Task<decimal> CalculateValueInCurrency(string destinationCurrencyCode,
+            ExternalPriceFacade priceFacade)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GetAssetType()
+        {
+            return "fund";
+        }
+
+        public override async Task<bool> Withdraw(decimal withdrawAmount, string currencyCode,
+            ExternalPriceFacade priceFacade)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<bool> AddValue(decimal amountInAssetUnit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<bool> WithdrawAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor, int period)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override decimal GetAssetSpecificAmount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GetCurrency()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+
     public class InvestFundService : IInvestFundService
     {
         private readonly IBaseRepository<InvestFund> _investFundRepository;
         private readonly IBaseRepository<SingleAssetTransaction> _assetTransactionRepository;
         private readonly ExternalPriceFacade _priceFacade;
+
+
         private string LackAmountErrorMessage => "Insufficient value left in asset";
 
         public InvestFundService(IBaseRepository<InvestFund> investFundRepository,
@@ -23,6 +79,7 @@ namespace ApplicationCore.InvestFundAggregate
             _investFundRepository = investFundRepository;
             _priceFacade = priceFacade;
             _assetTransactionRepository = assetTransactionRepository;
+
         }
 
         public async Task<bool> BuyUsingInvestFund(int portfolioId, PersonalAsset buyingAsset)
@@ -85,12 +142,17 @@ namespace ApplicationCore.InvestFundAggregate
                 i => i.Include(inf => inf.Portfolio));
         }
 
-        public List<SingleAssetTransaction> GetInvestFundTransactionByPortfolio(int portfolioId)
+        public List<SingleAssetTransaction> GetInvestFundTransactionByPortfolio(int portfolioId, int? pageNumber, int? pageSize,
+            DateTime? startDate, DateTime? endDate, string transactionType)
         {
-            return _assetTransactionRepository
-                .List(t => t.PortfolioId == portfolioId &&
-                           (t.ReferentialAssetType == "fund" || t.DestinationAssetType == "fund"))
-                .ToList();
+
+            var fakeAsset = new InvestFundAsset();
+            fakeAsset.PortfolioId = portfolioId;
+            fakeAsset.Name = "fund";
+            var listTransaction = _assetTransactionRepository.List(
+              new TransactionWithPagingAndTimeSpec(fakeAsset, pageNumber, pageSize, startDate, endDate, transactionType)
+          );
+            return listTransaction.ToList();
         }
     }
 }

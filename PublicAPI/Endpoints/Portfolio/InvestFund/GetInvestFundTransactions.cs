@@ -7,10 +7,11 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Endpoints.Portfolio.Transactions;
+using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    public class GetInvestFundTransactions : BasePortfolioRelatedEndpoint<int, List<InvestFundTransactionResponse>>
+    public class GetInvestFundTransactions : BasePortfolioRelatedEndpoint<GetInvestFundTransactionRequest, List<InvestFundTransactionResponse>>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IInvestFundService _investFundService;
@@ -25,11 +26,11 @@ namespace PublicAPI.Endpoints.Portfolio.InvestFund
 
         [HttpGet("investFund/transactions")]
         public override async Task<ActionResult<List<InvestFundTransactionResponse>>> HandleAsync
-            ([FromRoute] int portfolioId, CancellationToken cancellationToken = new())
+            ([FromMultipleSource] GetInvestFundTransactionRequest request, CancellationToken cancellationToken = new())
         {
-            if (!await IsAllowedToExecute(portfolioId, _authorizationService))
+            if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized("You are allowed for this portfolio");
-            var listTransactions = _investFundService.GetInvestFundTransactionByPortfolio(portfolioId);
+            var listTransactions = _investFundService.GetInvestFundTransactionByPortfolio(request.PortfolioId, request.PageNumber, request.PageSize, request.StartDate, request.EndDate, request.Type);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }

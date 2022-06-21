@@ -33,7 +33,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             if (foundCrypto is null)
                 return NotFound();
             var listTransactions = _transactionService.GetTransactionListByAsset(foundCrypto, request.PageNumber,
-                request.PageSize, request.StartDate, request.EndDate);
+                request.PageSize, request.StartDate, request.EndDate, request.Type);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }

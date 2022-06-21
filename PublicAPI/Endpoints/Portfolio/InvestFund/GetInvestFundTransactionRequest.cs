@@ -1,13 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PublicAPI.Endpoints.Portfolio.PersonalAsset
+namespace PublicAPI.Endpoints.Portfolio.InvestFund
 {
-    public class GetListTransactionRequest
+    public class GetInvestFundTransactionRequest
     {
-        [FromRoute] public int AssetId { get; set; }
         [FromRoute] public int PortfolioId { get; set; }
-
         [FromQuery] public int? PageNumber { get; set; } = null;
         [FromQuery] public int? PageSize { get; set; } = null;
         [FromQuery] public DateTime? StartDate { get; set; } = null;

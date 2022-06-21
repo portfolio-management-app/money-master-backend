@@ -18,7 +18,7 @@ namespace ApplicationCore.TransactionAggregate
             decimal? fee, decimal? tax);
 
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset, int? pageNumber, int? pageSize,
-            DateTime? startDate, DateTime? endDate);
+            DateTime? startDate, DateTime? endDate, string transactionType);
 
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
 
