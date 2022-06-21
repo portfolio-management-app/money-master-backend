@@ -65,5 +65,10 @@ namespace Infrastructure
             stockPriceApiDto.Adapt(stockPriceResultDto);
             return stockPriceResultDto;
         }
+
+        public Task<StockPriceDto> GetPassPrice(string symbolCode, DateTime time)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
