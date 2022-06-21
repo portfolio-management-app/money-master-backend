@@ -18,11 +18,9 @@ namespace PublicAPI.Endpoints.Account
         private readonly IUserService _userService;
 
 
-
         public UpdatePassword(IUserService userService)
         {
             _userService = userService;
-
         }
 
         [HttpPut("password")]

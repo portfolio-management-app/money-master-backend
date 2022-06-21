@@ -54,19 +54,19 @@ namespace ApplicationCore.Entity.Asset
             return true;
         }
 
-        public override Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor)
+        public override async Task<IEnumerable<ProfitLossBasis>> AcceptVisitor(IVisitor visitor, int period)
         {
-            throw new NotImplementedException();
+            return await visitor.VisitCash(this, period);
         }
 
         public override decimal GetAssetSpecificAmount()
         {
-            return this.Amount;
+            return Amount;
         }
 
         public override string GetCurrency()
         {
-            return this.CurrencyCode;
+            return CurrencyCode;
         }
     }
 }

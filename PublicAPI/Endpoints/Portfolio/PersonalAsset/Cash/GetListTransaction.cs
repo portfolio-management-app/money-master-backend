@@ -28,7 +28,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             var foundCash = _cashService.GetById(request.AssetId);
             if (foundCash is null)
                 return NotFound();
-            var listTransactions = _transactionService.GetTransactionListByAsset(foundCash,request.PageNumber,request.PageSize,request.StartDate,request.EndDate);
+            var listTransactions = _transactionService.GetTransactionListByAsset(foundCash, request.PageNumber,
+                request.PageSize, request.StartDate, request.EndDate);
             return Ok(listTransactions.Select(trans => new TransactionResponse(trans)));
         }
     }

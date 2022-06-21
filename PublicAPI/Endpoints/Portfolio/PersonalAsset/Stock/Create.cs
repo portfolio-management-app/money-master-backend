@@ -36,7 +36,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
             try
             {
                 var newStock = await _stockService.CreateNewStockAsset(request.PortfolioId, dto);
-                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId,newStock,
+                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId, newStock,
                     newStock.PurchasePrice * newStock.CurrentAmountHolding, newStock.CurrencyCode
                     , dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId
                     , dto.Fee, dto.Tax);

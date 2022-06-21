@@ -31,9 +31,9 @@ namespace ApplicationCore.Interfaces
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null
         );
-        
+
         IEnumerable<TEntity> List(
-            ISpecification<TEntity> specification );
+            ISpecification<TEntity> specification);
 
         decimal CalculateSum(Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null);

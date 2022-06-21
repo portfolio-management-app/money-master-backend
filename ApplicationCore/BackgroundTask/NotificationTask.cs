@@ -23,11 +23,12 @@ namespace ApplicationCore.BackgroundTask
         private readonly ILogger<NotificationTask> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private Timer _timer;
-        private readonly FirebaseAdminMessaging _fireBaseService = new FirebaseAdminMessaging();
+        private readonly FirebaseAdminMessaging _fireBaseService = new();
 
         private readonly string assetReachHigh = "assetReachValueHigh";
 
         private readonly string assetReachLow = "assetReachValueLow";
+
         public NotificationTask(ILogger<NotificationTask> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
@@ -41,15 +42,11 @@ namespace ApplicationCore.BackgroundTask
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-
             _logger.LogInformation("Notification service is running !!");
-            _timer = new Timer(o =>
-            {
-                RunService();
-            },
-            null,
-            TimeSpan.Zero,
-            TimeSpan.FromMinutes(5));
+            _timer = new Timer(o => { RunService(); },
+                null,
+                TimeSpan.Zero,
+                TimeSpan.FromMinutes(5));
 
             return Task.CompletedTask;
         }
@@ -93,25 +90,17 @@ namespace ApplicationCore.BackgroundTask
 
         private string[] GetCryptoQueryString(List<Notification> subscribers)
         {
-
             var coinCodes = new Dictionary<string, int>();
             var currencyCodes = new Dictionary<string, int>();
             foreach (var item in subscribers)
             {
-                if (!coinCodes.ContainsKey(item.CoinCode))
-                {
-                    coinCodes.Add(item.CoinCode, 0);
-                }
-                if (!currencyCodes.ContainsKey(item.Currency))
-                {
-                    currencyCodes.Add(item.Currency, 0);
-                }
-
+                if (!coinCodes.ContainsKey(item.CoinCode)) coinCodes.Add(item.CoinCode, 0);
+                if (!currencyCodes.ContainsKey(item.Currency)) currencyCodes.Add(item.Currency, 0);
             }
 
-            string coinCodeQuery = coinCodes.Aggregate("", (current, code) => current + $"{code.Key},");
+            var coinCodeQuery = coinCodes.Aggregate("", (current, code) => current + $"{code.Key},");
 
-            string currencyQuery = currencyCodes.Aggregate("", (current, currency) => current + $"{currency.Key},");
+            var currencyQuery = currencyCodes.Aggregate("", (current, currency) => current + $"{currency.Key},");
 
             var result = new string[] { coinCodeQuery, currencyQuery };
             return result;
@@ -133,7 +122,8 @@ namespace ApplicationCore.BackgroundTask
             return result.CurrentPrice;
         }
 
-        private void PushHighCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
+        private void PushHighCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject,
+            List<Notification> subscribers)
         {
             using var scope = _scopeFactory.CreateScope();
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
@@ -144,25 +134,25 @@ namespace ApplicationCore.BackgroundTask
             {
                 subscriber.Currency = subscriber.Currency.ToLower();
                 if (priceObject.ContainsKey(subscriber.CoinCode))
-                {
                     if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
                         var value = priceObject[subscriber.CoinCode][subscriber.Currency];
                         var cryptoAsset = cryptoService.GetById(subscriber.AssetId);
-                        if (value * cryptoAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
+                        if (value * cryptoAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount &&
+                            subscriber.HighThreadHoldAmount != 0)
                         {
-
                             var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                            _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
+                            _fireBaseService.SendMultiNotification(tokens,
+                                BuildDataForNotification(subscriber, assetReachHigh));
                             notificationService.TurnOffHighNotificationById(subscriber.Id);
                             userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
                         }
                     }
-                }
             }
         }
 
-        private void PushLowCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject, List<Notification> subscribers)
+        private void PushLowCryptoNotification(Dictionary<string, Dictionary<string, decimal>> priceObject,
+            List<Notification> subscribers)
         {
             using var scope = _scopeFactory.CreateScope();
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
@@ -174,21 +164,20 @@ namespace ApplicationCore.BackgroundTask
             {
                 subscriber.Currency = subscriber.Currency.ToLower();
                 if (priceObject.ContainsKey(subscriber.CoinCode))
-                {
                     if (priceObject[subscriber.CoinCode].ContainsKey(subscriber.Currency))
                     {
                         var value = priceObject[subscriber.CoinCode][subscriber.Currency];
                         var cryptoAsset = cryptoService.GetById(subscriber.AssetId);
-                        if (value * cryptoAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
+                        if (value * cryptoAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount &&
+                            subscriber.LowThreadHoldAmount != 0)
                         {
-
                             var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                            _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
+                            _fireBaseService.SendMultiNotification(tokens,
+                                BuildDataForNotification(subscriber, assetReachLow));
                             notificationService.TurnOffLowNotificationById(subscriber.Id);
                             userNotificationService.InsertNewNotification(subscriber, assetReachLow);
                         }
                     }
-                }
             }
         }
 
@@ -203,14 +192,15 @@ namespace ApplicationCore.BackgroundTask
             {
                 var price = await GetStockPrice(subscriber.StockCode);
                 var stockAsset = stockService.GetById(subscriber.AssetId);
-                if (price * stockAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount && subscriber.HighThreadHoldAmount != 0)
+                if (price * stockAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount &&
+                    subscriber.HighThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                    _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachHigh));
+                    _fireBaseService.SendMultiNotification(tokens,
+                        BuildDataForNotification(subscriber, assetReachHigh));
                     userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
                     notificationService.TurnOffHighNotificationById(subscriber.Id);
                 }
-
             }
         }
 
@@ -225,7 +215,8 @@ namespace ApplicationCore.BackgroundTask
             {
                 var price = await GetStockPrice(subscriber.StockCode);
                 var stockAsset = stockService.GetById(subscriber.AssetId);
-                if (price * stockAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount && subscriber.LowThreadHoldAmount != 0)
+                if (price * stockAsset.CurrentAmountHolding < subscriber.LowThreadHoldAmount &&
+                    subscriber.LowThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
                     _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
@@ -237,20 +228,19 @@ namespace ApplicationCore.BackgroundTask
 
         private Dictionary<string, string> BuildDataForNotification(Notification notification, string type)
         {
-            return new Dictionary<string, string>(){
-                {"title","Asset reach value"},
-                {"body","body"},
-                {"assetId",notification.AssetId.ToString()},
-                {"portfolioId",notification.PortfolioId.ToString()},
-                {"assetType",notification.AssetType},
-                {"assetName",notification.AssetName},
-                {"type",type},
-                {"high",notification.HighThreadHoldAmount.ToString()},
-                {"low",notification.LowThreadHoldAmount.ToString()},
-                {"currency",notification.Currency}
+            return new Dictionary<string, string>()
+            {
+                { "title", "Asset reach value" },
+                { "body", "body" },
+                { "assetId", notification.AssetId.ToString() },
+                { "portfolioId", notification.PortfolioId.ToString() },
+                { "assetType", notification.AssetType },
+                { "assetName", notification.AssetName },
+                { "type", type },
+                { "high", notification.HighThreadHoldAmount.ToString() },
+                { "low", notification.LowThreadHoldAmount.ToString() },
+                { "currency", notification.Currency }
             };
         }
-
-
     }
 }

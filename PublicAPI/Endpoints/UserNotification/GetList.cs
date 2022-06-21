@@ -12,7 +12,6 @@ namespace PublicAPI.UserNotification
     [Route("userNotification")]
     public class GetList : EndpointBaseSync.WithoutRequest.WithActionResult<List<GetListUserNotificationResponse>>
     {
-
         private readonly IUserNotificationService _userNotificationService;
 
         public GetList(IUserNotificationService userNotificationService)

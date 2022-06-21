@@ -13,8 +13,9 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.Notification
 {
-
-    public class RegisterHighNotification : BasePortfolioRelatedEndpoint<RegisterNotificationRequest, RegisterNotificationResponse>
+    public class
+        RegisterHighNotification : BasePortfolioRelatedEndpoint<RegisterNotificationRequest,
+            RegisterNotificationResponse>
 
     {
         private readonly INotificationService _notificationService;
@@ -23,16 +24,17 @@ namespace PublicAPI.Endpoints.Portfolio.Notification
         {
             _notificationService = notificationService;
         }
+
         [HttpPost("notification")]
-        public override async Task<ActionResult<RegisterNotificationResponse>> HandleAsync([FromMultipleSource] RegisterNotificationRequest request, CancellationToken cancellationToken = new())
+        public override async Task<ActionResult<RegisterNotificationResponse>> HandleAsync(
+            [FromMultipleSource] RegisterNotificationRequest request, CancellationToken cancellationToken = new())
         {
             var userId = (int)HttpContext.Items["userId"]!;
             var dto = request.RegisterNotificationCommand.Adapt<NotificationDto>();
 
-            var result = _notificationService.RegisterPriceNotification(userId, request.PortfolioId, dto, request.RegisterNotificationCommand.IsHigh);
+            var result = _notificationService.RegisterPriceNotification(userId, request.PortfolioId, dto,
+                request.RegisterNotificationCommand.IsHigh);
             return Ok(result.Adapt<RegisterNotificationResponse>());
-
         }
-
     }
 }

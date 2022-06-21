@@ -18,11 +18,11 @@ namespace ApplicationCore.NotificationAggregate
         private readonly IBaseRepository<Notification> _notificationRepository;
 
 
-
         public NotificationService(IBaseRepository<Notification> notificationRepository)
         {
             _notificationRepository = notificationRepository;
         }
+
         public Notification RegisterPriceNotification(int userId, int portfolioId, NotificationDto dto, bool isHigh)
 
         {
@@ -40,21 +40,19 @@ namespace ApplicationCore.NotificationAggregate
         public Notification EditNotification(int id, EditNotificationDto dto)
         {
             var found = _notificationRepository.GetFirst((item) => item.Id == id);
-            if (found == null)
-            {
-                return null;
-            }
+            if (found == null) return null;
             found.HighThreadHoldAmount = dto.HighThreadHoldAmount;
             found.LowThreadHoldAmount = dto.LowThreadHoldAmount;
             found.IsHighOn = dto.IsHighOn;
             found.IsLowOn = dto.IsLowOn;
             _notificationRepository.Update(found);
             return found;
-
         }
+
         public List<Notification> GetActiveHighNotifications(string assetType)
         {
-            return _notificationRepository.List((item) => item.AssetType == assetType && item.IsHighOn == true).ToList();
+            return _notificationRepository.List((item) => item.AssetType == assetType && item.IsHighOn == true)
+                .ToList();
         }
 
         public List<Notification> GetActiveLowNotifications(string assetType)
@@ -63,9 +61,12 @@ namespace ApplicationCore.NotificationAggregate
         }
 
 
-        public Notification GetNotificationByAssetIdAndAssetType(int assetId, int userId, int portfolioId, string assetType)
+        public Notification GetNotificationByAssetIdAndAssetType(int assetId, int userId, int portfolioId,
+            string assetType)
         {
-            return _notificationRepository.GetFirst((item) => item.AssetId == assetId && item.AssetType == assetType && item.UserId == userId && item.PortfolioId == portfolioId);
+            return _notificationRepository.GetFirst((item) =>
+                item.AssetId == assetId && item.AssetType == assetType && item.UserId == userId &&
+                item.PortfolioId == portfolioId);
         }
 
         public void TurnOffHighNotificationById(int id)

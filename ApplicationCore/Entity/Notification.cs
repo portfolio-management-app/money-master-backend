@@ -11,7 +11,6 @@ namespace ApplicationCore.Entity
 {
     public class Notification : BaseEntity
     {
-
         public int Id { get; set; }
         public int UserId { get; set; }
 

@@ -37,7 +37,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             try
             {
                 var createdCrypto = await _cryptoService.CreateNewCryptoAsset(request.PortfolioId, dto);
-                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId,createdCrypto,
+                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId, createdCrypto,
                     createdCrypto.PurchasePrice * createdCrypto.CurrentAmountHolding,
                     createdCrypto.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee,
                     dto.Tax);

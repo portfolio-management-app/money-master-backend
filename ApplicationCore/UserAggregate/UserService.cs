@@ -17,7 +17,8 @@ namespace ApplicationCore.UserAggregate
 
         private readonly IBaseRepository<OTP> _otpRepository;
 
-        public UserService(IBaseRepository<User> userRepository, IBaseRepository<UserMobileFcmCode> userFcmRepository, IBaseRepository<OTP> otpRepository)
+        public UserService(IBaseRepository<User> userRepository, IBaseRepository<UserMobileFcmCode> userFcmRepository,
+            IBaseRepository<OTP> otpRepository)
         {
             _userRepository = userRepository;
             _userFcmRepository = userFcmRepository;
@@ -94,9 +95,10 @@ namespace ApplicationCore.UserAggregate
                 _userFcmRepository.Insert(newFcm);
                 return newFcm;
             }
-            return null;
 
+            return null;
         }
+
         public List<string> GetUserFcmCodeByUserId(int userId)
         {
             var result = _userFcmRepository.List((item) => item.UserId == userId).Select(u => u.FcmCode).ToList();
@@ -106,10 +108,7 @@ namespace ApplicationCore.UserAggregate
         public void DeleteOtpByEmail(string email)
         {
             var found = _otpRepository.GetFirst(item => item.Email == email);
-            if (found is not null)
-            {
-                _otpRepository.Delete(found);
-            }
+            if (found is not null) _otpRepository.Delete(found);
         }
 
         public bool VerifyOtpCode(string email, string otpCode)
@@ -121,19 +120,17 @@ namespace ApplicationCore.UserAggregate
                 var diff = currentTime - found.CreateDate;
                 if (diff.TotalMinutes < 5)
                 {
-                    if (found.Code == otpCode)
-                    {
-                        return true;
-                    }
+                    if (found.Code == otpCode) return true;
                 }
                 else
                 {
                     throw new ApplicationException("OTP verify time is over");
                 }
-
             }
+
             return false;
         }
+
         public OTP AddNewOtp(string email, string OTP)
         {
             var existedOTP = _otpRepository.GetFirst(item => item.Email == email);
@@ -145,6 +142,7 @@ namespace ApplicationCore.UserAggregate
                 _otpRepository.Insert(otp);
                 return otp;
             }
+
             existedOTP.CreateDate = DateTime.Now;
             existedOTP.Code = OTP;
             _otpRepository.Update(existedOTP);
@@ -166,10 +164,7 @@ namespace ApplicationCore.UserAggregate
             var existedUser = _userRepository.GetFirst(user => user.Id == userId);
             if (existedUser is null)
                 throw new ApplicationException($"User  does not exist");
-            if (!existedUser.CheckPassword(oldPassword))
-            {
-                throw new ApplicationException("Old password not correct");
-            }
+            if (!existedUser.CheckPassword(oldPassword)) throw new ApplicationException("Old password not correct");
             existedUser.SetPassword(newPassword);
             _userRepository.Update(existedUser);
             return existedUser;

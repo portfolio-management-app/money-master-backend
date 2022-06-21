@@ -33,13 +33,11 @@ namespace PublicAPI.Endpoints.Account
             try
             {
                 var existedUser = _userService.GetUserByEmail(request.Email);
-                if (existedUser is null)
-                {
-                    throw new ApplicationException("Email not exist");
-                }
+                if (existedUser is null) throw new ApplicationException("Email not exist");
                 var random = new Random();
                 var otp = random.Next(100000, 999999).ToString();
-                await _emailSender.SendEmail(request.Email, MessageBuilder.BuildSubject(request.Lang, request.Email), MessageBuilder.BuildHtmlMessage(request.Lang, otp));
+                await _emailSender.SendEmail(request.Email, MessageBuilder.BuildSubject(request.Lang, request.Email),
+                    MessageBuilder.BuildHtmlMessage(request.Lang, otp));
                 _userService.AddNewOtp(request.Email, otp);
                 var response = new ForgetPasswordResponse();
                 response.Email = request.Email;

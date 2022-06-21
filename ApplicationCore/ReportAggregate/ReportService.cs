@@ -28,7 +28,7 @@ namespace ApplicationCore.ReportAggregate
         private readonly IBankSavingService _bankSavingService;
         private readonly IAssetTransactionService _assetTransactionService;
         private readonly ExternalPriceFacade _priceFacade;
-        private readonly CalculateDailyProfitLossVisitor _calculateDailyProfitLossVisitor; 
+        private readonly CalculateProfitLossVisitor _calculateProfitLossVisitor;
 
         private string _outsideOut = "OutsideOut";
         private string _outsideIn = "OutsideIn";
@@ -36,7 +36,8 @@ namespace ApplicationCore.ReportAggregate
         public ReportService(IPortfolioService portfolioService, ICryptoService cryptoService, ICashService cashService,
             IRealEstateService realEstateService, ICustomAssetService customAssetService,
             IStockService stockService, IBankSavingService bankSavingService,
-            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade, CalculateDailyProfitLossVisitor calculateDailyProfitLossVisitor)
+            IAssetTransactionService assetTransactionService, ExternalPriceFacade priceFacade,
+            CalculateProfitLossVisitor calculateProfitLossVisitor)
         {
             _portfolioService = portfolioService;
             _cryptoService = cryptoService;
@@ -47,7 +48,7 @@ namespace ApplicationCore.ReportAggregate
             _bankSavingService = bankSavingService;
             _assetTransactionService = assetTransactionService;
             _priceFacade = priceFacade;
-            _calculateDailyProfitLossVisitor = calculateDailyProfitLossVisitor;
+            _calculateProfitLossVisitor = calculateProfitLossVisitor;
         }
 
         public async Task<List<PieChartElementModel>> GetPieChart(int portfolioId)
@@ -200,17 +201,17 @@ namespace ApplicationCore.ReportAggregate
             {
                 transaction.ReferentialAssetId, transaction.ReferentialAssetType, transaction.ReferentialAssetName
             }).Select(async g => new SankeyFlowBasis()
-                {
-                    SourceId = g.Key.ReferentialAssetId!.Value,
-                    SourceType = g.Key.ReferentialAssetType,
-                    SourceName = g.Key.ReferentialAssetName,
-                    TargetId = null,
-                    TargetName = _outsideOut,
-                    TargetType = _outsideOut,
-                    Amount = 
-                        await GetType2SankeyChartCalculationHelper(inputCurrency, g),
-                    Currency = inputCurrency
-                });
+            {
+                SourceId = g.Key.ReferentialAssetId!.Value,
+                SourceType = g.Key.ReferentialAssetType,
+                SourceName = g.Key.ReferentialAssetName,
+                TargetId = null,
+                TargetName = _outsideOut,
+                TargetType = _outsideOut,
+                Amount =
+                    await GetType2SankeyChartCalculationHelper(inputCurrency, g),
+                Currency = inputCurrency
+            });
 
             return await Task.WhenAll(sankeyBasis);
         }
@@ -223,8 +224,10 @@ namespace ApplicationCore.ReportAggregate
                 singleAssetTransactions as SingleAssetTransaction[] ?? singleAssetTransactions.ToArray();
             var taskList = assetTransactions
                 .Select(t => t.CalculateSumOfTaxAndFee(inputCurrency, _priceFacade)).ToList();
-            var withdrawToOutsideTransactions = assetTransactions.Where(t=> t.SingleAssetTransactionType == SingleAssetTransactionType.WithdrawToOutside);
-            var addList = withdrawToOutsideTransactions.Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade)).ToList();
+            var withdrawToOutsideTransactions = assetTransactions.Where(t =>
+                t.SingleAssetTransactionType == SingleAssetTransactionType.WithdrawToOutside);
+            var addList = withdrawToOutsideTransactions
+                .Select(t => t.CalculateValueInCurrency(inputCurrency, _priceFacade)).ToList();
 
             taskList.AddRange(addList);
 
@@ -375,14 +378,14 @@ namespace ApplicationCore.ReportAggregate
             string period = "day")
         {
             var asset = GetAssetByIdAndType(assetType, assetId);
-            var visitor = period switch
+            var periodLength = period switch
             {
-                "day" => _calculateDailyProfitLossVisitor,
-                "week" => _calculateDailyProfitLossVisitor,
-                "month" => _calculateDailyProfitLossVisitor,
-                _ => throw new InvalidOperationException()
+                "day" => 1,
+                "week" => 7,
+                "month" => 30,
+                _ => throw new InvalidOperationException("Invalid period")
             };
-            var result = await asset.AcceptVisitor(visitor);
+            var result = await asset.AcceptVisitor(_calculateProfitLossVisitor,periodLength);
             return result.ToList();
         }
 

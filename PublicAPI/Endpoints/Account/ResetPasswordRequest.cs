@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace PublicAPI.Endpoints.Account
@@ -7,6 +6,5 @@ namespace PublicAPI.Endpoints.Account
     {
         [Required] public string Email { get; set; }
         [Required] public string NewPassword { get; set; }
-
     }
 }

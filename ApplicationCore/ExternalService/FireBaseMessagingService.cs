@@ -8,13 +8,11 @@ using System.IO;
 
 namespace ApplicationCore.ExternalService
 {
-
     public class FirebaseAdminMessaging
     {
         public FirebaseAdminMessaging()
         {
-
-            string currentPath = Directory.GetCurrentDirectory();
+            var currentPath = Directory.GetCurrentDirectory();
             FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile($"{currentPath}/firebase_admin.json")
@@ -46,7 +44,7 @@ namespace ApplicationCore.ExternalService
                 var message = new MulticastMessage()
                 {
                     Tokens = registerTokens,
-                    Data = data,
+                    Data = data
                 };
                 var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message).ConfigureAwait(true);
                 Console.WriteLine(response.SuccessCount);

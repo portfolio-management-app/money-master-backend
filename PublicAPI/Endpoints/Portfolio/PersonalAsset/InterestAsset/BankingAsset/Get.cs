@@ -11,7 +11,6 @@ using PublicAPI.Attributes;
 
 namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
 {
-
     public class Get : BasePortfolioRelatedEndpoint<GetListTransactionRequest, BankingAssetResponse>
     {
         private readonly IBankSavingService _bankSavingService;
@@ -20,11 +19,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         public Get(IBankSavingService bankSavingService)
         {
             _bankSavingService = bankSavingService;
-
         }
 
         [HttpGet("bankSaving/{assetId}")]
-        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync([FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<ActionResult<BankingAssetResponse>> HandleAsync(
+            [FromRoute] GetListTransactionRequest request, CancellationToken cancellationToken = new())
         {
             var foundAsset = _bankSavingService.GetById(request.AssetId);
             if (foundAsset is null)
@@ -33,5 +32,4 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             return Ok(foundAsset.Adapt<BankingAssetResponse>());
         }
     }
-
 }

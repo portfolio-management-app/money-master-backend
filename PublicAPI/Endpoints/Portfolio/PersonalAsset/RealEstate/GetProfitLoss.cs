@@ -7,7 +7,7 @@ using ApplicationCore.ReportAggregate.Models;
 using Microsoft.AspNetCore.Mvc;
 using PublicAPI.Attributes;
 
-namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
+namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
 {
     public class GetProfitLoss : BasePortfolioRelatedEndpoint<GetProfitLossRequest, List<ProfitLossBasis>>
     {
@@ -18,11 +18,11 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
             _reportService = reportService;
         }
 
-        [HttpGet("crypto/{assetId}/profitLoss")]
+        [HttpGet("realEstate/{assetId}/profitLoss")]
         public override async Task<ActionResult<List<ProfitLossBasis>>> HandleAsync(
             [FromMultipleSource] GetProfitLossRequest request, CancellationToken cancellationToken = new())
         {
-            string assetType = "crypto";
+            string assetType = "realEstate";
             try
             {
                 var listProfitLosses = request.Period switch
@@ -32,12 +32,12 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.CryptoCurrency
                     "month" => await _reportService.GetPeriodProfitLossByAsset(request.AssetId, assetType, "month"),
                     _ => throw new InvalidOperationException("Unsupported type ")
                 };
-            return Ok(listProfitLosses);
+                return Ok(listProfitLosses);
             }
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-    }
+    }   
 }

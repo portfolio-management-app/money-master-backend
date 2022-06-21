@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PublicAPI.Endpoints.Portfolio.Notification
 {
-
     public class EditNotificationCommand
     {
         public decimal HighThreadHoldAmount { get; set; }

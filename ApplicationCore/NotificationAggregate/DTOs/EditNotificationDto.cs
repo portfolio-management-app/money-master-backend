@@ -1,9 +1,9 @@
 using System;
+
 namespace ApplicationCore.NotificationAggregate.DTOs
 {
     public class EditNotificationDto
     {
-
         public decimal HighThreadHoldAmount { get; set; }
 
         public decimal LowThreadHoldAmount { get; set; }

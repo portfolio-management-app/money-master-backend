@@ -36,7 +36,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.RealEstate
             try
             {
                 var newRealEstate = await _realEstateService.CreateNewRealEstateAsset(request.PortfolioId, dto);
-                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId,newRealEstate, newRealEstate.InputMoneyAmount,
+                _ = _transactionService.AddCreateNewAssetTransaction(request.PortfolioId, newRealEstate,
+                    newRealEstate.InputMoneyAmount,
                     newRealEstate.InputCurrency, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee,
                     dto.Tax);
                 return Ok(newRealEstate.Adapt<RealEstateResponse>());

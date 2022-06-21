@@ -30,7 +30,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             [FromMultipleSource] CreateCashRequest request,
             CancellationToken cancellationToken = new())
         {
-            
             if (!await IsAllowedToExecute(request.PortfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
 
@@ -39,7 +38,8 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             {
                 var newCashAsset = await _cashService.CreateNewCashAsset(request.PortfolioId, dto);
                 var unused =
-                    _transactionService.AddCreateNewAssetTransaction(request.PortfolioId,newCashAsset, newCashAsset.Amount,
+                    _transactionService.AddCreateNewAssetTransaction(request.PortfolioId, newCashAsset,
+                        newCashAsset.Amount,
                         newCashAsset.CurrencyCode, dto.IsUsingInvestFund, dto.IsUsingCash, dto.UsingCashId, dto.Fee,
                         dto.Tax);
                 return Ok(newCashAsset.Adapt<CashResponse>());
@@ -48,7 +48,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Cash
             {
                 return BadRequest(ex.Message);
             }
-
         }
     }
 }

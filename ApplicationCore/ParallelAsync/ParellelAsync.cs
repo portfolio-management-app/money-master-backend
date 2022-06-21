@@ -8,7 +8,8 @@ namespace ApplicationCore.ParallelAsync
 {
     public static class AsyncMethod
     {
-        public static Task ParallelForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body, int maxDop = DataflowBlockOptions.Unbounded, TaskScheduler scheduler = null)
+        public static Task ParallelForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body,
+            int maxDop = DataflowBlockOptions.Unbounded, TaskScheduler scheduler = null)
         {
             var options = new ExecutionDataflowBlockOptions
             {

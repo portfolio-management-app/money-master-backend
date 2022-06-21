@@ -19,7 +19,6 @@ namespace PublicAPI.Endpoints.Account
         public VerifyOTP(IUserService userService)
         {
             _userService = userService;
-
         }
 
         [HttpPost("otp")]
@@ -29,10 +28,7 @@ namespace PublicAPI.Endpoints.Account
             try
             {
                 var result = _userService.VerifyOtpCode(request.Email, request.OtpCode);
-                if (!result)
-                {
-                    throw new ApplicationException("OTP not correct");
-                }
+                if (!result) throw new ApplicationException("OTP not correct");
 
                 return Ok("OTP verified");
             }
