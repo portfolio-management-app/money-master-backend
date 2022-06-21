@@ -279,7 +279,6 @@ namespace ApplicationCore.TransactionAggregate
             if (foundCash is null)
                 throw new InvalidOperationException(
                     $"Cash with Id {createTransactionDto.DestinationAssetId} not found");
-            var oldCashAmount = foundCash.Amount;
 
             decimal valueToAddToCash = 0;
             var sourceAssetId = createTransactionDto.ReferentialAssetId;
@@ -349,7 +348,7 @@ namespace ApplicationCore.TransactionAggregate
                 ValueOfReferentialAssetBeforeCreatingTransaction =
                     createTransactionDto.ValueOfReferentialAssetBeforeCreatingTransaction,
                 AmountOfDestinationAfterCreatingTransactionInSpecificUnit = foundCash.Amount,
-                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = foundCash.Amount
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = sourceAsset.GetAssetSpecificAmount(),
             };
             _transactionRepository.Insert(newTransaction);
 
