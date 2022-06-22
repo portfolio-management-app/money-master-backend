@@ -109,17 +109,17 @@ namespace ApplicationCore.ReportAggregate
         }
 
 
-        public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId)
+        public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId, DateTime? startTime = null, DateTime? endTime = null)
         {
             var foundPortfolio = _portfolioService.GetPortfolioById(portfolioId);
             if (foundPortfolio is null)
                 throw new InvalidOperationException("Portfolio not found");
             var currency = foundPortfolio.InitialCurrency;
-            var type1SankeyBasis = await GetType1SankeyBasis(currency, portfolioId);
-            var type2SankeyBasis = await GetType2SankeyBasis(currency, portfolioId);
-            var type3SankeyBasis = await GetType3SankeyBasis(currency, portfolioId);
-            var type4SankeyBasis = await GetType4SankeyBasis(currency, portfolioId);
-            var type5SankeyBasis = await GetType5SankeyBasis(currency, portfolioId);
+            var type1SankeyBasis = await GetType1SankeyBasis(currency, portfolioId, startTime, endTime);
+            var type2SankeyBasis = await GetType2SankeyBasis(currency, portfolioId, startTime, endTime);
+            var type3SankeyBasis = await GetType3SankeyBasis(currency, portfolioId, startTime, endTime);
+            var type4SankeyBasis = await GetType4SankeyBasis(currency, portfolioId, startTime, endTime);
+            var type5SankeyBasis = await GetType5SankeyBasis(currency, portfolioId, startTime, endTime);
 
             var resultList = new List<SankeyFlowBasis>();
             resultList.AddRange(type1SankeyBasis);
@@ -140,10 +140,10 @@ namespace ApplicationCore.ReportAggregate
         /// <param name="inputCurrency"></param>
         /// <param name="portfolioId"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType1SankeyBasis(string inputCurrency, int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType1SankeyBasis(string inputCurrency, int portfolioId, DateTime? startTime, DateTime? endTime)
         {
             var relatedToFromOutsideTransactions =
-                _assetTransactionService.GetTransactionsByType(portfolioId, SingleAssetTransactionType.AddValue,
+                _assetTransactionService.GetTransactionsByType(portfolioId,startTime,endTime, SingleAssetTransactionType.AddValue,
                     SingleAssetTransactionType.BuyFromOutside);
             var removedBuyNotFromOutsideTransactions = relatedToFromOutsideTransactions
                 .Where(transaction =>
@@ -185,10 +185,10 @@ namespace ApplicationCore.ReportAggregate
         /// <param name="inputCurrency"></param>
         /// <param name="portfolioId">portfolioId</param>
         /// <returns>The partial list of sankey flow basis</returns>
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(string inputCurrency, int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType2SankeyBasis(string inputCurrency, int portfolioId, DateTime? startTime, DateTime? endTime)
         {
             var listTransactions = _assetTransactionService.GetTransactionsByType
-            (portfolioId, SingleAssetTransactionType.WithdrawToCash,
+            (portfolioId, startTime, endTime, SingleAssetTransactionType.WithdrawToCash,
                 SingleAssetTransactionType.WithdrawToOutside,
                 SingleAssetTransactionType.BuyFromCash,
                 SingleAssetTransactionType.AddValue);
@@ -241,10 +241,10 @@ namespace ApplicationCore.ReportAggregate
         /// <param name="inputCurrency"></param>
         /// <param name="portfolioId"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType3SankeyBasis(string inputCurrency, int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType3SankeyBasis(string inputCurrency, int portfolioId, DateTime? startTime, DateTime? endTime)
         {
             var listTransactions = _assetTransactionService
-                .GetTransactionsByType(portfolioId, SingleAssetTransactionType.BuyFromFund,
+                .GetTransactionsByType(portfolioId,startTime,endTime,SingleAssetTransactionType.BuyFromFund,
                     SingleAssetTransactionType.AddValue);
             var eligibleTransactions = listTransactions.Where(t =>
                 !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue &&
@@ -276,11 +276,12 @@ namespace ApplicationCore.ReportAggregate
             return calculatedSegments.Sum();
         }
 
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType4SankeyBasis(string inputCurrency, int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType4SankeyBasis(string inputCurrency, int portfolioId, DateTime? startTime, DateTime? endTime)
         {
-            var listTransactions = _assetTransactionService.GetTransactionsByType(portfolioId,
-                SingleAssetTransactionType.MoveToFund
-                , SingleAssetTransactionType.BuyFromFund,
+            var listTransactions = _assetTransactionService.GetTransactionsByType(portfolioId, 
+                startTime,endTime,
+                SingleAssetTransactionType.MoveToFund,
+                SingleAssetTransactionType.BuyFromFund,
                 SingleAssetTransactionType.AddValue);
             var eligibleTransactions = listTransactions
                 .Where(t => !(t.SingleAssetTransactionType == SingleAssetTransactionType.AddValue &&
@@ -326,9 +327,10 @@ namespace ApplicationCore.ReportAggregate
             return result;
         }
 
-        private async Task<IEnumerable<SankeyFlowBasis>> GetType5SankeyBasis(string inputCurrency, int portfolioId)
+        private async Task<IEnumerable<SankeyFlowBasis>> GetType5SankeyBasis(string inputCurrency, int portfolioId, DateTime? startTime, DateTime? endTime)
         {
             var listTransactions = _assetTransactionService.GetTransactionsByType(portfolioId,
+                startTime,endTime,
                 SingleAssetTransactionType.AddValue,
                 SingleAssetTransactionType.BuyFromCash,
                 SingleAssetTransactionType.WithdrawToCash);

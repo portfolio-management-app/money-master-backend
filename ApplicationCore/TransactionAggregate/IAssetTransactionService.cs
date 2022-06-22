@@ -22,6 +22,9 @@ namespace ApplicationCore.TransactionAggregate
 
         List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset);
 
+        List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset, DateTime? startTime,
+            DateTime? endTime);
+
         Task<SingleAssetTransaction> CreateWithdrawToCashTransaction
             (int portfolioId, CreateTransactionDto createTransactionDto);
 
@@ -39,5 +42,8 @@ namespace ApplicationCore.TransactionAggregate
 
         public List<SingleAssetTransaction> GetTransactionsByType(
             int portfolioId, params SingleAssetTransactionType[] assetTransactionTypesArray);
+        
+        public List<SingleAssetTransaction> GetTransactionsByType(
+            int portfolioId, DateTime? startTime, DateTime? endTime, params SingleAssetTransactionType[] assetTransactionTypesArray);
     }
 }

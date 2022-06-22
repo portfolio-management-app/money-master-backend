@@ -107,7 +107,8 @@ namespace ApplicationCore.TransactionAggregate
         }
 
         public List<SingleAssetTransaction> GetTransactionListByAsset
-            (PersonalAsset asset, int? pageNumber, int? pageSize, DateTime? startDate, DateTime? endDate, string transactionType)
+        (PersonalAsset asset, int? pageNumber, int? pageSize, DateTime? startDate, DateTime? endDate,
+            string transactionType)
         {
             var listTransaction = _transactionRepository.List(
                 new TransactionWithPagingAndTimeSpec(asset, pageNumber, pageSize, startDate, endDate, transactionType)
@@ -122,6 +123,39 @@ namespace ApplicationCore.TransactionAggregate
                     trans.ReferentialAssetId == asset.Id && trans.ReferentialAssetType == asset.GetAssetType()
                     || trans.DestinationAssetId == asset.Id && trans.DestinationAssetType == asset.GetAssetType());
             return listTransaction.ToList();
+        }
+
+        public List<SingleAssetTransaction> GetTransactionListByAsset(PersonalAsset asset, DateTime? startTime,
+            DateTime? endTime)
+        {
+            if (startTime is null && endTime is null) return GetTransactionListByAsset(asset);
+
+            if (startTime is null)
+            {
+                var listTransaction = _transactionRepository.List(
+                    trans =>
+                        (trans.ReferentialAssetId == asset.Id && trans.ReferentialAssetType == asset.GetAssetType()
+                         || trans.DestinationAssetId == asset.Id && trans.DestinationAssetType == asset.GetAssetType())
+                        && trans.CreatedAt <= endTime);
+                return listTransaction.ToList();
+            }
+
+            if (endTime is null)
+            {
+                var listTransaction = _transactionRepository.List(
+                    trans =>
+                        (trans.ReferentialAssetId == asset.Id && trans.ReferentialAssetType == asset.GetAssetType()
+                         || trans.DestinationAssetId == asset.Id && trans.DestinationAssetType == asset.GetAssetType())
+                        && trans.CreatedAt >= startTime);
+                return listTransaction.ToList();
+            }
+
+            var listTransactionWithStartAndEnd = _transactionRepository.List(
+                trans =>
+                    (trans.ReferentialAssetId == asset.Id && trans.ReferentialAssetType == asset.GetAssetType()
+                     || trans.DestinationAssetId == asset.Id && trans.DestinationAssetType == asset.GetAssetType())
+                    && trans.CreatedAt >= startTime && trans.CreatedAt <= endTime);
+            return listTransactionWithStartAndEnd.ToList();
         }
 
         public async Task<SingleAssetTransaction> CreateAddValueTransaction(int portfolioId,
@@ -272,6 +306,22 @@ namespace ApplicationCore.TransactionAggregate
             return resultTransactions.ToList();
         }
 
+        public List<SingleAssetTransaction> GetTransactionsByType(int portfolioId, DateTime? startTime,
+            DateTime? endTime,
+            params SingleAssetTransactionType[] assetTransactionTypesArray)
+        {
+            var resultTransactions = _transactionRepository.List
+            (transaction =>
+                !transaction.IsDeleted &&
+                assetTransactionTypesArray.Contains(transaction.SingleAssetTransactionType)
+                && transaction.PortfolioId == portfolioId
+                && (startTime == null || transaction.CreatedAt >= startTime)
+                && (endTime == null || transaction.CreatedAt <= endTime));
+
+            return resultTransactions.ToList();
+        }
+
+
         public async Task<SingleAssetTransaction> CreateWithdrawToCashTransaction(int portfolioId,
             CreateTransactionDto createTransactionDto)
         {
@@ -348,7 +398,7 @@ namespace ApplicationCore.TransactionAggregate
                 ValueOfReferentialAssetBeforeCreatingTransaction =
                     createTransactionDto.ValueOfReferentialAssetBeforeCreatingTransaction,
                 AmountOfDestinationAfterCreatingTransactionInSpecificUnit = foundCash.Amount,
-                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = sourceAsset.GetAssetSpecificAmount(),
+                AmountOfSourceAssetAfterCreatingTransactionInSpecificUnit = sourceAsset.GetAssetSpecificAmount()
             };
             _transactionRepository.Insert(newTransaction);
 
