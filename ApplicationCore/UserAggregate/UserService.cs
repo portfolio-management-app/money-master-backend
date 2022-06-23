@@ -60,7 +60,7 @@ namespace ApplicationCore.UserAggregate
                 var settings = new GoogleJsonWebSignature.ValidationSettings()
                 {
                     Audience = new List<string>
-                        { "511417762868-an9ak0crrtra3c4l0rqebt5bmuuo5aqp.apps.googleusercontent.com" }
+                        { "440213221151-sq1vmgkg40rlmi1ib8cd51m9n55li747.apps.googleusercontent.com" }
                 };
 
                 var payloadResult = await GoogleJsonWebSignature.ValidateAsync(token, settings);
