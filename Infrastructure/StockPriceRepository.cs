@@ -39,6 +39,7 @@ namespace Infrastructure
         private readonly IHttpClientFactory _clientFactory;
         private readonly string _baseUrl = "https://finnhub.io/api/v1/quote";
         private readonly string _baseUrlPassPrice = "https://finnhub.io/api/v1/stock/candle";
+        private readonly string _apiKey = "caq7egiad3iecj6acvhg";
 
         public StockPriceRepository(IHttpClientFactory clientFactory)
         {
@@ -52,7 +53,7 @@ namespace Infrastructure
             var query = new Dictionary<string, string>()
             {
                 ["symbol"] = symbolCode,
-                ["token"] = "c99q2t2ad3iaj0qou8mg"
+                ["token"] = _apiKey
             };
 
             var uri = QueryHelpers.AddQueryString(_baseUrl, query);
@@ -88,9 +89,9 @@ namespace Infrastructure
             {
                 ["symbol"] = symbolCode,
                 ["resolution"] = "D",
-                ["fromTime"] = ((DateTimeOffset)mockStartTime).ToUnixTimeSeconds().ToString(),
-                ["toTime"] = ((DateTimeOffset)mockEndTime).ToUnixTimeSeconds().ToString(),
-                ["token"] = "caq4hfqad3i1rqbdlcmg"
+                ["from"] = ((DateTimeOffset)mockStartTime).ToUnixTimeSeconds().ToString(),
+                ["to"] = ((DateTimeOffset)mockEndTime).ToUnixTimeSeconds().ToString(),
+                ["token"] = _apiKey
             };
             var uri = QueryHelpers.AddQueryString(_baseUrlPassPrice, queries);
             var apiResult = await client.GetAsync(uri);
@@ -115,7 +116,9 @@ namespace Infrastructure
             var listDateOfCandle = stockCandlePriceDto.t;
             var closestDateTime = listDateOfCandle.Aggregate(long.MaxValue, (closest, next) =>
                 Math.Abs(next - unixOfInputTime) < Math.Abs(closest - unixOfInputTime) ? next : closest);
-            var priceInUsd = listOpenPrice.FirstOrDefault(o => o == closestDateTime);
+            var indexOfClosesDateTime = listDateOfCandle.Select((dt, index) => new { dt = dt, index = index })
+                .First(d => d.dt == closestDateTime).index;
+            var priceInUsd = listOpenPrice[indexOfClosesDateTime];
             if (priceInUsd is 0)
                 throw new ApplicationException("Failed to read the past price from open price of candles");
             return priceInUsd;
