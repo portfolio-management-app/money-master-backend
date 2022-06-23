@@ -49,7 +49,7 @@ namespace PublicAPI
             services.AddCors();
             services.AddControllers(options => { options.Filters.Add<SetUserIdFilter>(); });
             services.AddDbContext<AppDbContext>(builder =>
-                builder.UseNpgsql(Configuration.GetConnectionString("LocalDBConnection"))
+                builder.UseNpgsql(Configuration.GetConnectionString("HerokuConnection"))
                     .LogTo(Console.WriteLine, LogLevel.Information));
             services.AddSwaggerGen(c =>
             {
