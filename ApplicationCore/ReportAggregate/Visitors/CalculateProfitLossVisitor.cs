@@ -187,9 +187,9 @@ namespace ApplicationCore.ReportAggregate.Visitors
                 if (startTime + TimeSpan.FromDays(period) >= DateTime.Now) isCurrentTimePeriod = true;
                 var basePrice = isCurrentTimePeriod
                     ? (await _priceFacade.StockPriceRepository.GetPriceInUsd(asset.StockCode)).CurrentPrice
-                    : (await _priceFacade.StockPriceRepository
+                    : await _priceFacade.StockPriceRepository
                         .GetPassPriceInUsd(asset.StockCode,
-                            startTime + TimeSpan.FromDays(period))).CurrentPrice;
+                            startTime + TimeSpan.FromDays(period));
                 basePrice *= rateObj.GetValue(asset.GetCurrency());
 
                 var subListTransactions = listTransaction
