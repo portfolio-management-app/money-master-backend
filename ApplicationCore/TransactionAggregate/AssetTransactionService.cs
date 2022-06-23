@@ -414,9 +414,9 @@ namespace ApplicationCore.TransactionAggregate
                 createTransactionDto.ReferentialAssetId.Value);
             var oldAssetValue = await asset.CalculateValueInCurrency(asset.GetCurrency(), _priceFacade);
             var rateObj =
-                await _priceFacade.CurrencyRateRepository.GetRateObject(foundFund.Portfolio.InitialCurrency);
+                await _priceFacade.CurrencyRateRepository.GetRateObject(createTransactionDto.CurrencyCode);
             var valueToAddToFund =
-                rateObj.GetValue(createTransactionDto.CurrencyCode) * createTransactionDto.Amount;
+                rateObj.GetValue(foundFund.Portfolio.InitialCurrency) * createTransactionDto.Amount;
 
             var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
             if (createTransactionDto.IsTransferringAll)
