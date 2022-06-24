@@ -1,4 +1,3 @@
-using System;
 
 namespace ApplicationCore.AssetAggregate.StockAggregate.DTOs
 {

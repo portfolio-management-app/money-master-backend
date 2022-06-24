@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.RealEstateAggregate.DTOs;
 using ApplicationCore.Entity.Asset;

@@ -1,10 +1,10 @@
-using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
 using Ardalis.ApiEndpoints;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using PublicAPI.Endpoints.UserNotification;
 
 namespace PublicAPI.UserNotification
 {

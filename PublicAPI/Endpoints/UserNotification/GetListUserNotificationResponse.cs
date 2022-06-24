@@ -1,6 +1,6 @@
 using System;
 
-namespace PublicAPI.UserNotification
+namespace PublicAPI.Endpoints.UserNotification
 {
     public class GetListUserNotificationResponse
     {
