@@ -28,7 +28,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
                 return Unauthorized(NotAllowedPortfolioMessage); 
             }
 
-            var dto = request.EditPortfolioCommand.Adapt<EditStockDto>();
+            var dto = request.EditStockCommand.Adapt<EditStockDto>();
             var updatedStock =  _stockService.EditStock(request.AssetId, dto); 
             if(updatedStock is null)
                 return NotFound(); 

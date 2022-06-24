@@ -14,7 +14,7 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.Stock
     }
     public class EditStockRequest
     {
-        [FromBody] public EditPortfolioCommand EditPortfolioCommand { get; set; }
+        [FromBody] public EditStockCommand EditStockCommand { get; set; }
         [FromRoute] public int AssetId { get; set; }
         [FromRoute] public int PortfolioId { get; set; }
     }
