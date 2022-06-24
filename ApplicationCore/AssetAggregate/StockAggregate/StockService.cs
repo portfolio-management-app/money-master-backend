@@ -65,6 +65,22 @@ namespace ApplicationCore.AssetAggregate.StockAggregate
             return sumCash;
         }
 
+        public Stock EditStock(int stockId,EditStockDto editStockDto)
+        {
+            var stock = GetById(stockId);
+            if (stock is null)
+                return null;
+            stock.Name = editStockDto.Name;
+            stock.InputDay = editStockDto.InputDay;
+            stock.CurrentAmountHolding = editStockDto.CurrentAmountHolding;
+            stock.Description = editStockDto.Description;
+            stock.StockCode = editStockDto.StockCode;
+            stock.PurchasePrice = editStockDto.PurchasePrice;
+
+            _stockRepository.Update(stock);
+            return stock;
+        }
+
         public Stock GetById(int assetId)
         {
             return _stockRepository.GetFirst(s => s.Id == assetId);
