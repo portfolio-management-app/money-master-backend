@@ -209,7 +209,7 @@ namespace ApplicationCore.BackgroundTask
                     subscriber.HighThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                    _fireBaseService.SendMultiNotification(tokens,
+                    await _fireBaseService.SendMultiNotification(tokens,
                         BuildDataForNotification(subscriber, assetReachHigh));
                     userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
                     notificationService.TurnOffHighNotificationById(subscriber.Id);
@@ -232,7 +232,7 @@ namespace ApplicationCore.BackgroundTask
                     subscriber.LowThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                    _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
+                    await _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
                     notificationService.TurnOffLowNotificationById(subscriber.Id);
                     userNotificationService.InsertNewNotification(subscriber, assetReachLow);
                 }
