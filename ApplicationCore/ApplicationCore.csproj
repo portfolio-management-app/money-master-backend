@@ -29,4 +29,8 @@
         <None Remove="ReportAggregate\Visitors\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ExternalService" />
+    </ItemGroup>
+
 </Project>

@@ -7,10 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
-using ApplicationCore.ExternalService;
 using ApplicationCore.NotificationAggregate;
 using ApplicationCore.Entity;
-using Microsoft.VisualBasic;
 using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
@@ -23,16 +21,17 @@ namespace ApplicationCore.BackgroundTask
         private readonly ILogger<NotificationTask> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private Timer _timer;
-        private readonly FirebaseAdminMessaging _fireBaseService = new();
+        private readonly IFireBaseAdminMessagingService _fireBaseService;
 
         private readonly string assetReachHigh = "assetReachValueHigh";
 
         private readonly string assetReachLow = "assetReachValueLow";
 
-        public NotificationTask(ILogger<NotificationTask> logger, IServiceScopeFactory scopeFactory)
+        public NotificationTask(ILogger<NotificationTask> logger, IServiceScopeFactory scopeFactory, IFireBaseAdminMessagingService fireBaseService)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;
+            _fireBaseService = fireBaseService;
         }
 
         public void Dispose()

@@ -15,5 +15,6 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
         public double InterestRate { get; set; }
         public int TermRange { get; set; } // in day 
         public bool IsGoingToReinState { get; set; }
+        public decimal CurrentMoneyAmount { get; set; }
     }
 }
