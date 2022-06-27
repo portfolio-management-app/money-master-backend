@@ -5,7 +5,7 @@ namespace PublicAPI.Endpoints
 {
     public class HeathCheck: EndpointBaseSync.WithoutRequest.WithActionResult
     {
-        [Route("healthCheck")]
+        [Route("")]
         [HttpGet]
         public override ActionResult Handle()
         {
