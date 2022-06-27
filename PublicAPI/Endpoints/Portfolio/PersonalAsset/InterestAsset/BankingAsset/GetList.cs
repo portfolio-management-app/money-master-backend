@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
@@ -27,7 +28,14 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             if (!await IsAllowedToExecute(portfolioId, _authorizationService))
                 return Unauthorized(NotAllowedPortfolioMessage);
             var list = await _bankSavingService.ListByPortfolio(portfolioId);
-            return Ok(list.Adapt<List<GetListBankSavingAssetResponse>>());
+            var listResponse =
+                list.Select(bankSaving =>
+                {
+                    var bankSavingResponse = bankSaving.Adapt<GetListBankSavingAssetResponse>();
+                    bankSavingResponse.CurrentMoneyAmount = bankSaving.CalculateValueInCurrentCurrency();
+                    return bankSavingResponse;
+                });
+            return Ok(listResponse);
         }
     }
 }

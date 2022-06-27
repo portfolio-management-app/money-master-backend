@@ -114,6 +114,21 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
             return sumCash;
         }
 
+        public CustomInterestAsset EditCustomAsset(int assetId, EditCustomAssetDto editDto)
+        {
+            var foundAsset = GetById(assetId);
+            if (foundAsset is null)
+                return null;
+            foundAsset.Name = editDto.Name;
+            foundAsset.InterestRate = editDto.InterestRate;
+            foundAsset.Description = editDto.Description;
+            foundAsset.TermRange = editDto.TermRange;
+
+            _customInterestAssetRepo.Update(foundAsset);
+
+            return foundAsset;
+        }
+
         public CustomInterestAsset GetById(int assetId)
         {
             return _customInterestAssetRepo.GetFirst(c => c.Id == assetId);

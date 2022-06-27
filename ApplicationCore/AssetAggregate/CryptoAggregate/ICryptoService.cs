@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApplicationCore.AssetAggregate.CryptoAggregate.DTOs;
 using ApplicationCore.Entity.Asset;
-using ApplicationCore.Interfaces;
 
 namespace ApplicationCore.AssetAggregate.CryptoAggregate
 {

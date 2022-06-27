@@ -16,5 +16,7 @@ namespace ApplicationCore.AssetAggregate.CustomAssetAggregate
 
         List<CustomInterestAssetInfo> GetAllUserCustomInterestAssetCategory(int userId);
         Task<decimal> CalculateSumCustomInterestAssetByPortfolio(int portfolioId, string currencyCode);
+
+        CustomInterestAsset EditCustomAsset(int assetId, EditCustomAssetDto editDto);
     }
 }

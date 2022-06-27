@@ -108,6 +108,11 @@ namespace ApplicationCore.ReportAggregate
             };
         }
 
+        public async Task<decimal> GetSumValueOfPortfolio(int portfolioId)
+        {
+            return (await GetPieChart(portfolioId)).Select(p => p.SumValue).Sum();
+        }
+
 
         public async Task<List<SankeyFlowBasis>> GetSankeyChart(int portfolioId, DateTime? startTime = null, DateTime? endTime = null)
         {

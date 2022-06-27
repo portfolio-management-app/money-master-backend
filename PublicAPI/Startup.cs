@@ -1,13 +1,11 @@
 using System;
 using ApplicationCore;
-using ApplicationCore.ExternalService;
 using ApplicationCore.AssetAggregate.BankSavingAssetAggregate;
 using ApplicationCore.AssetAggregate.CashAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
 using ApplicationCore.AssetAggregate.CustomAssetAggregate;
 using ApplicationCore.AssetAggregate.RealEstateAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
-using ApplicationCore.Entity.Asset;
 using ApplicationCore.Interfaces;
 using ApplicationCore.InvestFundAggregate;
 using ApplicationCore.NotificationAggregate;
@@ -40,7 +38,6 @@ namespace PublicAPI
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -91,6 +88,7 @@ namespace PublicAPI
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IEmailSender, MailService>();
+            services.AddSingleton<IFireBaseAdminMessagingService, FirebaseAdminMessaging>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,7 +100,6 @@ namespace PublicAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PublicAPI v1"));
             }
-
 
             app.UseRouting();
             app.UseCors(x => x

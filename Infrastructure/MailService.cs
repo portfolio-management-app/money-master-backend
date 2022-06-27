@@ -6,7 +6,7 @@ using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
 
-namespace ApplicationCore.ExternalService
+namespace Infrastructure
 {
     public class MailService : IEmailSender
     {

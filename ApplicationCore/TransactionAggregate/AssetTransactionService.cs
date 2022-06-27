@@ -97,8 +97,8 @@ namespace ApplicationCore.TransactionAggregate
                 CreatedAt = asset.InputDay,
                 CurrencyCode = currency,
                 LastChanged = DateTime.Now,
-                Fee = fee,
-                Tax = tax,
+                Fee = fee ?? 0,
+                Tax = tax ?? 0,
                 PortfolioId = portfolioId
             };
 
@@ -216,8 +216,8 @@ namespace ApplicationCore.TransactionAggregate
                 CreatedAt = DateTime.Now,
                 CurrencyCode = createTransactionDto.CurrencyCode,
                 LastChanged = DateTime.Now,
-                Fee = createTransactionDto.Fee,
-                Tax = createTransactionDto.Tax,
+                Fee = createTransactionDto.Fee ?? 0,
+                Tax = createTransactionDto.Tax ?? 0,
                 PortfolioId = portfolioId
             };
 
@@ -246,8 +246,8 @@ namespace ApplicationCore.TransactionAggregate
                 Amount = createTransactionDto.Amount,
                 CurrencyCode = createTransactionDto.CurrencyCode,
                 SingleAssetTransactionType = SingleAssetTransactionType.WithdrawToOutside,
-                Fee = createTransactionDto.Fee,
-                Tax = createTransactionDto.Tax,
+                Fee = createTransactionDto.Fee ?? 0,
+                Tax = createTransactionDto.Tax ?? 0,
                 CreatedAt = DateTime.Now,
                 LastChanged = DateTime.Now,
                 DestinationAssetId = null,
@@ -384,8 +384,8 @@ namespace ApplicationCore.TransactionAggregate
                 Amount = createTransactionDto.Amount,
                 CurrencyCode = createTransactionDto.CurrencyCode,
                 SingleAssetTransactionType = SingleAssetTransactionType.WithdrawToCash,
-                Fee = createTransactionDto.Fee,
-                Tax = createTransactionDto.Tax,
+                Fee = createTransactionDto.Fee ?? 0,
+                Tax = createTransactionDto.Tax ?? 0,
                 CreatedAt = DateTime.Now,
                 LastChanged = DateTime.Now,
                 DestinationAssetId = foundCash.Id,
@@ -414,9 +414,9 @@ namespace ApplicationCore.TransactionAggregate
                 createTransactionDto.ReferentialAssetId.Value);
             var oldAssetValue = await asset.CalculateValueInCurrency(asset.GetCurrency(), _priceFacade);
             var rateObj =
-                await _priceFacade.CurrencyRateRepository.GetRateObject(foundFund.Portfolio.InitialCurrency);
+                await _priceFacade.CurrencyRateRepository.GetRateObject(createTransactionDto.CurrencyCode);
             var valueToAddToFund =
-                rateObj.GetValue(createTransactionDto.CurrencyCode) * createTransactionDto.Amount;
+                rateObj.GetValue(foundFund.Portfolio.InitialCurrency) * createTransactionDto.Amount;
 
             var mandatoryWithdrawAll = new[] { "bankSaving", "realEstate" };
             if (createTransactionDto.IsTransferringAll)
@@ -445,8 +445,8 @@ namespace ApplicationCore.TransactionAggregate
                 Amount = createTransactionDto.Amount,
                 CurrencyCode = createTransactionDto.CurrencyCode,
                 SingleAssetTransactionType = SingleAssetTransactionType.MoveToFund,
-                Fee = createTransactionDto.Fee,
-                Tax = createTransactionDto.Tax,
+                Fee = createTransactionDto.Fee ?? 0,
+                Tax = createTransactionDto.Tax ?? 0,
                 CreatedAt = DateTime.Now,
                 LastChanged = DateTime.Now,
                 DestinationAssetId = null,

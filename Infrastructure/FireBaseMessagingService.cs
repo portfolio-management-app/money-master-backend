@@ -1,14 +1,15 @@
 using System;
-using FirebaseAdmin.Messaging;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using ApplicationCore.Interfaces;
+using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
 
-
-namespace ApplicationCore.ExternalService
+namespace Infrastructure
 {
-    public class FirebaseAdminMessaging
+    public class FirebaseAdminMessaging: IFireBaseAdminMessagingService
     {
         public FirebaseAdminMessaging()
         {
@@ -19,7 +20,7 @@ namespace ApplicationCore.ExternalService
             });
         }
 
-        public async void SendSingleNotification(string fcmCode, Dictionary<string, string> data)
+        public async Task SendSingleNotification(string fcmCode, Dictionary<string, string> data)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace ApplicationCore.ExternalService
             }
         }
 
-        public async void SendMultiNotification(List<string> registerTokens, Dictionary<string, string> data)
+        public async Task SendMultiNotification(List<string> registerTokens, Dictionary<string, string> data)
         {
             try
             {

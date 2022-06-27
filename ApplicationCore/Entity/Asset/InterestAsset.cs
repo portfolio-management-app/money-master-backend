@@ -45,5 +45,14 @@ namespace ApplicationCore.Entity.Asset
 
             return (decimal)total; 
         }
+
+        public decimal CalculateValueInCurrentCurrency()
+        {
+            var passedPeriod = (DateTime.Now - InputDay) / TimeSpan.FromDays(TermRange);
+            var passedPeriodInt = (int)passedPeriod;
+            var total = (double)InputMoneyAmount
+                               * Math.Pow(1 + (double)this.InterestRate, passedPeriodInt);
+            return (decimal)total;
+        }
     }
 }

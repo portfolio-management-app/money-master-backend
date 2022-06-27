@@ -7,10 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationCore.Interfaces;
-using ApplicationCore.ExternalService;
 using ApplicationCore.NotificationAggregate;
 using ApplicationCore.Entity;
-using Microsoft.VisualBasic;
 using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
@@ -23,16 +21,17 @@ namespace ApplicationCore.BackgroundTask
         private readonly ILogger<NotificationTask> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private Timer _timer;
-        private readonly FirebaseAdminMessaging _fireBaseService = new();
+        private readonly IFireBaseAdminMessagingService _fireBaseService;
 
         private readonly string assetReachHigh = "assetReachValueHigh";
 
         private readonly string assetReachLow = "assetReachValueLow";
 
-        public NotificationTask(ILogger<NotificationTask> logger, IServiceScopeFactory scopeFactory)
+        public NotificationTask(ILogger<NotificationTask> logger, IServiceScopeFactory scopeFactory, IFireBaseAdminMessagingService fireBaseService)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;
+            _fireBaseService = fireBaseService;
         }
 
         public void Dispose()
@@ -210,7 +209,7 @@ namespace ApplicationCore.BackgroundTask
                     subscriber.HighThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                    _fireBaseService.SendMultiNotification(tokens,
+                    await _fireBaseService.SendMultiNotification(tokens,
                         BuildDataForNotification(subscriber, assetReachHigh));
                     userNotificationService.InsertNewNotification(subscriber, assetReachHigh);
                     notificationService.TurnOffHighNotificationById(subscriber.Id);
@@ -233,7 +232,7 @@ namespace ApplicationCore.BackgroundTask
                     subscriber.LowThreadHoldAmount != 0)
                 {
                     var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
-                    _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
+                    await _fireBaseService.SendMultiNotification(tokens, BuildDataForNotification(subscriber, assetReachLow));
                     notificationService.TurnOffLowNotificationById(subscriber.Id);
                     userNotificationService.InsertNewNotification(subscriber, assetReachLow);
                 }

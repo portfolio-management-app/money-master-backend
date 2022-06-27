@@ -15,19 +15,20 @@ namespace ApplicationCore.TransactionAggregate
             {
                 if (transactionType == "all")
                     Query.Where(trans =>
-                       trans.ReferentialAssetType == asset.GetAssetType()
-                        || trans.DestinationAssetType == asset.GetAssetType());
+                       (trans.ReferentialAssetType == asset.GetAssetType()
+                        || trans.DestinationAssetType == asset.GetAssetType()) && trans.PortfolioId == asset.PortfolioId);
 
                 if (transactionType == "in")
                 {
                     Query.Where(trans =>
-                   trans.DestinationAssetType == asset.GetAssetType());
+                   trans.DestinationAssetType == asset.GetAssetType() && trans.PortfolioId == asset.PortfolioId);
 
                 }
                 if (transactionType == "out")
                 {
                     Query.Where(trans =>
-                    trans.ReferentialAssetType == asset.GetAssetType());
+                    trans.ReferentialAssetType == asset.GetAssetType() && trans.PortfolioId == asset.PortfolioId)
+                    ;
                 }
             }
             else
