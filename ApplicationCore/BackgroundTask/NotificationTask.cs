@@ -13,6 +13,7 @@ using ApplicationCore.UserAggregate;
 using ApplicationCore.UserNotificationAggregate;
 using ApplicationCore.AssetAggregate.StockAggregate;
 using ApplicationCore.AssetAggregate.CryptoAggregate;
+using ApplicationCore.PortfolioAggregate;
 
 namespace ApplicationCore.BackgroundTask
 {
@@ -154,6 +155,7 @@ namespace ApplicationCore.BackgroundTask
                         if (value * cryptoAsset.CurrentAmountHolding > subscriber.HighThreadHoldAmount &&
                             subscriber.HighThreadHoldAmount != 0)
                         {
+                            Console.WriteLine("Push high crypto noti");
                             var tokens = userService.GetUserFcmCodeByUserId(subscriber.UserId);
                             _fireBaseService.SendMultiNotification(tokens,
                                 BuildDataForNotification(subscriber, assetReachHigh));
@@ -241,6 +243,9 @@ namespace ApplicationCore.BackgroundTask
 
         private Dictionary<string, string> BuildDataForNotification(Notification notification, string type)
         {
+            using var scope = _scopeFactory.CreateScope();
+            var portfolioService = scope.ServiceProvider.GetRequiredService<IPortfolioService>();
+            var portfolioName = portfolioService.GetPortfolioById(notification.PortfolioId).Name;
             return new Dictionary<string, string>()
             {
                 { "title", "Asset reach value" },
@@ -249,6 +254,7 @@ namespace ApplicationCore.BackgroundTask
                 { "portfolioId", notification.PortfolioId.ToString() },
                 { "assetType", notification.AssetType },
                 { "assetName", notification.AssetName },
+                {"portfolioName",portfolioName},
                 { "type", type },
                 { "high", notification.HighThreadHoldAmount.ToString() },
                 { "low", notification.LowThreadHoldAmount.ToString() },
