@@ -28,8 +28,10 @@ namespace PublicAPI.Endpoints.Portfolio.PersonalAsset.InterestAsset.BankingAsset
             var foundAsset = _bankSavingService.GetById(request.AssetId);
             if (foundAsset is null)
                 return NotFound();
+            var response = foundAsset.Adapt<BankingAssetResponse>();
+            response.CurrentMoneyAmount = foundAsset.CalculateValueInCurrentCurrency();
 
-            return Ok(foundAsset.Adapt<BankingAssetResponse>());
+            return Ok(response);
         }
     }
 }
