@@ -12,6 +12,8 @@ namespace PublicAPI.Endpoints.UserNotification
 
         public int PortfolioId { get; set; }
 
+        public string PortfolioName { get; set; }
+
         public string AssetName { get; set; }
 
         public string AssetType { get; set; }

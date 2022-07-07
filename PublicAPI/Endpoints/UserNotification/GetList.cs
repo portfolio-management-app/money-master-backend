@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using PublicAPI.Endpoints.UserNotification;
+using ApplicationCore.PortfolioAggregate;
 
 namespace PublicAPI.UserNotification
 {
@@ -14,9 +15,12 @@ namespace PublicAPI.UserNotification
     {
         private readonly IUserNotificationService _userNotificationService;
 
-        public GetList(IUserNotificationService userNotificationService)
+        private readonly IPortfolioService _portfolioService;
+
+        public GetList(IUserNotificationService userNotificationService, IPortfolioService portfolioService)
         {
             _userNotificationService = userNotificationService;
+            _portfolioService = portfolioService;
         }
 
         [HttpGet]
@@ -24,7 +28,12 @@ namespace PublicAPI.UserNotification
         {
             var userId = (int)HttpContext.Items["userId"]!;
             var list = _userNotificationService.GetListNotificationByUserId(userId);
-            return Ok(list.Adapt<List<GetListUserNotificationResponse>>());
+            var res = list.Adapt<List<GetListUserNotificationResponse>>();
+            res.ForEach(item =>
+            {
+                item.PortfolioName = _portfolioService.GetPortfolioById(item.PortfolioId).Name;
+            });
+            return Ok(res);
         }
     }
 }
